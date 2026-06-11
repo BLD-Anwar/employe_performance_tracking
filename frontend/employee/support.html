@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriPulse — Support & Assistance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#003527",
+          "secondary": "#006c49",
+          "background": "#f4f6f8",
+          "surface": "#ffffff",
+        },
+        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", "2xl": "1rem", full: "9999px" },
+        fontFamily: { sans: ["Inter", "sans-serif"] },
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; background-color: #f4f6f8; color: #0f172a; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  input:focus, select:focus, textarea:focus { outline: none; box-shadow: 0 0 0 2px rgba(16,185,129,0.2); border-color: #10b981; }
+
+  .agri-sidebar { background: linear-gradient(180deg, #002b1f 0%, #001f16 100%); box-shadow: inset -1px 0 0 rgba(255,255,255,0.03), 4px 0 24px rgba(0,0,0,0.15); }
+  .nav-link { color: rgba(255,255,255,0.7); transition: all 0.2s ease; }
+  .nav-link:hover { background: rgba(255,255,255,0.06); color: #ffffff; transform: translateX(2px); }
+  .nav-link.active { background: linear-gradient(90deg, rgba(16,185,129,0.15), rgba(16,185,129,0.02)); color: #34d399; border-left: 3px solid #10b981; }
+  .nav-link.active .material-symbols-outlined { color: #10b981; }
+
+  .premium-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); border-radius: 1rem; }
+
+  .ticket-success { display:none; border-radius:1rem; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #a7f3d0; padding: 2rem; text-align:center; }
+
+  .faq-item details summary { cursor: pointer; list-style: none; }
+  .faq-item details summary::-webkit-details-marker { display: none; }
+  .faq-item details[open] summary .faq-arrow { transform: rotate(180deg); }
+  .faq-arrow { transition: transform 0.2s ease; }
+</style>
+<script src="../assets/js/auth-store.js"></script>
+<script src="../assets/js/api.js"></script>
+<script>if (!AgriAuth.requireAuth("login.html")) { document.documentElement.innerHTML = ""; }</script>
+</head>
+
+<body class="min-h-screen flex">
+
+<!-- Side Navigation -->
+<aside class="agri-sidebar w-[240px] flex flex-col py-6 shrink-0 fixed h-screen z-50 text-white">
+  <div class="px-6 mb-8 flex items-center gap-3">
+    <div class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center rounded-xl shadow-lg shrink-0">
+      <span class="material-symbols-outlined text-2xl text-emerald-400">agriculture</span>
+    </div>
+    <div>
+      <h1 class="text-sm font-black tracking-wider leading-none uppercase text-white">Sri Sri Sugar</h1>
+      <p class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-1">Operations Portal</p>
+    </div>
+  </div>
+  <nav class="flex-grow space-y-1">
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="dashboard.html"><span class="material-symbols-outlined text-lg">dashboard</span><span>My Dashboard</span></a>
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="employees.html"><span class="material-symbols-outlined text-lg">person</span><span>My Profile</span></a>
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="reports.html"><span class="material-symbols-outlined text-lg">assessment</span><span>My Reports</span></a>
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="work_submission.html"><span class="material-symbols-outlined text-lg">task</span><span>Submit Work</span></a>
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="insights.html"><span class="material-symbols-outlined text-lg">analytics</span><span>Analytics</span></a>
+  </nav>
+  <div class="mt-auto border-t border-white/5 pt-6 space-y-1">
+    <a class="nav-link active flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider" href="support.html"><span class="material-symbols-outlined text-lg">help</span><span>Support</span></a>
+    <a class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider" href="settings.html"><span class="material-symbols-outlined text-lg">settings</span><span>Settings</span></a>
+    <a id="navLogout" class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider text-red-400 hover:bg-red-500/10 cursor-pointer"><span class="material-symbols-outlined text-lg">logout</span><span>Sign Out</span></a>
+  </div>
+</aside>
+
+<!-- Main Container -->
+<div class="ml-[240px] flex-grow flex flex-col min-h-screen">
+
+  <!-- Top Bar -->
+  <header class="sticky top-0 w-full h-16 px-8 bg-white border-b border-slate-200 flex justify-between items-center z-40 shadow-sm">
+    <h1 class="text-base font-bold text-slate-800">Help & Support Centre</h1>
+    <div class="flex items-center gap-3">
+      <div class="text-right">
+        <p class="text-xs font-black text-slate-800 leading-none" id="headerUserName">Loading...</p>
+        <p class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider mt-1">Field Operations</p>
+      </div>
+      <div class="w-9 h-9 rounded-xl bg-[#003527] text-emerald-300 font-bold text-xs flex items-center justify-center shadow" id="avatarCircle">A</div>
+    </div>
+  </header>
+
+  <main class="flex-grow p-8 space-y-6">
+    <section>
+      <h2 class="text-2xl font-black text-slate-900 tracking-tight">Support & Assistance</h2>
+      <p class="text-xs text-slate-500 mt-1">Raise a support ticket, browse FAQs, or contact the IT helpdesk directly.</p>
+    </section>
+
+    <div class="grid grid-cols-12 gap-6">
+
+      <!-- Support Ticket Form -->
+      <div class="col-span-12 lg:col-span-7 space-y-6">
+        <div class="premium-card overflow-hidden">
+          <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#003527] text-lg">contact_support</span>
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Open a Support Ticket</h3>
+          </div>
+          <div class="p-6">
+            <!-- Form -->
+            <form id="supportForm" class="space-y-4 text-xs" onsubmit="submitTicket(event)">
+              <div class="space-y-1">
+                <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Your Name</label>
+                <input type="text" id="tName" readonly class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-bold" placeholder="Loading...">
+              </div>
+              <div class="space-y-1">
+                <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Ticket Category</label>
+                <select id="tCategory" required class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-semibold">
+                  <option value="GPS Sync Failure">GPS Coordinates Synchronization Failure</option>
+                  <option value="Password / Account Issue">Password or Account Access Issue</option>
+                  <option value="DGPS Device Error">DGPS Soil Telemetry Device Error</option>
+                  <option value="Data Entry Correction">Data Entry / Work Submission Correction</option>
+                  <option value="Performance Score Query">Performance Score Query</option>
+                  <option value="Report Download Issue">Report Download Issue</option>
+                  <option value="General Feedback">General Application Feedback</option>
+                </select>
+              </div>
+              <div class="space-y-1">
+                <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Priority Level</label>
+                <select id="tPriority" class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-semibold">
+                  <option value="Low">Low — General Inquiry</option>
+                  <option value="Medium" selected>Medium — Affecting My Work</option>
+                  <option value="High">High — Blocking Operations</option>
+                  <option value="Critical">Critical — System Emergency</option>
+                </select>
+              </div>
+              <div class="space-y-1">
+                <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Issue Description</label>
+                <textarea id="tDesc" rows="4" required class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-medium resize-none" placeholder="Please describe the issue in detail — what happened, when it occurred, and what page it was on..."></textarea>
+              </div>
+              <button type="submit" class="w-full bg-[#003527] hover:bg-[#002d21] text-emerald-300 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow uppercase tracking-wider transition-all active:scale-[0.98]">
+                <span class="material-symbols-outlined text-sm">send</span>
+                Submit Support Ticket
+              </button>
+            </form>
+
+            <!-- Success State -->
+            <div class="ticket-success" id="ticketSuccess">
+              <div class="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-emerald-600 text-3xl">check_circle</span>
+              </div>
+              <h3 class="text-lg font-black text-slate-900 mb-1">Ticket Submitted!</h3>
+              <p class="text-sm text-slate-600 mb-2">Our IT team will respond within 24 hours.</p>
+              <p class="text-xs font-black text-[#006c49] mb-4" id="ticketId">TICKET #TK-000000</p>
+              <button class="text-xs font-bold text-[#006c49] hover:underline" onclick="resetForm()">Submit Another Ticket</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ Accordion -->
+        <div class="premium-card overflow-hidden">
+          <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#003527] text-lg">quiz</span>
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Frequently Asked Questions</h3>
+          </div>
+          <div class="p-6 space-y-3 text-xs faq-item">
+            <details class="border border-slate-100 rounded-xl overflow-hidden">
+              <summary class="flex items-center justify-between px-4 py-3 bg-slate-50 font-bold text-slate-800 hover:bg-slate-100 transition-colors">
+                How is my Performance Score calculated?
+                <span class="material-symbols-outlined text-slate-400 faq-arrow text-base">expand_more</span>
+              </summary>
+              <div class="px-4 py-3 text-slate-600 leading-relaxed bg-white">Your score = <strong>Crushing 40% + Recovery 20% + Meetings 20% + KCC 20%</strong>. Each category is benchmarked against the regional average. Scores above 80% are considered excellent.</div>
+            </details>
+            <details class="border border-slate-100 rounded-xl overflow-hidden">
+              <summary class="flex items-center justify-between px-4 py-3 bg-slate-50 font-bold text-slate-800 hover:bg-slate-100 transition-colors">
+                Why can I only see my own data?
+                <span class="material-symbols-outlined text-slate-400 faq-arrow text-base">expand_more</span>
+              </summary>
+              <div class="px-4 py-3 text-slate-600 leading-relaxed bg-white">The AgriPulse portal enforces strict data privacy. As a Field Operations user, you can only view your own KPIs, submissions, and reports. Managers and Staff can view team-level analytics.</div>
+            </details>
+            <details class="border border-slate-100 rounded-xl overflow-hidden">
+              <summary class="flex items-center justify-between px-4 py-3 bg-slate-50 font-bold text-slate-800 hover:bg-slate-100 transition-colors">
+                How do I download my performance reports?
+                <span class="material-symbols-outlined text-slate-400 faq-arrow text-base">expand_more</span>
+              </summary>
+              <div class="px-4 py-3 text-slate-600 leading-relaxed bg-white">Go to <a href="reports.html" class="text-[#006c49] font-bold hover:underline">My Reports</a> and click the Download button (PDF, CSV, or Excel). Reports are generated instantly with your personal data.</div>
+            </details>
+            <details class="border border-slate-100 rounded-xl overflow-hidden">
+              <summary class="flex items-center justify-between px-4 py-3 bg-slate-50 font-bold text-slate-800 hover:bg-slate-100 transition-colors">
+                My GPS location is not syncing — what should I do?
+                <span class="material-symbols-outlined text-slate-400 faq-arrow text-base">expand_more</span>
+              </summary>
+              <div class="px-4 py-3 text-slate-600 leading-relaxed bg-white">Ensure you have enabled Location Permission for your browser, and that you are within DGPS signal range. If the issue persists, submit a ticket with category "GPS Sync Failure".</div>
+            </details>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Contact + Status -->
+      <div class="col-span-12 lg:col-span-5 space-y-6">
+
+        <!-- IT Contact Card -->
+        <div class="premium-card p-6 space-y-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-[#003527] text-lg">support_agent</span>
+            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Direct IT Helpdesk</h4>
+          </div>
+          <p class="text-xs text-slate-500 leading-relaxed">Sri Sri Sugar IT Engineering Team — supporting field operations across Sangli & Kolhapur zones.</p>
+          <div class="space-y-3 text-xs">
+            <a href="mailto:software@srisrisugar.com" class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-emerald-50 hover:border-emerald-100 transition-all group">
+              <div class="w-8 h-8 bg-[#003527]/10 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-[#006c49] text-base">mail</span>
+              </div>
+              <div>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Email Support</p>
+                <p class="font-bold text-[#006c49] group-hover:underline">software@srisrisugar.com</p>
+              </div>
+            </a>
+            <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div class="w-8 h-8 bg-[#003527]/10 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-[#006c49] text-base">call</span>
+              </div>
+              <div>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Phone Helpdesk</p>
+                <p class="font-bold text-slate-800">+91 233 247 9002</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div class="w-8 h-8 bg-[#003527]/10 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-[#006c49] text-base">schedule</span>
+              </div>
+              <div>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Office Hours</p>
+                <p class="font-bold text-slate-800">Mon–Sat, 9:00 AM – 6:00 PM IST</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="premium-card p-6 space-y-3">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-[#003527] text-lg">monitor_heart</span>
+            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-widest">System Status</h4>
+          </div>
+          <div class="space-y-2 text-xs" id="systemStatus">
+            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50">
+              <span class="font-medium text-slate-700">AgriPulse Portal</span>
+              <span class="flex items-center gap-1 text-emerald-600 font-black text-[10px]"><span class="w-2 h-2 bg-emerald-500 rounded-full inline-block animate-pulse"></span> OPERATIONAL</span>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50">
+              <span class="font-medium text-slate-700">GPS Sync Server</span>
+              <span class="flex items-center gap-1 text-emerald-600 font-black text-[10px]"><span class="w-2 h-2 bg-emerald-500 rounded-full inline-block animate-pulse"></span> OPERATIONAL</span>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50">
+              <span class="font-medium text-slate-700">Report Generator</span>
+              <span class="flex items-center gap-1 text-emerald-600 font-black text-[10px]"><span class="w-2 h-2 bg-emerald-500 rounded-full inline-block animate-pulse"></span> OPERATIONAL</span>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50">
+              <span class="font-medium text-slate-700">Data Telemetry</span>
+              <span class="flex items-center gap-1 text-amber-600 font-black text-[10px]"><span class="w-2 h-2 bg-amber-400 rounded-full inline-block"></span> MAINTENANCE</span>
+            </div>
+          </div>
+          <p class="text-[9px] text-slate-400 text-right">Last checked: <span id="lastChecked">—</span></p>
+        </div>
+
+        <!-- My Tickets History -->
+        <div class="premium-card p-6 space-y-3">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-[#003527] text-lg">inbox</span>
+            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-widest">My Tickets</h4>
+          </div>
+          <div id="myTickets" class="space-y-2 text-xs"></div>
+          <p class="text-[10px] text-slate-400 text-center" id="noTicketsMsg">No tickets submitted yet</p>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+let myTickets = JSON.parse(localStorage.getItem("agriTickets") || "[]");
+
+function submitTicket(e) {
+  e.preventDefault();
+  const category = document.getElementById("tCategory").value;
+  const desc = document.getElementById("tDesc").value;
+  const priority = document.getElementById("tPriority").value;
+  const ticketNum = Math.floor(100000 + Math.random() * 900000);
+  const ticketId = `TK-${ticketNum}`;
+
+  // Save to local storage
+  const session = AgriAuth.getSession();
+  const ticket = {
+    id: ticketId,
+    category,
+    priority,
+    desc,
+    date: new Date().toLocaleDateString("en-IN"),
+    status: "Open"
+  };
+  myTickets.push(ticket);
+  localStorage.setItem("agriTickets", JSON.stringify(myTickets));
+
+  // Show success state
+  document.getElementById("supportForm").style.display = "none";
+  document.getElementById("ticketSuccess").style.display = "block";
+  document.getElementById("ticketId").textContent = `TICKET #${ticketId}`;
+  renderTickets();
+}
+
+function resetForm() {
+  document.getElementById("supportForm").style.display = "block";
+  document.getElementById("ticketSuccess").style.display = "none";
+  document.getElementById("tDesc").value = "";
+}
+
+function renderTickets() {
+  const container = document.getElementById("myTickets");
+  const noMsg = document.getElementById("noTicketsMsg");
+  if (!myTickets.length) { noMsg.style.display = "block"; return; }
+  noMsg.style.display = "none";
+  container.innerHTML = myTickets.slice().reverse().slice(0, 5).map(t => `
+    <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50">
+      <div class="flex justify-between items-center">
+        <span class="font-black text-slate-800 text-[10px]">#${t.id}</span>
+        <span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold ${t.status === 'Open' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}">${t.status}</span>
+      </div>
+      <p class="text-[10px] text-slate-600 mt-1 truncate">${t.category}</p>
+      <p class="text-[9px] text-slate-400 mt-0.5">${t.date} · ${t.priority} Priority</p>
+    </div>
+  `).join("");
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const session = AgriAuth.getSession();
+  if (!session) return;
+
+  document.getElementById("lastChecked").textContent = new Date().toLocaleTimeString("en-IN");
+
+  // Fetch profile from the live API
+  try {
+    const profile = await AgriAPI.getProfile();
+    document.getElementById("avatarCircle").textContent = profile.initials;
+    document.getElementById("headerUserName").textContent = profile.name;
+    document.getElementById("tName").value = profile.name;
+  } catch (err) {
+    document.getElementById("avatarCircle").textContent = (session.name || "?")[0].toUpperCase();
+    document.getElementById("headerUserName").textContent = session.name || session.username || "—";
+    document.getElementById("tName").value = session.name || session.username || "";
+  }
+
+  renderTickets();
+
+  // Logout
+  document.getElementById("navLogout").addEventListener("click", (e) => {
+    e.preventDefault();
+    if (confirm("Are you sure you want to sign out?")) {
+      AgriAPI.logout();
+      AgriAuth.clearSession();
+      window.location.replace("login.html");
+    }
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriPulse — Reports Centre</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Inter',sans-serif;background:#f4f6f8;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}
+  .sidebar{background:linear-gradient(180deg,#0f1f18 0%,#0a150f 100%);width:220px;min-height:100vh;position:fixed;left:0;top:0;z-index:50;display:flex;flex-direction:column;}
+  .nav-link{display:flex;align-items:center;gap:12px;padding:10px 16px;margin:2px 8px;border-radius:8px;color:rgba(209,250,229,0.65);font-size:13px;font-weight:600;text-decoration:none;transition:all 0.15s;}
+  .nav-link:hover{background:rgba(255,255,255,0.07);color:#fff;}
+  .nav-link.active{background:rgba(74,222,128,0.18);color:#86efac;}
+  .nav-link.active .material-symbols-outlined{color:#4ade80;}
+  .nav-link.logout{color:rgba(252,165,165,0.7);}
+  .nav-link.logout:hover{background:rgba(239,68,68,0.1);color:#fca5a5;}
+  .nav-link.settings-link{color:rgba(209,250,229,0.65);}
+  .card{background:#fff;border-radius:14px;border:1px solid #e5e7eb;}
+  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;}
+  .tbl-row:hover{background:#f9fafb;}
+  input,select{border:1.5px solid #d1d5db;border-radius:8px;padding:8px 12px;font-size:13px;color:#111827;font-family:inherit;background:#fff;}
+  input:focus,select:focus{outline:none;border-color:#006c49;box-shadow:0 0 0 3px rgba(0,108,73,0.08);}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:100;display:none;align-items:center;justify-content:center;padding:16px;}
+  .modal-bg.show{display:flex;}
+  label.flabel{font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:5px;}
+  .officer-list-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;cursor:pointer;transition:all 0.12s;}
+  .officer-list-item:hover{background:#f0fdf4;}
+  .officer-list-item.active{background:#d1fae5;border:1.5px solid #bbf7d0;}
+  .tab-btn{padding:8px 16px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s;}
+  .tab-btn.active{background:#003527;color:#fff;}
+  .tab-btn:not(.active){background:#f3f4f6;color:#6b7280;}
+  .report-card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;}
+  .report-card:hover{border-color:#bbf7d0;background:#f9fffe;}
+  .toast{position:fixed;top:70px;right:20px;background:#003527;color:#fff;border-radius:10px;padding:12px 20px;font-size:13px;font-weight:600;z-index:999;transform:translateX(140%);transition:transform 0.3s ease;}
+  .toast.show{transform:translateX(0);}
+</style>
+<script src="../assets/js/manager-auth-store.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+  <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
+    <div style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:#4ade80;font-size:20px;">agriculture</span></div>
+    <div><div style="color:#f0fdf4;font-weight:800;font-size:14px;">Sri Sri Sugar</div><div style="color:rgba(209,250,229,0.5);font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL</div></div>
+  </div>
+  <nav style="flex:1;padding:8px 0;">
+    <a class="nav-link" href="manager_dashboard.html"><span class="material-symbols-outlined" style="font-size:20px;">dashboard</span>Overview</a>
+    <a class="nav-link" href="manager_officers.html"><span class="material-symbols-outlined" style="font-size:20px;">group</span>Officers</a>
+    <a class="nav-link" href="manager_tasks.html"><span class="material-symbols-outlined" style="font-size:20px;">checklist</span>Tasks</a>
+    <a class="nav-link" href="manager_performance.html"><span class="material-symbols-outlined" style="font-size:20px;">bar_chart</span>Performance</a>
+    <a class="nav-link active" href="manager_reports.html"><span class="material-symbols-outlined" style="font-size:20px;">assessment</span>Reports</a>
+  </nav>
+  <div style="border-top:1px solid rgba(255,255,255,0.07);padding:8px 0;">
+    <a class="nav-link settings-link" href="manager_settings.html"><span class="material-symbols-outlined" style="font-size:20px;">settings</span>Settings</a>
+    <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined" style="font-size:20px;">logout</span>Logout</a>
+  </div>
+</aside>
+
+<!-- Generate Report Modal -->
+<div class="modal-bg" id="genModal">
+  <div style="background:#fff;border-radius:16px;width:100%;max-width:460px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+    <div style="padding:16px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:15px;font-weight:700;color:#003527;">Generate Report</span>
+      <button onclick="hideModal()" style="background:none;border:none;cursor:pointer;color:#6b7280;"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
+      <div><label class="flabel">Report Type</label>
+        <select id="rType" style="width:100%;">
+          <option value="task">Task Performance Report</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div><label class="flabel">Start Date</label><input type="date" id="rStart" style="width:100%;"></div>
+        <div><label class="flabel">End Date</label><input type="date" id="rEnd" style="width:100%;"></div>
+      </div>
+      <div><label class="flabel">Task ID</label>
+        <input type="number" id="rTaskId" placeholder="Enter Task ID" style="width:100%;">
+      </div>
+      <button onclick="submitReport()" id="genBtn" style="background:#003527;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;"><span class="material-symbols-outlined" style="font-size:18px;">description</span>Generate Report</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<div style="margin-left:220px;min-height:100vh;">
+  <header style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
+    <span style="font-size:18px;font-weight:800;color:#003527;">Reports Centre</span>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button onclick="showModal()" style="background:#003527;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px;">add</span>Generate Report</button>
+      <button onclick="generateAllReports()" style="background:#006c49;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px;">auto_awesome</span>Auto-Generate All</button>
+      <div style="width:36px;height:36px;border-radius:99px;background:#d1fae5;color:#003527;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;" id="avatarCircle">M</div>
+      <span style="font-size:13px;font-weight:600;color:#374151;" id="headerName">—</span>
+    </div>
+  </header>
+
+  <div style="padding:24px;display:flex;flex-direction:column;gap:20px;">
+
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #003527;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">Total Activities</div>
+        <div style="font-size:28px;font-weight:800;color:#003527;" id="totalActivitiesKPI">—</div>
+        <div style="font-size:11px;color:#6b7280;margin-top:2px;">Jan 1 – Dec 31, 2026</div>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #006c49;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">Reports Generated</div>
+        <div style="font-size:28px;font-weight:800;color:#006c49;" id="reportCount">6</div>
+        <div style="font-size:11px;color:#6b7280;margin-top:2px;">This period</div>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #0d9488;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">Active Officers</div>
+        <div style="font-size:28px;font-weight:800;color:#0d9488;" id="activeOfficersKPI">—</div>
+        <div style="font-size:11px;color:#6b7280;margin-top:2px;">Logged in database</div>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #d97706;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">Villages Covered</div>
+        <div style="font-size:18px;font-weight:800;color:#d97706;" id="villagesCoveredKPI">—</div>
+        <div style="font-size:11px;color:#6b7280;margin-top:2px;">Across all records</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="tab-btn active" id="tabAll" onclick="switchTab('all')"><span class="material-symbols-outlined" style="font-size:16px;vertical-align:-3px;">folder</span> All Reports</button>
+      <button class="tab-btn" id="tabOfficer" onclick="switchTab('officer')"><span class="material-symbols-outlined" style="font-size:16px;vertical-align:-3px;">person_search</span> By Officer</button>
+      <button class="tab-btn" id="tabActivities" onclick="switchTab('activities')"><span class="material-symbols-outlined" style="font-size:16px;vertical-align:-3px;">fact_check</span> Activity Log</button>
+    </div>
+
+    <!-- ALL REPORTS TAB -->
+    <div id="tabAllContent">
+      <div class="card" style="overflow:hidden;">
+        <div style="padding:14px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;">
+          <div style="font-size:14px;font-weight:700;color:#111827;">Report Archive</div>
+          <div style="display:flex;gap:10px;">
+            <input type="text" id="rSearch" placeholder="Search reports..." oninput="filterReports()" style="width:200px;font-size:12px;">
+            <select id="rFmt" onchange="filterReports()" style="width:110px;font-size:12px;display:none;">
+              <option value="">All Formats</option>
+            </select>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead style="background:#f9fafb;"><tr>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Report Title</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Officer</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Generated</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Period</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Format</th>
+              <th style="padding:10px 16px;text-align:right;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Download</th>
+            </tr></thead>
+            <tbody id="rBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- BY OFFICER TAB -->
+    <div id="tabOfficerContent" style="display:none;">
+      <div style="display:grid;grid-template-columns:280px 1fr;gap:20px;">
+        <!-- Officer List -->
+        <div class="card" style="padding:16px;">
+          <div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:10px;">Select Officer</div>
+          <div style="position:relative;margin-bottom:10px;">
+            <span class="material-symbols-outlined" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:16px;">search</span>
+            <input type="text" placeholder="Search officer..." id="officerSearch" oninput="filterOfficerList()" style="width:100%;padding-left:32px;font-size:12px;box-sizing:border-box;">
+          </div>
+          <div id="officerList" style="display:flex;flex-direction:column;gap:4px;max-height:400px;overflow-y:auto;"></div>
+        </div>
+        <!-- Officer Reports -->
+        <div id="officerReportPanel">
+          <div class="card" style="padding:40px;text-align:center;color:#9ca3af;">
+            <span class="material-symbols-outlined" style="font-size:48px;display:block;margin-bottom:12px;opacity:0.3;">person_search</span>
+            <div style="font-size:14px;font-weight:600;color:#374151;">Select an officer</div>
+            <div style="font-size:12px;margin-top:4px;">Their reports will appear here</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY LOG TAB -->
+    <div id="tabActivitiesContent" style="display:none;">
+      <div class="card" style="overflow:hidden;">
+        <!-- Filters panel -->
+        <div style="padding:16px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
+          <div style="position:relative;width:220px;">
+            <span class="material-symbols-outlined" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:16px;">search</span>
+            <input type="text" placeholder="Search farmer, village..." id="actSearch" oninput="actPage=1;fetchActivities()" style="width:100%;padding-left:32px;font-size:12px;box-sizing:border-box;">
+          </div>
+          <select id="actWorkType" onchange="actPage=1;fetchActivities()" style="width:150px;font-size:12px;">
+            <option value="">All Work Types</option>
+          </select>
+          <select id="actOfficer" onchange="actPage=1;fetchActivities()" style="width:150px;font-size:12px;">
+            <option value="">All Officers</option>
+          </select>
+          <input type="date" id="actDate" onchange="actPage=1;fetchActivities()" style="width:140px;font-size:12px;padding:7px 10px;">
+          <div style="flex:1;"></div>
+          <button onclick="downloadActivityLog()" style="background:#003527;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px;">download</span>Export CSV</button>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead style="background:#f9fafb;"><tr>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Date</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Farmer Name</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Work Type</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Village</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">City</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Officer</th>
+            </tr></thead>
+            <tbody id="actBody"></tbody>
+          </table>
+        </div>
+
+        <div style="padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #e5e7eb;background:#f9fafb;" id="actPagination">
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let reports=[];
+let officerProfiles=[];
+let filteredActivities=[];
+let actPage=1;
+let selectedOfficerId=null;
+
+function switchTab(tab){
+  ["All","Officer","Activities"].forEach(t=>{
+    document.getElementById("tab"+t+"Content").style.display="none";
+    document.getElementById("tab"+t).classList.remove("active");
+  });
+  const capTab = tab.charAt(0).toUpperCase()+tab.slice(1);
+  document.getElementById("tab"+capTab+"Content").style.display="block";
+  document.getElementById("tab"+capTab).classList.add("active");
+  if(tab==="officer")renderOfficerList();
+  if(tab==="activities"){actPage=1;fetchActivities();}
+}
+
+function renderReports(data){
+  const b=document.getElementById("rBody");
+  document.getElementById("reportCount").textContent=data.length;
+  if(!data.length){b.innerHTML=`<tr><td colspan="6" style="padding:32px;text-align:center;color:#9ca3af;font-size:13px;">No reports generated yet. Click 'Generate Report' or 'Auto-Generate All' to create task reports.</td></tr>`;return;}
+  b.innerHTML=data.map(r=>`
+    <tr class="tbl-row" style="border-top:1px solid #f3f4f6;">
+      <td style="padding:12px 16px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:#d1fae5;display:flex;align-items:center;justify-content:center;">
+            <span class="material-symbols-outlined" style="font-size:16px;color:#003527;">table_chart</span>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#111827;">${r.task_name || r.report_type}</div>
+            <div style="font-size:10px;color:#9ca3af;">Task #${r.task_id} · ${r.report_type}</div>
+          </div>
+        </div>
+      </td>
+      <td style="padding:12px 16px;font-size:12px;color:#6b7280;">${r.officer_name}</td>
+      <td style="padding:12px 16px;font-size:12px;color:#6b7280;">${r.generated_date}</td>
+      <td style="padding:12px 16px;"><span class="badge" style="background:${r.task_status==='OVERDUE'?'#fee2e2;color:#b91c1c':r.task_status==='COMPLETED'?'#d1fae5;color:#003527':'#dbeafe;color:#1e40af'};">${r.task_status}</span></td>
+      <td style="padding:12px 16px;"><span class="badge" style="background:#d1fae5;color:#003527;">CSV</span></td>
+      <td style="padding:12px 16px;text-align:right;display:flex;gap:6px;justify-content:flex-end;">
+        <button onclick="downloadTaskReport(${r.report_id})" style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;color:#003527;cursor:pointer;display:flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:15px;">download</span>Download</button>
+        <button onclick="viewSnapshot(${r.report_id})" style="background:#f3f4f6;border:1.5px solid #e5e7eb;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;color:#374151;cursor:pointer;display:flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:15px;">visibility</span></button>
+      </td>
+    </tr>`).join("");
+}
+
+function filterReports(){
+  const q=document.getElementById("rSearch").value.toLowerCase();
+  const filtered = reports.filter(r=>!q||(r.task_name||'').toLowerCase().includes(q)||(r.officer_name||'').toLowerCase().includes(q)||(r.report_type||'').toLowerCase().includes(q));
+  renderReports(filtered);
+}
+
+async function loadReportArchive(){
+  try{
+    const res=await fetch("/api/reports/archive");
+    if(!res.ok) throw new Error("Failed");
+    reports = await res.json();
+    renderReports(reports);
+  }catch(err){
+    console.error("Archive error:",err);
+    renderReports([]);
+  }
+}
+
+async function loadSummary() {
+  try {
+    const res = await fetch("/api/reports/summary");
+    if (!res.ok) throw new Error("Failed to load reports summary");
+    const data = await res.json();
+    document.getElementById("totalActivitiesKPI").textContent = (data.total_activities || 0).toLocaleString();
+    document.getElementById("activeOfficersKPI").textContent = (data.active_officers || 0).toLocaleString();
+    document.getElementById("villagesCoveredKPI").textContent = (data.villages_covered || 0).toLocaleString();
+  } catch (err) {
+    console.error("Summary error:", err);
+  }
+}
+
+async function loadOfficers() {
+  try {
+    const res = await fetch("/api/officers");
+    if (!res.ok) throw new Error("Failed to load officers");
+    const data = await res.json();
+    officerProfiles = data.map(o => ({
+      id: o.id,
+      name: o.name,
+      code: o.username,
+      acts: o.activities,
+      total_assigned: o.total_assigned || 0,
+      completed_tasks: o.completed_tasks || 0,
+      overdue_tasks: o.overdue_tasks || 0
+    }));
+
+    const actOfficer = document.getElementById("actOfficer");
+    if (actOfficer) {
+      actOfficer.innerHTML = '<option value="">All Officers</option>';
+      officerProfiles.forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o.name;
+        opt.textContent = o.name;
+        actOfficer.appendChild(opt);
+      });
+    }
+  } catch (err) {
+    console.error("Officers error:", err);
+  }
+}
+
+async function loadFilters() {
+  try {
+    const res = await fetch("/api/reports/work-types-for-filter");
+    if (!res.ok) throw new Error("Failed to load work types");
+    const data = await res.json();
+    const dropdown = document.getElementById("actWorkType");
+    if (dropdown) {
+      dropdown.innerHTML = '<option value="">All Work Types</option>';
+      data.forEach(wt => {
+        const opt = document.createElement("option");
+        opt.value = wt;
+        opt.textContent = wt;
+        dropdown.appendChild(opt);
+      });
+    }
+  } catch (err) {
+    console.error("Filters load error:", err);
+  }
+}
+
+async function fetchActivities() {
+  const search = document.getElementById("actSearch")?.value || "";
+  const work_type = document.getElementById("actWorkType")?.value || "";
+  const officer = document.getElementById("actOfficer")?.value || "";
+  const date = document.getElementById("actDate")?.value || "";
+
+  let url = `/api/reports/activities?page=${actPage}&page_size=10`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+  if (work_type) url += `&work_type=${encodeURIComponent(work_type)}`;
+  if (officer) url += `&officer=${encodeURIComponent(officer)}`;
+  if (date) url += `&date_from=${date}&date_to=${date}`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to fetch activities");
+    const data = await res.json();
+    filteredActivities = data.items;
+    renderActivityLog(data.total, data.pages);
+  } catch (err) {
+    console.error("Activities fetch error:", err);
+  }
+}
+
+function renderActivityLog(total, pages) {
+  const body = document.getElementById("actBody");
+  if (!filteredActivities.length) {
+    body.innerHTML = `<tr><td colspan="6" style="padding:32px;text-align:center;color:#9ca3af;font-size:13px;">No records found.</td></tr>`;
+    document.getElementById("actPagination").innerHTML = "";
+    return;
+  }
+  body.innerHTML = filteredActivities.map(a => `
+    <tr class="tbl-row" style="border-top:1px solid #f3f4f6;">
+      <td style="padding:10px 14px;font-size:12px;color:#6b7280;white-space:nowrap;">${a.date}</td>
+      <td style="padding:10px 14px;font-size:13px;font-weight:600;color:#111827;">${a.farmer}</td>
+      <td style="padding:10px 14px;"><span class="badge" style="background:#d1fae5;color:#003527;font-size:10px;">${a.work_type}</span></td>
+      <td style="padding:10px 14px;font-size:12px;color:#6b7280;">${a.village}</td>
+      <td style="padding:10px 14px;font-size:12px;color:#6b7280;">${a.city}</td>
+      <td style="padding:10px 14px;font-size:12px;font-weight:600;color:#374151;">${a.officer}</td>
+    </tr>`).join("");
+
+  document.getElementById("actPagination").innerHTML = `
+    <span style="font-size:12px;color:#6b7280;">Showing ${(actPage-1)*10+1}\u2013${Math.min(actPage*10,total)} of ${total}</span>
+    <div style="display:flex;gap:6px;">
+      ${actPage > 1 ? `<button onclick="actPage--; fetchActivities()" style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700;color:#003527;cursor:pointer;">\u2190 Prev</button>` : ""}
+      ${actPage < pages ? `<button onclick="actPage++; fetchActivities()" style="background:#003527;border:none;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;">Next \u2192</button>` : ""}
+    </div>`;
+}
+
+function renderOfficerList(q=""){
+  const list=document.getElementById("officerList");
+  const filtered=officerProfiles.filter(o=>!q||o.name.toLowerCase().includes(q));
+  list.innerHTML=filtered.map(o=>`
+    <div class="officer-list-item ${selectedOfficerId===o.id?'active':''}" onclick="selectOfficerReport(${o.id})">
+      <div style="width:34px;height:34px;border-radius:99px;background:${selectedOfficerId===o.id?'#003527':'#d1fae5'};color:${selectedOfficerId===o.id?'#fff':'#003527'};font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${o.name.charAt(0)}</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:700;color:#111827;">${o.name}</div>
+        <div style="font-size:11px;color:#9ca3af;">ID ${o.code} \u00b7 ${o.acts.toLocaleString()} acts</div>
+      </div>
+      <span class="material-symbols-outlined" style="font-size:16px;color:#9ca3af;">chevron_right</span>
+    </div>`).join("");
+}
+
+function filterOfficerList(){renderOfficerList(document.getElementById("officerSearch").value);}
+
+function selectOfficerReport(id){
+  selectedOfficerId=id;
+  renderOfficerList(document.getElementById("officerSearch").value||"");
+  const o=officerProfiles.find(x=>x.id===id);
+  // Filter archive reports for this officer
+  const officerReports = reports.filter(r => (r.officer_name||'').trim() === (o.name||'').trim());
+  document.getElementById("officerReportPanel").innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="card" style="padding:16px;display:flex;align-items:center;gap:14px;">
+        <div style="width:50px;height:50px;border-radius:99px;background:#d1fae5;color:#003527;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center;">${o.name.charAt(0)}</div>
+        <div style="flex:1;">
+          <div style="font-size:17px;font-weight:800;color:#111827;">${o.name}</div>
+          <div style="font-size:12px;color:#6b7280;">Field Officer \u00b7 ID ${o.code} \u00b7 ${o.acts.toLocaleString()} total activities \u00b7 ${o.total_assigned} tasks assigned</div>
+        </div>
+        <button onclick="window.location.href='manager_officers.html'" style="background:#003527;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;">View Profile \u2192</button>
+      </div>
+      <div class="card" style="overflow:hidden;">
+        <div style="padding:12px 16px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:13px;font-weight:700;color:#111827;">Reports for ${o.name}</div>
+          <span style="font-size:12px;color:#6b7280;">${officerReports.length} reports</span>
+        </div>
+        ${officerReports.length === 0 ? `<div style="padding:32px;text-align:center;color:#9ca3af;font-size:13px;">No reports for this officer yet.</div>` :
+        officerReports.map(r=>`
+          <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #f3f4f6;transition:background 0.12s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background=''">
+            <div style="width:36px;height:36px;border-radius:8px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <span class="material-symbols-outlined" style="font-size:18px;color:#003527;">description</span>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:#111827;">${r.task_name || r.report_type}</div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Task #${r.task_id} \u00b7 ${r.generated_date} \u00b7 ${r.farmer_count} farmers \u00b7 ${r.completion_rate}% complete</div>
+            </div>
+            <span class="badge" style="background:${r.task_status==='OVERDUE'?'#fee2e2;color:#b91c1c':r.task_status==='COMPLETED'?'#d1fae5;color:#003527':'#dbeafe;color:#1e40af'};">${r.task_status}</span>
+            <button onclick="downloadTaskReport(${r.report_id})" style="background:#d1fae5;border:none;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;color:#003527;cursor:pointer;display:flex;align-items:center;gap:3px;"><span class="material-symbols-outlined" style="font-size:14px;">download</span>CSV</button>
+          </div>`).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function downloadTaskReport(reportId){
+  showToast('Downloading report...');
+  window.location.href = `/api/reports/download-file?report_id=${reportId}`;
+}
+
+function viewSnapshot(reportId){
+  showToast('Report #' + reportId + ' snapshot view coming soon');
+}
+
+function downloadActivityLog(){
+  const search = document.getElementById("actSearch")?.value || "";
+  const work_type = document.getElementById("actWorkType")?.value || "";
+  const officer = document.getElementById("actOfficer")?.value || "";
+  const date = document.getElementById("actDate")?.value || "";
+
+  let url = `/api/reports/activities/download?`;
+  if (search) url += `search=${encodeURIComponent(search)}&`;
+  if (work_type) url += `work_type=${encodeURIComponent(work_type)}&`;
+  if (officer) url += `officer=${encodeURIComponent(officer)}&`;
+  if (date) url += `date_from=${date}&date_to=${date}&`;
+
+  window.location.href = url;
+}
+
+async function generateAllReports(){
+  showToast('Scanning for eligible tasks...');
+  try{
+    const res = await fetch('/api/reports/generate-all', {method:'POST'});
+    if(!res.ok) throw new Error('Failed');
+    const data = await res.json();
+    showToast('\u2713 ' + (data.message || 'Reports generated'));
+    await loadReportArchive();
+  }catch(err){
+    console.error('Generate all error:', err);
+    showToast('Error generating reports');
+  }
+}
+
+function showToast(msg){
+  const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000);
+}
+
+function showModal(){document.getElementById("rTaskId").value='';document.getElementById("genModal").classList.add("show");}
+function hideModal(){document.getElementById("genModal").classList.remove("show");}
+
+async function submitReport(){
+  const taskId = document.getElementById("rTaskId").value;
+  if(!taskId){showToast('Please enter a Task ID');return;}
+  const btn = document.getElementById("genBtn");
+  btn.disabled=true; btn.textContent='Generating...';
+  try{
+    const res = await fetch(`/api/reports/generate-task-report?task_id=${taskId}`, {method:'POST'});
+    if(!res.ok){
+      const err = await res.json().catch(()=>({detail:'Server error'}));
+      throw new Error(err.detail || 'Failed');
+    }
+    const data = await res.json();
+    showToast('\u2713 ' + (data.message || 'Report generated'));
+    hideModal();
+    await loadReportArchive();
+  }catch(err){
+    showToast('Error: ' + err.message);
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='<span class="material-symbols-outlined" style="font-size:18px;">description</span>Generate Report';
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async ()=>{
+  const s=AgriAuth.getSession();
+  if(s){const name=(s.name&&s.name!=="None")?s.name:s.username;document.getElementById("avatarCircle").textContent=name.charAt(0).toUpperCase();document.getElementById("headerName").textContent=name;}
+  
+  document.getElementById("logoutBtn").addEventListener("click",e=>{e.preventDefault();if(confirm("Sign out?"))AgriAuth.clearSession(),window.location.replace("login.html");});
+
+  // Load all data
+  await loadSummary();
+  await loadOfficers();
+  await loadFilters();
+  await loadReportArchive();
+  fetchActivities();
+});
+</script>
+</body>
+</html>

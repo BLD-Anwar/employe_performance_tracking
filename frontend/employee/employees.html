@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriPulse — My Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#003527",         // Deep Emerald
+          "primary-light": "#004d39",
+          "secondary": "#006c49",       // Forest Green
+          "secondary-light": "#00855a",
+          "background": "#f4f6f8",       // Cool light slate
+          "surface": "#ffffff",
+          "surface-muted": "#f8fafc",
+          "border-color": "#e2e8f0",
+          "text-main": "#0f172a",       // Deep dark gray
+          "text-muted": "#64748b",      // Slate gray
+          "accent-success": "#10b981",  // Mint green
+          "accent-warning": "#f59e0b",  // Warm amber
+          "accent-error": "#ef4444"     // Soft red
+        },
+        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", "2xl": "1rem", full: "9999px" },
+        fontFamily: { sans: ["Inter", "sans-serif"] },
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; background-color: #f4f6f8; color: #0f172a; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  
+  /* Sidebar design with sleek gradient */
+  .agri-sidebar {
+    background: linear-gradient(180deg, #002b1f 0%, #001f16 100%);
+    box-shadow: inset -1px 0 0 rgba(255,255,255,0.03), 4px 0 24px rgba(0,0,0,0.15);
+  }
+  .nav-link {
+    color: rgba(255,255,255,0.7);
+    transition: all 0.2s ease;
+  }
+  .nav-link:hover {
+    background: rgba(255,255,255,0.06);
+    color: #ffffff;
+    transform: translateX(2px);
+  }
+  .nav-link.active {
+    background: linear-gradient(90deg, rgba(16,185,129,0.15), rgba(16,185,129,0.02));
+    color: #34d399;
+    border-left: 3px solid #10b981;
+    box-shadow: inset 0 0 12px rgba(16,185,129,0.04);
+  }
+  .nav-link.active .material-symbols-outlined { color: #10b981; }
+
+  /* Premium Cards */
+  .premium-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    border-radius: 1rem;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Info rows and hover states */
+  .info-row {
+    transition: background-color 0.15s ease;
+  }
+  .info-row:hover {
+    background-color: #f8fafc;
+  }
+</style>
+<script src="../assets/js/auth-store.js"></script>
+<script src="../assets/js/api.js"></script>
+<script>
+  if (!AgriAuth.requireAuth("login.html")) {
+    document.documentElement.innerHTML = "";
+  }
+</script>
+</head>
+
+<body class="min-h-screen flex">
+
+<!-- Side Navigation -->
+<aside class="agri-sidebar w-[240px] flex flex-col py-6 shrink-0 fixed h-screen z-50 text-white">
+  <div class="px-6 mb-8 flex items-center gap-3">
+    <div class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center rounded-xl shadow-lg shrink-0">
+      <span class="material-symbols-outlined text-2xl text-emerald-400">agriculture</span>
+    </div>
+    <div>
+      <h1 class="text-sm font-black tracking-wider leading-none uppercase text-white">Sri Sri Sugar</h1>
+      <p class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-1">Operations Portal</p>
+    </div>
+  </div>
+  <nav class="flex-grow space-y-1">
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="dashboard.html">
+      <span class="material-symbols-outlined text-lg">dashboard</span>
+      <span>My Dashboard</span>
+    </a>
+    <a class="nav-link active flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="employees.html">
+      <span class="material-symbols-outlined text-lg">person</span>
+      <span>My Profile</span>
+    </a>
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="reports.html">
+      <span class="material-symbols-outlined text-lg">assessment</span>
+      <span>My Reports</span>
+    </a>
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="work_submission.html">
+      <span class="material-symbols-outlined text-lg">task</span>
+      <span>Submit Work</span>
+    </a>
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="insights.html">
+      <span class="material-symbols-outlined text-lg">analytics</span>
+      <span>Analytics</span>
+    </a>
+  </nav>
+  <div class="mt-auto border-t border-white/5 pt-6 space-y-1">
+    <a class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider" href="support.html">
+      <span class="material-symbols-outlined text-lg">help</span>
+      <span>Support</span>
+    </a>
+    <a class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider" href="settings.html">
+      <span class="material-symbols-outlined text-lg">settings</span>
+      <span>Settings</span>
+    </a>
+    <a id="navLogout" class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider text-red-400 hover:bg-red-500/10 cursor-pointer">
+      <span class="material-symbols-outlined text-lg">logout</span>
+      <span>Sign Out</span>
+    </a>
+  </div>
+</aside>
+
+<!-- Main Container -->
+<div class="ml-[240px] flex-grow flex flex-col min-h-screen">
+  
+  <!-- Top App Bar -->
+  <header class="sticky top-0 w-full h-16 px-8 bg-white border-b border-slate-200 flex justify-between items-center z-40 shadow-sm">
+    <h1 class="text-base font-bold text-slate-800">My Profile</h1>
+    <div class="flex items-center gap-3 pl-2">
+      <div class="text-right">
+        <p class="text-xs font-black text-slate-800 leading-none" id="headerUserName">Loading Officer</p>
+        <p class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider mt-1" id="headerUserRole">Field Officer</p>
+      </div>
+      <div class="w-9 h-9 rounded-xl bg-[#003527] text-emerald-300 font-bold text-xs flex items-center justify-center shadow" id="avatarCircle">
+        A
+      </div>
+    </div>
+  </header>
+
+  <!-- Profile Viewport -->
+  <main class="flex-grow p-8 max-w-4xl mx-auto w-full space-y-6">
+    
+    <!-- Hero Profile card -->
+    <div class="premium-card overflow-hidden">
+      <!-- Top banner strip -->
+      <div class="h-20 w-full" style="background: linear-gradient(135deg, #003527 0%, #006c49 100%);">
+        <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, #ffffff 10px, #ffffff 11px);"></div>
+      </div>
+      
+      <div class="px-8 pb-8">
+        <div class="flex flex-wrap items-end gap-6 -mt-8 mb-6">
+          <div class="w-20 h-20 rounded-2xl bg-white border-4 border-white shadow-md flex items-center justify-center overflow-hidden shrink-0">
+            <div class="w-full h-full bg-slate-100 flex items-center justify-center font-black text-2xl text-[#003527]" id="profileInitials">
+              ??
+            </div>
+          </div>
+          <div class="flex-grow pt-2">
+            <h2 class="text-xl font-black text-slate-800 leading-tight" id="profileName">Loading Name...</h2>
+            <p class="text-xs text-[#006c49] font-bold mt-1" id="profileRole">Loading Role...</p>
+          </div>
+          <div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200" id="profileStatusBadge">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              Active
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 border-t pt-6">
+          <div class="bg-slate-50 border rounded-xl p-3 text-center">
+            <span class="text-base font-black text-[#003527]" id="statTasks">0</span>
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wide block mt-1">Tasks Completed</span>
+          </div>
+          <div class="bg-slate-50 border rounded-xl p-3 text-center">
+            <span class="text-base font-black text-[#006c49]" id="statAttendance">95%</span>
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wide block mt-1">Attendance Rate</span>
+          </div>
+          <div class="bg-slate-50 border rounded-xl p-3 text-center">
+            <span class="text-base font-black text-slate-800" id="statDept">—</span>
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wide block mt-1">Department</span>
+          </div>
+          <div class="bg-slate-50 border rounded-xl p-3 text-center">
+            <span class="text-base font-black text-slate-800" id="statJoined">—</span>
+            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wide block mt-1">Joined Date</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Details -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- Left side: Account Info -->
+      <div class="premium-card overflow-hidden">
+        <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
+          <span class="material-symbols-outlined text-base text-[#006c49]">manage_accounts</span>
+          <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Account Information</h3>
+        </div>
+        <div class="divide-y text-xs">
+          <div class="info-row flex items-center gap-4 px-6 py-3.5">
+            <span class="material-symbols-outlined text-slate-400 text-lg">badge</span>
+            <div class="flex-grow">
+              <span class="text-[9px] font-bold text-slate-400 uppercase block">Full Name</span>
+              <span class="font-bold text-slate-700 mt-0.5 block" id="infoName">—</span>
+            </div>
+          </div>
+          <div class="info-row flex items-center gap-4 px-6 py-3.5">
+            <span class="material-symbols-outlined text-slate-400 text-lg">tag</span>
+            <div class="flex-grow">
+              <span class="text-[9px] font-bold text-slate-400 uppercase block">Employee Username</span>
+              <span class="font-bold text-slate-700 font-mono mt-0.5 block" id="infoUsername">—</span>
+            </div>
+          </div>
+          <div class="info-row flex items-center gap-4 px-6 py-3.5">
+            <span class="material-symbols-outlined text-slate-400 text-lg">mail</span>
+            <div class="flex-grow">
+              <span class="text-[9px] font-bold text-slate-400 uppercase block">Email Address</span>
+              <span class="font-bold text-slate-700 mt-0.5 block" id="infoEmail">—</span>
+            </div>
+          </div>
+          <div class="info-row flex items-center gap-4 px-6 py-3.5">
+            <span class="material-symbols-outlined text-slate-400 text-lg">admin_panel_settings</span>
+            <div class="flex-grow">
+              <span class="text-[9px] font-bold text-slate-400 uppercase block">Access Rights</span>
+              <span class="font-bold text-slate-700 mt-0.5 block" id="infoType">—</span>
+            </div>
+          </div>
+          <div class="info-row flex items-center gap-4 px-6 py-3.5">
+            <span class="material-symbols-outlined text-slate-400 text-lg">schedule</span>
+            <div class="flex-grow">
+              <span class="text-[9px] font-bold text-slate-400 uppercase block">Session Login Time</span>
+              <span class="font-bold text-slate-700 mt-0.5 block" id="infoLogin">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side: Work Record -->
+      <div class="premium-card overflow-hidden">
+        <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
+          <span class="material-symbols-outlined text-base text-[#006c49]">work_history</span>
+          <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Work & Operations Record</h3>
+        </div>
+        <div class="divide-y text-xs">
+          <div class="info-row flex items-center gap-4 px-6 py-3.5">
+            <span class="material-symbols-outlined text-slate-400 text-lg">factory</span>
+            <div class="flex-grow">
+              <span class="text-[9px] font-bold text-slate-400 uppercase block">Operations Division</span>
+              <span class="font-bold text-slate-700 mt-0.5 block" id="infoDept">—</span>
+            </div>
+          </div>
+          <div class="info-row flex items-center gap-4 px-6 py-3.5">
+            <span class="material-symbols-outlined text-slate-400 text-lg">calendar_today</span>
+            <div class="flex-grow">
+              <span class="text-[9px] font-bold text-slate-400 uppercase block">Date Joined</span>
+              <span class="font-bold text-slate-700 mt-0.5 block" id="infoJoined">—</span>
+            </div>
+          </div>
+          <div class="info-row flex items-center gap-4 px-6 py-3.5">
+            <span class="material-symbols-outlined text-slate-400 text-lg">home_pin</span>
+            <div class="flex-grow">
+              <span class="text-[9px] font-bold text-slate-400 uppercase block">Villages Assigned</span>
+              <span class="font-bold text-slate-700 mt-0.5 block" id="infoVillages">—</span>
+            </div>
+          </div>
+          <div class="info-row flex items-center gap-4 px-6 py-3.5">
+            <span class="material-symbols-outlined text-slate-400 text-lg">groups</span>
+            <div class="flex-grow">
+              <span class="text-[9px] font-bold text-slate-400 uppercase block">Farmers Managed</span>
+              <span class="font-bold text-slate-700 mt-0.5 block" id="infoFarmers">—</span>
+            </div>
+          </div>
+          <div class="info-row flex items-center gap-4 px-6 py-3.5">
+            <span class="material-symbols-outlined text-slate-400 text-lg">task_alt</span>
+            <div class="flex-grow">
+              <span class="text-[9px] font-bold text-slate-400 uppercase block">Operational Performance Rating</span>
+              <span class="font-bold text-[#006c49] font-black mt-0.5 block" id="infoRating">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const session = AgriAuth.getSession();
+  if (!session) return;
+
+  // ── Fetch profile, metrics, and tasks in parallel from the live API ──
+  let profile = null, metrics = null, tasks = [];
+  try {
+    [profile, metrics, tasks] = await Promise.all([
+      AgriAPI.getProfile(),
+      AgriAPI.getMetrics(),
+      AgriAPI.getTasks(),
+    ]);
+  } catch (err) {
+    console.error("Failed to load profile data:", err.message);
+    // Show a minimal error state — no static fallback
+    document.getElementById("profileName").textContent = session.name || session.username || "—";
+    document.getElementById("profileRole").textContent = "Field Officer";
+    document.getElementById("headerUserName").textContent = session.name || session.username || "—";
+    document.getElementById("avatarCircle").textContent = (session.name || "?")[0].toUpperCase();
+    return;
+  }
+
+  const calculatedScore = metrics ? metrics.calculated_score : 0;
+
+  // ── Header ──
+  document.getElementById("headerUserName").textContent = profile.name;
+  document.getElementById("headerUserRole").textContent = profile.role;
+  document.getElementById("avatarCircle").textContent = profile.initials;
+
+  // ── Profile hero ──
+  document.getElementById("profileInitials").textContent = profile.initials;
+  document.getElementById("profileName").textContent = profile.name;
+  document.getElementById("profileRole").textContent = profile.role;
+
+  // ── Status badge ──
+  const badge = document.getElementById("profileStatusBadge");
+  if (profile.status === "On Leave") {
+    badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200";
+    badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> On Leave`;
+  } else if (profile.status === "Inactive") {
+    badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-50 text-red-700 border border-red-200";
+    badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Inactive`;
+  } else {
+    badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> ${profile.status}`;
+  }
+
+  // ── Quick stats row ──
+  const completedCount = tasks.filter(t => t.status === "completed").length;
+  document.getElementById("statTasks").textContent = completedCount;
+  document.getElementById("statAttendance").textContent = profile.status === "On Leave" ? "—" : "94%";
+  document.getElementById("statDept").textContent = (profile.department || "—").split(" ")[0];
+  document.getElementById("statJoined").textContent = profile.joined || "—";
+
+  // ── Account Information ──
+  document.getElementById("infoName").textContent = profile.name;
+  document.getElementById("infoUsername").textContent = profile.username || "—";
+  document.getElementById("infoEmail").textContent = profile.email;
+  document.getElementById("infoType").textContent = profile.is_staff ? "Staff Supervisor / Admin" : "Standard Operations Field Officer";
+
+  if (session.loginAt) {
+    document.getElementById("infoLogin").textContent = new Date(session.loginAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+  } else {
+    document.getElementById("infoLogin").textContent = "Active Session";
+  }
+
+  // ── Work & Operations Record ──
+  document.getElementById("infoDept").textContent = profile.department || "—";
+  document.getElementById("infoJoined").textContent = profile.joined || "—";
+  document.getElementById("infoVillages").textContent = `${profile.villages_count} active villages assigned`;
+  document.getElementById("infoFarmers").textContent = `${profile.farmer_count} active farmers engaged`;
+  document.getElementById("infoRating").textContent = `${calculatedScore}% Efficiency`;
+
+  // ── Sign out ──
+  const logoutBtn = document.getElementById('navLogout');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('Are you sure you want to sign out?')) {
+        AgriAPI.logout();
+        AgriAuth.clearSession();
+        window.location.replace('login.html');
+      }
+    });
+  }
+});
+</script>
+</body>
+</html>

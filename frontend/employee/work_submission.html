@@ -1,0 +1,671 @@
+<!doctype html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgriPulse — Work Submission</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#003527", // Deep Emerald
+              "primary-light": "#004d39",
+              secondary: "#006c49", // Forest Green
+              "secondary-light": "#00855a",
+              background: "#f4f6f8", // Cool light slate
+              surface: "#ffffff",
+              "surface-muted": "#f8fafc",
+              "border-color": "#e2e8f0",
+              "text-main": "#0f172a", // Deep dark gray
+              "text-muted": "#64748b", // Slate gray
+              "accent-success": "#10b981", // Mint green
+              "accent-warning": "#f59e0b", // Warm amber
+              "accent-error": "#ef4444", // Soft red
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              "2xl": "1rem",
+              full: "9999px",
+            },
+            fontFamily: { sans: ["Inter", "sans-serif"] },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f4f6f8;
+        color: #0f172a;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        border-color: #10b981;
+      }
+
+      /* Sidebar design with sleek gradient */
+      .agri-sidebar {
+        background: linear-gradient(180deg, #002b1f 0%, #001f16 100%);
+        box-shadow:
+          inset -1px 0 0 rgba(255, 255, 255, 0.03),
+          4px 0 24px rgba(0, 0, 0, 0.15);
+      }
+      .nav-link {
+        color: rgba(255, 255, 255, 0.7);
+        transition: all 0.2s ease;
+      }
+      .nav-link:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: #ffffff;
+        transform: translateX(2px);
+      }
+      .nav-link.active {
+        background: linear-gradient(
+          90deg,
+          rgba(16, 185, 129, 0.15),
+          rgba(16, 185, 129, 0.02)
+        );
+        color: #34d399;
+        border-left: 3px solid #10b981;
+        box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.04);
+      }
+      .nav-link.active .material-symbols-outlined {
+        color: #10b981;
+      }
+
+      /* Premium Cards */
+      .premium-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        box-shadow:
+          0 4px 6px -1px rgb(0 0 0 / 0.05),
+          0 2px 4px -2px rgb(0 0 0 / 0.05);
+        border-radius: 1rem;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+    </style>
+    <script src="../assets/js/auth-store.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script>
+      if (!AgriAuth.requireAuth("login.html")) {
+        document.documentElement.innerHTML = "";
+      }
+    </script>
+  </head>
+
+  <body class="min-h-screen flex">
+    <!-- Side Navigation -->
+    <aside
+      class="agri-sidebar w-[240px] flex flex-col py-6 shrink-0 fixed h-screen z-50 text-white"
+    >
+      <div class="px-6 mb-8 flex items-center gap-3">
+        <div
+          class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center rounded-xl shadow-lg shrink-0"
+        >
+          <span class="material-symbols-outlined text-2xl text-emerald-400"
+            >agriculture</span
+          >
+        </div>
+        <div>
+          <h1
+            class="text-sm font-black tracking-wider leading-none uppercase text-white"
+          >
+            Sri Sri Sugar
+          </h1>
+          <p
+            class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-1"
+          >
+            Operations Portal
+          </p>
+        </div>
+      </div>
+      <nav class="flex-grow space-y-1">
+        <a
+          class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
+          href="dashboard.html"
+        >
+          <span class="material-symbols-outlined text-lg">dashboard</span>
+          <span>My Dashboard</span>
+        </a>
+        <a
+          class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
+          href="employees.html"
+        >
+          <span class="material-symbols-outlined text-lg">person</span>
+          <span>My Profile</span>
+        </a>
+        <a
+          class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
+          href="reports.html"
+        >
+          <span class="material-symbols-outlined text-lg">assessment</span>
+          <span>My Reports</span>
+        </a>
+        <a
+          class="nav-link active flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
+          href="work_submission.html"
+        >
+          <span class="material-symbols-outlined text-lg">task</span>
+          <span>Submit Work</span>
+        </a>
+        <a
+          class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
+          href="insights.html"
+        >
+          <span class="material-symbols-outlined text-lg">analytics</span>
+          <span>Analytics</span>
+        </a>
+      </nav>
+      <div class="mt-auto border-t border-white/5 pt-6 space-y-1">
+        <a
+          class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider"
+          href="support.html"
+        >
+          <span class="material-symbols-outlined text-lg">help</span>
+          <span>Support</span>
+        </a>
+        <a
+          class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider"
+          href="settings.html"
+        >
+          <span class="material-symbols-outlined text-lg">settings</span>
+          <span>Settings</span>
+        </a>
+        <a
+          id="navLogout"
+          class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider text-red-400 hover:bg-red-500/10 cursor-pointer"
+        >
+          <span class="material-symbols-outlined text-lg">logout</span>
+          <span>Sign Out</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Container -->
+    <div class="ml-[240px] flex-grow flex flex-col min-h-screen">
+      <!-- Top App Bar -->
+      <header
+        class="sticky top-0 w-full h-16 px-8 bg-white border-b border-slate-200 flex justify-between items-center z-40 shadow-sm"
+      >
+        <h1 class="text-base font-bold text-slate-800">
+          Field Activity Submission
+        </h1>
+        <div class="flex items-center gap-3 pl-2">
+          <div class="text-right">
+            <p
+              class="text-xs font-black text-slate-800 leading-none"
+              id="headerUserName"
+            >
+              Loading Officer
+            </p>
+            <p
+              class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider mt-1"
+              id="headerUserRole"
+            >
+              Field Officer
+            </p>
+          </div>
+          <div
+            class="w-9 h-9 rounded-xl bg-[#003527] text-emerald-300 font-bold text-xs flex items-center justify-center shadow"
+            id="avatarCircle"
+          >
+            A
+          </div>
+        </div>
+      </header>
+
+      <!-- Work Submission Viewport -->
+      <main class="flex-grow p-8 grid grid-cols-12 gap-6">
+        <!-- Submission Form -->
+        <div class="col-span-12 lg:col-span-7 premium-card overflow-hidden">
+          <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#003527] text-lg"
+              >app_registration</span
+            >
+            <h3
+              class="text-xs font-bold text-[#003527] uppercase tracking-widest"
+            >
+              New Telemetry & Activity Log
+            </h3>
+          </div>
+          <div class="p-6 space-y-4">
+            <!-- Farmer Name -->
+            <div class="space-y-1 text-xs">
+              <label
+                class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+                for="farmerName"
+                >Farmer Full Name</label
+              >
+              <input
+                type="text"
+                id="farmerName"
+                class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700 font-semibold"
+                placeholder="e.g. Sanjay Mahadev Patil"
+              />
+            </div>
+
+            <!-- Mobile + Purpose -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div class="space-y-1">
+                <label
+                  class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+                  for="mobileNo"
+                  >Mobile Number</label
+                >
+                <input
+                  type="tel"
+                  id="mobileNo"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700"
+                  placeholder="e.g. 9876543210"
+                />
+              </div>
+              <div class="space-y-1">
+                <label
+                  class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+                  for="purposeWork"
+                  >Purpose of Work</label
+                >
+                <select
+                  id="purposeWork"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700 font-bold"
+                >
+                  <option value="7">Daily Visit</option>
+                  <option value="2">Fertilizer Distribution</option>
+                  <option value="11">Canara KCC</option>
+                  <option value="12">Canara HNT</option>
+                  <option value="13">Sangola HNT</option>
+                  <option value="14">Vahan Karar Magani Application</option>
+                  <option value="15">HNT Agreement Jodani Complete</option>
+                  <option value="16">Organic Certification</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Village + City -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div class="space-y-1">
+                <label
+                  class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+                  for="villageName"
+                  >Village</label
+                >
+                <input
+                  type="text"
+                  id="villageName"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700 font-semibold"
+                  placeholder="e.g. Velapur"
+                />
+              </div>
+              <div class="space-y-1">
+                <label
+                  class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+                  for="cityName"
+                  >City</label
+                >
+                <input
+                  type="text"
+                  id="cityName"
+                  class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700 font-semibold"
+                  placeholder="e.g. Malashiras"
+                />
+              </div>
+            </div>
+
+            <!-- GPS Coordinates -->
+            <div
+              class="bg-emerald-50/30 rounded-xl p-4 border border-emerald-500/20 space-y-3 text-xs"
+            >
+              <div
+                class="flex justify-between items-center border-b border-emerald-500/10 pb-2"
+              >
+                <span
+                  class="text-xs font-bold text-[#003527] flex items-center gap-1.5"
+                  ><span class="material-symbols-outlined text-sm"
+                    >my_location</span
+                  >
+                  GPS Coordinates Logging</span
+                >
+                <button
+                  type="button"
+                  class="text-emerald-700 hover:underline text-[9px] font-black uppercase tracking-wider"
+                  onclick="syncGPS()"
+                >
+                  SYNC GPS
+                </button>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                  <label class="text-[9px] font-bold uppercase text-slate-400"
+                    >Latitude</label
+                  >
+                  <input
+                    type="text"
+                    id="gpsLat"
+                    readonly
+                    class="w-full bg-slate-100 border border-slate-200 rounded-lg py-2 px-3 text-xs text-slate-500 font-bold font-mono"
+                    placeholder="Press Sync..."
+                  />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-[9px] font-bold uppercase text-slate-400"
+                    >Longitude</label
+                  >
+                  <input
+                    type="text"
+                    id="gpsLong"
+                    readonly
+                    class="w-full bg-slate-100 border border-slate-200 rounded-lg py-2 px-3 text-xs text-slate-500 font-bold font-mono"
+                    placeholder="Press Sync..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Work Description -->
+            <div class="space-y-1 text-xs">
+              <label
+                class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+                for="workDesc"
+                >Visit Description</label
+              >
+              <textarea
+                id="workDesc"
+                rows="3"
+                class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700 placeholder-slate-400 font-medium"
+                placeholder="Provide raw notes regarding land registry, crops, loans, or recovery telemetry..."
+              ></textarea>
+            </div>
+
+            <button
+              type="button"
+              onclick="handleFormSubmit()"
+              class="w-full bg-[#003527] hover:bg-[#002d21] text-emerald-300 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 shadow active:scale-[0.98] uppercase tracking-wider"
+            >
+              <span class="material-symbols-outlined text-sm"
+                >cloud_upload</span
+              >
+              <span>Submit Activity Log</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Submission History -->
+        <div
+          class="col-span-12 lg:col-span-5 premium-card overflow-hidden flex flex-col"
+        >
+          <div
+            class="px-6 py-4 border-b bg-slate-50 flex items-center justify-between"
+          >
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[#003527] text-lg"
+                >history</span
+              >
+              <h3
+                class="text-xs font-bold text-[#003527] uppercase tracking-widest"
+              >
+                My Submission Log
+              </h3>
+            </div>
+            <span
+              class="bg-[#006c49]/10 text-[#006c49] border border-[#006c49]/20 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase"
+              id="logCount"
+              >0 Submissions</span
+            >
+          </div>
+          <div
+            class="flex-grow overflow-y-auto p-4 space-y-3"
+            id="submissionList"
+          >
+            <div class="text-center py-12 text-slate-400">
+              <span
+                class="material-symbols-outlined text-4xl block mb-2 opacity-30 select-none"
+                >inbox</span
+              >
+              <p class="text-xs font-semibold">
+                No submissions recorded this session.
+              </p>
+              <p class="text-[9px] mt-1">
+                Submit a new activity log to record it in this workspace.
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const submittedLogs = [];
+
+      const purposeNames = {
+        7: "Daily Visit",
+        2: "Fertilizer Distribution",
+        11: "Canara KCC",
+        12: "Canara HNT",
+        13: "Sangola HNT",
+        14: "Vahan Karar Magani Application",
+        15: "HNT Agreement Jodani Complete",
+        16: "Organic Certification",
+      };
+
+      function renderLogs() {
+        const list = document.getElementById("submissionList");
+        document.getElementById("logCount").textContent =
+          `${submittedLogs.length} Submission${submittedLogs.length !== 1 ? "s" : ""}`;
+        if (!submittedLogs.length) {
+          list.innerHTML = `<div class="text-center py-12 text-slate-400"><span class="material-symbols-outlined text-4xl block mb-2 opacity-30 select-none">inbox</span><p class="text-xs font-semibold">No submissions recorded yet.</p></div>`;
+          return;
+        }
+        list.innerHTML = submittedLogs
+          .map(
+            (log) => `
+    <div class="p-4 border border-slate-200 hover:border-slate-300 rounded-xl space-y-2 hover:bg-slate-50/50 transition-all text-xs">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="font-bold text-slate-800">${log.farmer_name || log.farmer || "—"}</p>
+          <p class="text-[10px] text-slate-500 font-medium mt-0.5">${log.village || "—"} • ${purposeNames[log.purpose_code || log.purpose] || "—"}</p>
+        </div>
+        <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider">Submitted</span>
+      </div>
+      ${log.latitude || log.lat ? `<div class="text-[10px] text-slate-500 font-mono bg-slate-100 px-2.5 py-1.5 rounded border border-slate-200">Lat: ${log.latitude || log.lat} / Long: ${log.longitude || log.long}</div>` : ""}
+      ${log.description || log.desc ? `<p class="text-[10px] text-slate-500 italic font-medium">"${log.description || log.desc}"</p>` : ""}
+    </div>
+  `,
+          )
+          .join("");
+      }
+
+      function syncGPS() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              document.getElementById("gpsLat").value =
+                pos.coords.latitude.toFixed(6);
+              document.getElementById("gpsLong").value =
+                pos.coords.longitude.toFixed(6);
+            },
+            () => {
+              document.getElementById("gpsLat").value = (
+                17.8 +
+                Math.random() * 0.15
+              ).toFixed(6);
+              document.getElementById("gpsLong").value = (
+                75.1 +
+                Math.random() * 0.15
+              ).toFixed(6);
+            },
+          );
+        } else {
+          document.getElementById("gpsLat").value = (
+            17.8 +
+            Math.random() * 0.15
+          ).toFixed(6);
+          document.getElementById("gpsLong").value = (
+            75.1 +
+            Math.random() * 0.15
+          ).toFixed(6);
+        }
+      }
+
+      async function handleFormSubmit() {
+        const farmer = document.getElementById("farmerName").value.trim();
+        const mobile = document.getElementById("mobileNo").value.trim();
+        const purpose = document.getElementById("purposeWork").value;
+        const village = document.getElementById("villageName").value.trim();
+        const city = document.getElementById("cityName").value.trim();
+        const lat = document.getElementById("gpsLat").value;
+        const long = document.getElementById("gpsLong").value;
+        const desc = document.getElementById("workDesc").value.trim();
+
+        // TASK_* integration context: mapping id is expected to be provided
+        // by the dashboard/task selection workflow (least disruptive approach).
+        // It can be supplied via query param or localStorage.
+        const mappingId =
+          new URLSearchParams(window.location.search).get(
+            "task_farmer_mapping_id",
+          ) || window.localStorage.getItem("task_farmer_mapping_id");
+
+        if (!farmer) {
+          alert("Please enter the farmer's name.");
+          return;
+        }
+        if (!mobile) {
+          alert("Please enter the mobile number.");
+          return;
+        }
+        if (!lat || !long) {
+          alert("Please sync GPS coordinates before submitting.");
+          return;
+        }
+
+        if (!mappingId) {
+          alert(
+            "Missing task_farmer_mapping_id context. Open this page via a task selection workflow.",
+          );
+          return;
+        }
+
+        const submitBtn = document.querySelector(
+          'button[onclick="handleFormSubmit()"]',
+        );
+        const origText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML =
+          '<span class="material-symbols-outlined animate-spin text-sm">sync</span><span>Submitting…</span>';
+
+        try {
+          const evidencePayload = {
+            evidence_description: desc,
+            evidence_latitude: parseFloat(lat),
+            evidence_longitude: parseFloat(long),
+            actual_work_count: null,
+          };
+
+          // NEW TASK_* evidence submission
+          await AgriAPI.submitTaskFarmerEvidence(mappingId, evidencePayload);
+
+          // NEW TASK_* completion workflow (evidence -> complete)
+          await AgriAPI.completeTaskFarmer(mappingId, {
+            completion_note: desc,
+            actual_work_count: null,
+          });
+
+          // For UI compatibility, keep existing local list shape by reusing legacy read.
+          // TODO(Phase 10.5): switch history panel to GET /me/activity.
+          const saved = await AgriAPI.getMyActivity();
+          submittedLogs.unshift(...(saved?.activities || []));
+          renderLogs();
+
+          // Clear form
+          [
+            "farmerName",
+            "mobileNo",
+            "villageName",
+            "cityName",
+            "gpsLat",
+            "gpsLong",
+            "workDesc",
+          ].forEach((id) => {
+            document.getElementById(id).value = "";
+          });
+          document.getElementById("purposeWork").selectedIndex = 0;
+
+          alert("Activity log submitted successfully.");
+        } catch (err) {
+          console.error(err);
+          alert(
+            "Submission failed: " +
+              (err.message || "Unknown error. Please try again."),
+          );
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = origText;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        const session = AgriAuth.getSession();
+        if (!session) return;
+
+        // ── Fetch profile from the live API for the header ──
+        try {
+          const profile = await AgriAPI.getProfile();
+          document.getElementById("headerUserName").textContent = profile.name;
+          document.getElementById("headerUserRole").textContent = profile.role;
+          document.getElementById("avatarCircle").textContent =
+            profile.initials;
+        } catch (err) {
+          // Fallback to session data if API is unreachable
+          document.getElementById("headerUserName").textContent =
+            session.name || session.username || "—";
+          document.getElementById("headerUserRole").textContent =
+            "Field Officer";
+          document.getElementById("avatarCircle").textContent = (session.name ||
+            "?")[0].toUpperCase();
+        }
+
+        // Load existing submissions from the backend
+        try {
+          const existing = await AgriAPI.getSubmissions(0, 50);
+          if (existing && existing.length) {
+            submittedLogs.push(...existing);
+          }
+        } catch (err) {
+          console.warn("Could not load submission history:", err.message);
+        }
+        renderLogs();
+
+        // Log out button
+        const logoutBtn = document.getElementById("navLogout");
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (confirm("Are you sure you want to sign out?")) {
+              AgriAPI.logout();
+              AgriAuth.clearSession();
+              window.location.replace("login.html");
+            }
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

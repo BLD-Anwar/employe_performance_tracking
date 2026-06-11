@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriPulse — Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#003527",
+          "secondary": "#006c49",
+          "background": "#f4f6f8",
+          "surface": "#ffffff",
+        },
+        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", "2xl": "1rem", full: "9999px" },
+        fontFamily: { sans: ["Inter", "sans-serif"] },
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; background-color: #f4f6f8; color: #0f172a; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  input:focus, select:focus, textarea:focus { outline: none; box-shadow: 0 0 0 2px rgba(16,185,129,0.2); border-color: #10b981; }
+
+  .agri-sidebar { background: linear-gradient(180deg, #002b1f 0%, #001f16 100%); box-shadow: inset -1px 0 0 rgba(255,255,255,0.03), 4px 0 24px rgba(0,0,0,0.15); }
+  .nav-link { color: rgba(255,255,255,0.7); transition: all 0.2s ease; }
+  .nav-link:hover { background: rgba(255,255,255,0.06); color: #ffffff; transform: translateX(2px); }
+  .nav-link.active { background: linear-gradient(90deg, rgba(16,185,129,0.15), rgba(16,185,129,0.02)); color: #34d399; border-left: 3px solid #10b981; }
+  .nav-link.active .material-symbols-outlined { color: #10b981; }
+
+  .premium-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); border-radius: 1rem; }
+
+  .toggle-track { width: 40px; height: 22px; background: #e2e8f0; border-radius: 999px; position: relative; cursor: pointer; transition: background 0.2s; }
+  .toggle-track.on { background: #006c49; }
+  .toggle-thumb { width: 18px; height: 18px; background: white; border-radius: 999px; position: absolute; top: 2px; left: 2px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  .toggle-track.on .toggle-thumb { transform: translateX(18px); }
+</style>
+<script src="../assets/js/auth-store.js"></script>
+<script src="../assets/js/api.js"></script>
+<script>if (!AgriAuth.requireAuth("login.html")) { document.documentElement.innerHTML = ""; }</script>
+</head>
+
+<body class="min-h-screen flex">
+
+<!-- Side Navigation -->
+<aside class="agri-sidebar w-[240px] flex flex-col py-6 shrink-0 fixed h-screen z-50 text-white">
+  <div class="px-6 mb-8 flex items-center gap-3">
+    <div class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center rounded-xl shadow-lg shrink-0">
+      <span class="material-symbols-outlined text-2xl text-emerald-400">agriculture</span>
+    </div>
+    <div>
+      <h1 class="text-sm font-black tracking-wider leading-none uppercase text-white">Sri Sri Sugar</h1>
+      <p class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-1">Operations Portal</p>
+    </div>
+  </div>
+  <nav class="flex-grow space-y-1">
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="dashboard.html"><span class="material-symbols-outlined text-lg">dashboard</span><span>My Dashboard</span></a>
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="employees.html"><span class="material-symbols-outlined text-lg">person</span><span>My Profile</span></a>
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="reports.html"><span class="material-symbols-outlined text-lg">assessment</span><span>My Reports</span></a>
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="work_submission.html"><span class="material-symbols-outlined text-lg">task</span><span>Submit Work</span></a>
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="insights.html"><span class="material-symbols-outlined text-lg">analytics</span><span>Analytics</span></a>
+  </nav>
+  <div class="mt-auto border-t border-white/5 pt-6 space-y-1">
+    <a class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider" href="support.html"><span class="material-symbols-outlined text-lg">help</span><span>Support</span></a>
+    <a class="nav-link active flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider" href="settings.html"><span class="material-symbols-outlined text-lg">settings</span><span>Settings</span></a>
+    <a id="navLogout" class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider text-red-400 hover:bg-red-500/10 cursor-pointer"><span class="material-symbols-outlined text-lg">logout</span><span>Sign Out</span></a>
+  </div>
+</aside>
+
+<!-- Main Container -->
+<div class="ml-[240px] flex-grow flex flex-col min-h-screen">
+
+  <!-- Top Bar -->
+  <header class="sticky top-0 w-full h-16 px-8 bg-white border-b border-slate-200 flex justify-between items-center z-40 shadow-sm">
+    <h1 class="text-base font-bold text-slate-800">Portal Settings</h1>
+    <div class="flex items-center gap-3">
+      <div class="text-right">
+        <p class="text-xs font-black text-slate-800 leading-none" id="headerUserName">Loading...</p>
+        <p class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider mt-1" id="headerUserRole">Field Officer</p>
+      </div>
+      <div class="w-9 h-9 rounded-xl bg-[#003527] text-emerald-300 font-bold text-xs flex items-center justify-center shadow" id="avatarCircle">A</div>
+    </div>
+  </header>
+
+  <main class="flex-grow p-8 space-y-6">
+    <section>
+      <h2 class="text-2xl font-black text-slate-900 tracking-tight">Account & Portal Settings</h2>
+      <p class="text-xs text-slate-500 mt-1">Manage your portal preferences, notification settings, and account security options.</p>
+    </section>
+
+    <div class="grid grid-cols-12 gap-6">
+
+      <!-- LEFT: Settings Panels -->
+      <div class="col-span-12 lg:col-span-8 space-y-6">
+
+        <!-- Account Info (read-only from session) -->
+        <div class="premium-card overflow-hidden">
+          <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#003527] text-lg">manage_accounts</span>
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">My Account Information</h3>
+          </div>
+          <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="space-y-1">
+              <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Full Name</label>
+              <div class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-bold" id="settingName">—</div>
+            </div>
+            <div class="space-y-1">
+              <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Employee Username / ID</label>
+              <div class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-mono font-bold" id="settingUsername">—</div>
+            </div>
+            <div class="space-y-1">
+              <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Email Address</label>
+              <div class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-bold" id="settingEmail">—</div>
+            </div>
+            <div class="space-y-1">
+              <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Access Type</label>
+              <div class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-bold" id="settingRole">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Operations Preferences -->
+        <div class="premium-card overflow-hidden">
+          <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#003527] text-lg">tune</span>
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Operations Preferences</h3>
+          </div>
+          <form class="p-6 space-y-5 text-xs" onsubmit="saveSettings(event)">
+            <div class="space-y-1">
+              <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Default Operations District</label>
+              <select class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-semibold focus:ring-1 focus:ring-emerald-600" id="settingDistrict">
+                <option>Sangli Region (Atpadi / Tasgaon)</option>
+                <option>Sangola Sector (South)</option>
+                <option>Kolhapur Sugar Belt</option>
+                <option>Pune Sugarcane Area</option>
+              </select>
+            </div>
+            <div class="space-y-1">
+              <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400">GPS Telemetry Sync Interval</label>
+              <select class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-semibold focus:ring-1 focus:ring-emerald-600">
+                <option>Real-Time DGPS Sync (Recommended)</option>
+                <option>Every 15 Minutes</option>
+                <option>Hourly Sync</option>
+                <option>Manual Upload Only</option>
+              </select>
+            </div>
+
+            <!-- Notification Toggles -->
+            <div class="pt-2 border-t border-slate-100">
+              <h4 class="text-[10px] font-black text-slate-800 uppercase tracking-widest mb-4">Notification & Alert Preferences</h4>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="font-bold text-slate-700">SMS Alerts — Critical Operations</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Receive SMS for crushing and recovery alerts</p>
+                  </div>
+                  <div class="toggle-track on" id="t1" onclick="this.classList.toggle('on')">
+                    <div class="toggle-thumb"></div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="font-bold text-slate-700">Daily Task Reminders</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Morning reminders for pending tasks and deadlines</p>
+                  </div>
+                  <div class="toggle-track on" id="t2" onclick="this.classList.toggle('on')">
+                    <div class="toggle-thumb"></div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="font-bold text-slate-700">Loan & Agreement Alerts</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Alerts for pending KCC and H&T deadlines</p>
+                  </div>
+                  <div class="toggle-track" id="t3" onclick="this.classList.toggle('on')">
+                    <div class="toggle-thumb"></div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="font-bold text-slate-700">GPS Attendance Sync</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Sync daily GPS check-in with payroll telemetry</p>
+                  </div>
+                  <div class="toggle-track on" id="t4" onclick="this.classList.toggle('on')">
+                    <div class="toggle-thumb"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="w-full bg-[#003527] hover:bg-[#002d21] text-emerald-300 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow active:scale-[0.98] uppercase tracking-wider transition-all">
+              <span class="material-symbols-outlined text-sm">save</span>
+              Save Preferences
+            </button>
+          </form>
+        </div>
+
+        <!-- Security -->
+        <div class="premium-card overflow-hidden">
+          <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#003527] text-lg">lock</span>
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Security & Password</h3>
+          </div>
+          <div class="p-6 space-y-4 text-xs">
+            <p class="text-slate-500 leading-relaxed">Password changes are managed by the IT department. Contact <a href="mailto:software@srisrisugar.com" class="text-[#006c49] font-bold hover:underline">software@srisrisugar.com</a> to reset your credentials.</p>
+            <button type="button" class="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold hover:bg-slate-50 transition-all" onclick="alert('Password reset request sent to IT.\n\nContact: software@srisrisugar.com\nPhone: +91 233 247 9002')">
+              <span class="material-symbols-outlined text-base">key</span>
+              Request Password Reset
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: Profile Summary Card -->
+      <div class="col-span-12 lg:col-span-4 space-y-6">
+
+        <div class="premium-card p-6 text-center">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-[#003527] text-emerald-300 font-black text-xl flex items-center justify-center shadow-lg mb-4" id="profileAvatar">A</div>
+          <h3 class="text-base font-black text-slate-800" id="profileName">Loading...</h3>
+          <p class="text-xs text-[#006c49] font-bold uppercase tracking-wider mt-1" id="profileRole">Field Operations</p>
+
+          <div class="border-t border-slate-100 mt-4 pt-4 space-y-3 text-xs text-left">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400 font-medium">Employee ID</span>
+              <span class="font-black text-slate-800" id="profileId">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400 font-medium">Region</span>
+              <span class="font-bold text-slate-700" id="profileRegion">—</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400 font-medium">Session</span>
+              <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide">Active Secure</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-400 font-medium">Joined</span>
+              <span class="font-bold text-slate-700" id="profileJoined">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="premium-card p-5 space-y-3">
+          <h4 class="text-[10px] font-black text-slate-800 uppercase tracking-widest border-b pb-2">Quick Actions</h4>
+          <a href="dashboard.html" class="flex items-center gap-3 p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition-all text-xs font-bold text-slate-700 group">
+            <span class="material-symbols-outlined text-[#006c49] text-lg">dashboard</span>
+            Go to My Dashboard
+          </a>
+          <a href="reports.html" class="flex items-center gap-3 p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition-all text-xs font-bold text-slate-700">
+            <span class="material-symbols-outlined text-[#006c49] text-lg">download</span>
+            Download My Reports
+          </a>
+          <a href="support.html" class="flex items-center gap-3 p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition-all text-xs font-bold text-slate-700">
+            <span class="material-symbols-outlined text-[#006c49] text-lg">contact_support</span>
+            Open Support Ticket
+          </a>
+          <button id="signOutBtn" class="w-full flex items-center gap-3 p-2.5 rounded-xl border border-red-100 hover:bg-red-50 transition-all text-xs font-bold text-red-600 mt-2">
+            <span class="material-symbols-outlined text-lg">logout</span>
+            Sign Out Securely
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+function saveSettings(e) {
+  e.preventDefault();
+  const district = document.getElementById("settingDistrict").value;
+  alert(`✓ Preferences saved successfully!\n\nDefault District: ${district}\nNotification settings updated.`);
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const session = AgriAuth.getSession();
+  if (!session) return;
+
+  // Fetch profile from the live API
+  let profile = null;
+  try {
+    profile = await AgriAPI.getProfile();
+  } catch (err) {
+    console.error("Failed to load settings profile:", err.message);
+    document.getElementById("headerUserName").textContent = session.name || session.username || "—";
+    document.getElementById("avatarCircle").textContent = (session.name || "?")[0].toUpperCase();
+    document.getElementById("settingName").textContent = session.name || "—";
+    document.getElementById("settingUsername").textContent = session.username || "—";
+    document.getElementById("settingEmail").textContent = session.email || "—";
+    document.getElementById("settingRole").textContent = session.isStaff ? "Staff / Administrator" : "Standard Field Operations Officer";
+    return;
+  }
+
+  // Populate header
+  document.getElementById("avatarCircle").textContent = profile.initials;
+  document.getElementById("headerUserName").textContent = profile.name;
+  document.getElementById("headerUserRole").textContent = profile.role;
+
+  // Populate account info fields
+  document.getElementById("settingName").textContent = profile.name;
+  document.getElementById("settingUsername").textContent = profile.username;
+  document.getElementById("settingEmail").textContent = profile.email;
+  document.getElementById("settingRole").textContent = profile.is_staff ? "Staff / Administrator" : "Standard Field Operations Officer";
+
+  // Populate profile card
+  document.getElementById("profileAvatar").textContent = profile.initials;
+  document.getElementById("profileName").textContent = profile.name;
+  document.getElementById("profileRole").textContent = profile.role;
+  document.getElementById("profileId").textContent = profile.id;
+  document.getElementById("profileRegion").textContent = profile.region;
+  document.getElementById("profileJoined").textContent = profile.joined;
+
+  // Logout
+  const doLogout = (e) => {
+    e.preventDefault();
+    if (confirm("Are you sure you want to sign out?")) {
+      AgriAPI.logout();
+      AgriAuth.clearSession();
+      window.location.replace("login.html");
+    }
+  };
+  document.getElementById("navLogout").addEventListener("click", doLogout);
+  document.getElementById("signOutBtn").addEventListener("click", doLogout);
+});
+</script>
+</body>
+</html>

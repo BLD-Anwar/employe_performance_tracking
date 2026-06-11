@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriPulse — Insights & Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#003527",         // Deep Emerald
+          "primary-light": "#004d39",
+          "secondary": "#006c49",       // Forest Green
+          "secondary-light": "#00855a",
+          "background": "#f4f6f8",       // Cool light slate
+          "surface": "#ffffff",
+          "surface-muted": "#f8fafc",
+          "border-color": "#e2e8f0",
+          "text-main": "#0f172a",       // Deep dark gray
+          "text-muted": "#64748b",      // Slate gray
+          "accent-success": "#10b981",  // Mint green
+          "accent-warning": "#f59e0b",  // Warm amber
+          "accent-error": "#ef4444"     // Soft red
+        },
+        borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", "2xl": "1rem", full: "9999px" },
+        fontFamily: { sans: ["Inter", "sans-serif"] },
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; background-color: #f4f6f8; color: #0f172a; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  
+  /* Sidebar design with sleek gradient */
+  .agri-sidebar {
+    background: linear-gradient(180deg, #002b1f 0%, #001f16 100%);
+    box-shadow: inset -1px 0 0 rgba(255,255,255,0.03), 4px 0 24px rgba(0,0,0,0.15);
+  }
+  .nav-link {
+    color: rgba(255,255,255,0.7);
+    transition: all 0.2s ease;
+  }
+  .nav-link:hover {
+    background: rgba(255,255,255,0.06);
+    color: #ffffff;
+    transform: translateX(2px);
+  }
+  .nav-link.active {
+    background: linear-gradient(90deg, rgba(16,185,129,0.15), rgba(16,185,129,0.02));
+    color: #34d399;
+    border-left: 3px solid #10b981;
+    box-shadow: inset 0 0 12px rgba(16,185,129,0.04);
+  }
+  .nav-link.active .material-symbols-outlined { color: #10b981; }
+
+  /* Premium Cards */
+  .premium-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    border-radius: 1rem;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .bar-fill {
+    transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+</style>
+<script src="../assets/js/auth-store.js"></script>
+<script src="../assets/js/api.js"></script>
+<script>
+  if (!AgriAuth.requireAuth("login.html")) {
+    document.documentElement.innerHTML = "";
+  }
+</script>
+</head>
+
+<body class="min-h-screen flex">
+
+<!-- Side Navigation -->
+<aside class="agri-sidebar w-[240px] flex flex-col py-6 shrink-0 fixed h-screen z-50 text-white">
+  <div class="px-6 mb-8 flex items-center gap-3">
+    <div class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center rounded-xl shadow-lg shrink-0">
+      <span class="material-symbols-outlined text-2xl text-emerald-400">agriculture</span>
+    </div>
+    <div>
+      <h1 class="text-sm font-black tracking-wider leading-none uppercase text-white">Sri Sri Sugar</h1>
+      <p class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-1">Operations Portal</p>
+    </div>
+  </div>
+  <nav class="flex-grow space-y-1">
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="dashboard.html">
+      <span class="material-symbols-outlined text-lg">dashboard</span>
+      <span>My Dashboard</span>
+    </a>
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="employees.html">
+      <span class="material-symbols-outlined text-lg">person</span>
+      <span>My Profile</span>
+    </a>
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="reports.html">
+      <span class="material-symbols-outlined text-lg">assessment</span>
+      <span>My Reports</span>
+    </a>
+    <a class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="work_submission.html">
+      <span class="material-symbols-outlined text-lg">task</span>
+      <span>Submit Work</span>
+    </a>
+    <a class="nav-link active flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider" href="insights.html">
+      <span class="material-symbols-outlined text-lg">analytics</span>
+      <span>Analytics</span>
+    </a>
+  </nav>
+  <div class="mt-auto border-t border-white/5 pt-6 space-y-1">
+    <a class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider" href="support.html">
+      <span class="material-symbols-outlined text-lg">help</span>
+      <span>Support</span>
+    </a>
+    <a class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider" href="settings.html">
+      <span class="material-symbols-outlined text-lg">settings</span>
+      <span>Settings</span>
+    </a>
+    <a id="navLogout" class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider text-red-400 hover:bg-red-500/10 cursor-pointer">
+      <span class="material-symbols-outlined text-lg">logout</span>
+      <span>Sign Out</span>
+    </a>
+  </div>
+</aside>
+
+<!-- Main Container -->
+<div class="ml-[240px] flex-grow flex flex-col min-h-screen">
+  
+  <!-- Top App Bar -->
+  <header class="sticky top-0 w-full h-16 px-8 bg-white border-b border-slate-200 flex justify-between items-center z-40 shadow-sm">
+    <h1 class="text-base font-bold text-slate-800">My Insights & Analytics</h1>
+    <div class="flex items-center gap-3 pl-2">
+      <div class="text-right">
+        <p class="text-xs font-black text-slate-800 leading-none" id="headerUserName">Loading Officer</p>
+        <p class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider mt-1" id="headerUserRole">Field Officer</p>
+      </div>
+      <div class="w-9 h-9 rounded-xl bg-[#003527] text-emerald-300 font-bold text-xs flex items-center justify-center shadow" id="avatarCircle">
+        A
+      </div>
+    </div>
+  </header>
+
+  <!-- Insights Viewport -->
+  <main class="flex-grow p-8 space-y-6">
+    
+    <section>
+      <h2 class="text-2xl font-black text-slate-900 tracking-tight">Personal Operational Intelligence</h2>
+      <p class="text-xs text-slate-500 mt-1">Analytics derived exclusively from your active sugarcane operations and GPS logging telemetry.</p>
+    </section>
+
+    <!-- Personal Stats cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="premium-card p-5">
+        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">My Villages Count</p>
+        <h3 class="text-2xl font-black text-[#003527]" id="statVillages">0</h3>
+        <p class="text-[10px] text-slate-500 mt-1">Assigned operations base</p>
+      </div>
+      <div class="premium-card p-5">
+        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">My Farmers Base</p>
+        <h3 class="text-2xl font-black text-[#003527]" id="statFarmers">0</h3>
+        <p class="text-[10px] text-slate-500 mt-1">Active relationship telemetry</p>
+      </div>
+      <div class="premium-card p-5">
+        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Calculated Score</p>
+        <h3 class="text-2xl font-black text-emerald-700" id="statScore">0%</h3>
+        <p class="text-[10px] text-emerald-600 mt-1 font-bold">Weighted Operational Rating</p>
+      </div>
+      <div class="premium-card p-5">
+        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Cane Registration</p>
+        <h3 class="text-2xl font-black text-[#006c49]" id="statCaneReg">0%</h3>
+        <p class="text-[10px] text-slate-500 mt-1">Cane season compliance</p>
+      </div>
+    </div>
+
+    <!-- Charts & Tables Grid -->
+    <div class="grid grid-cols-12 gap-6">
+      
+      <!-- Left: Target Parameter Breakdown -->
+      <div class="col-span-12 lg:col-span-7 premium-card overflow-hidden">
+        <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
+          <span class="material-symbols-outlined text-base text-[#006c49]">bar_chart</span>
+          <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">My Operations Target Parameter Breakdown</h3>
+        </div>
+        <div class="p-6 space-y-4" id="targetBreakdown">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Right: Village Breakdown -->
+      <div class="col-span-12 lg:col-span-5 premium-card overflow-hidden">
+        <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
+          <span class="material-symbols-outlined text-base text-[#006c49]">location_on</span>
+          <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">My Top Operational Villages</h3>
+        </div>
+        <div class="p-6 space-y-3" id="villageBreakdown">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<script>
+function renderTargetParameters(metrics) {
+  const m = metrics;
+  const list = [
+    { name: "Sugarcane Crushing Target Achievement", val: m.crushing_target,  color: "bg-[#003527]", weight: "40% Weightage" },
+    { name: "Sugar Recovery Completion Rate",         val: m.recovery_target,  color: "bg-[#006c49]", weight: "20% Weightage" },
+    { name: "Farmer Engagement Meetings Held",        val: m.farmer_meetings,  color: "bg-emerald-500", weight: "20% Weightage" },
+    { name: "KCC Loan Target Completions",            val: m.kcc_target,       color: "bg-teal-600",   weight: "20% Weightage" },
+    { name: "Cane Registration Compliance",           val: m.cane_reg_target,  color: "bg-slate-500",  weight: "Standard Compliance" },
+  ];
+
+  const el = document.getElementById("targetBreakdown");
+  el.innerHTML = list.map(t => `
+    <div>
+      <div class="flex justify-between items-center mb-1 text-xs">
+        <span class="font-bold text-slate-700">${t.name}</span>
+        <span class="font-black text-[#003527] tabular-nums">${t.val}% <span class="text-slate-400 font-normal">(${t.weight})</span></span>
+      </div>
+      <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+        <div class="bar-fill h-2 rounded-full ${t.color}" style="width:0%" data-target="${t.val}%"></div>
+      </div>
+    </div>
+  `).join('');
+  setTimeout(() => document.querySelectorAll('.bar-fill').forEach(b => b.style.width = b.dataset.target), 100);
+}
+
+function renderVillages(villages) {
+  const el = document.getElementById("villageBreakdown");
+
+  if (!villages || !villages.length) {
+    el.innerHTML = `
+      <div class="text-center py-10 text-slate-400">
+        <span class="material-symbols-outlined text-3xl block mb-2 opacity-30 select-none">location_off</span>
+        <p class="text-xs font-semibold">No village data yet.</p>
+        <p class="text-[10px] mt-1">Submit field activities to see your top operational villages here.</p>
+      </div>`;
+    return;
+  }
+
+  const max = villages[0].visits;
+  el.innerHTML = villages.map((v, i) => `
+    <div class="flex items-center gap-3 text-xs">
+      <span class="font-black text-slate-400 w-4">${i + 1}</span>
+      <div class="flex-grow">
+        <div class="flex justify-between items-center mb-1">
+          <span class="font-bold text-slate-700">${v.village}</span>
+          <span class="font-black text-[#006c49] tabular-nums">${v.visits} visit${v.visits !== 1 ? 's' : ''}</span>
+        </div>
+        <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+          <div class="bar-fill h-1.5 rounded-full bg-[#006c49]" style="width:0%" data-target="${Math.round(v.visits / max * 100)}%"></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  setTimeout(() => document.querySelectorAll('.bar-fill').forEach(b => b.style.width = b.dataset.target), 100);
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const session = AgriAuth.getSession();
+  if (!session) return;
+
+  // ── Fetch all data from the live API ──
+  let profile = null, metrics = null, villages = [];
+  try {
+    [profile, metrics, villages] = await Promise.all([
+      AgriAPI.getProfile(),
+      AgriAPI.getMetrics(),
+      AgriAPI.getVillages(),
+    ]);
+  } catch (err) {
+    console.error("Failed to load insights data:", err.message);
+    document.getElementById("headerUserName").textContent = session.name || session.username || "—";
+    document.getElementById("avatarCircle").textContent = (session.name || "?")[0].toUpperCase();
+    renderVillages([]);
+    return;
+  }
+
+  // ── Header ──
+  document.getElementById("headerUserName").textContent = profile.name;
+  document.getElementById("headerUserRole").textContent = profile.role;
+  document.getElementById("avatarCircle").textContent = profile.initials;
+
+  // ── Stats cards ──
+  document.getElementById("statVillages").textContent = profile.villages_count;
+  document.getElementById("statFarmers").textContent = profile.farmer_count;
+  document.getElementById("statScore").textContent = `${metrics.calculated_score}%`;
+  document.getElementById("statCaneReg").textContent = `${metrics.cane_reg_target}%`;
+
+  renderTargetParameters(metrics);
+  renderVillages(villages);
+
+  // ── Log out ──
+  const logoutBtn = document.getElementById('navLogout');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('Are you sure you want to sign out?')) {
+        AgriAPI.logout();
+        AgriAuth.clearSession();
+        window.location.replace('login.html');
+      }
+    });
+  }
+});
+</script>
+</body>
+</html>

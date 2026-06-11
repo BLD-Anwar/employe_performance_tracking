@@ -1,0 +1,1747 @@
+﻿<!doctype html>
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgriPulse – Employee Performance Portal</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#003527", // Deep Emerald
+              "primary-light": "#004d39",
+              secondary: "#006c49", // Forest Green
+              "secondary-light": "#00855a",
+              background: "#f4f6f8", // Cool light slate
+              surface: "#ffffff",
+              "surface-muted": "#f8fafc",
+              "border-color": "#e2e8f0",
+              "text-main": "#0f172a", // Deep dark gray
+              "text-muted": "#64748b", // Slate gray
+              "accent-success": "#10b981", // Mint green
+              "accent-warning": "#f59e0b", // Warm amber
+              "accent-error": "#ef4444", // Soft red
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              "2xl": "1rem",
+              "3xl": "1.5rem",
+              full: "9999px",
+            },
+            fontFamily: { sans: ["Inter", "sans-serif"] },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f4f6f8;
+        color: #0f172a;
+        overflow-x: hidden;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
+
+      /* Sidebar design with sleek gradient */
+      .agri-sidebar {
+        background: linear-gradient(180deg, #002b1f 0%, #001f16 100%);
+        box-shadow:
+          inset -1px 0 0 rgba(255, 255, 255, 0.03),
+          4px 0 24px rgba(0, 0, 0, 0.15);
+      }
+      .nav-link {
+        color: rgba(255, 255, 255, 0.7);
+        transition: all 0.2s ease;
+      }
+      .nav-link:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: #ffffff;
+        transform: translateX(2px);
+      }
+      .nav-link.active {
+        background: linear-gradient(
+          90deg,
+          rgba(16, 185, 129, 0.15),
+          rgba(16, 185, 129, 0.02)
+        );
+        color: #34d399;
+        border-left: 3px solid #10b981;
+        box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.04);
+      }
+      .nav-link.active .material-symbols-outlined {
+        color: #10b981;
+      }
+
+      /* Premium Cards */
+      .premium-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        box-shadow:
+          0 4px 6px -1px rgb(0 0 0 / 0.05),
+          0 2px 4px -2px rgb(0 0 0 / 0.05);
+        border-radius: 1rem;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .premium-card:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 10px 15px -3px rgb(0 0 0 / 0.08),
+          0 4px 6px -4px rgb(0 0 0 / 0.08);
+      }
+
+      /* Radial Circle Animation */
+      .radial-bg {
+        fill: none;
+        stroke: #e2e8f0;
+      }
+      .radial-fill {
+        fill: none;
+        stroke-linecap: round;
+        transform: rotate(-90deg);
+        transform-origin: 50px 50px;
+        transition: stroke-dasharray 0.8s ease-in-out;
+      }
+
+      /* Target completion bar animations */
+      .progress-fill {
+        transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+    </style>
+    <script src="../assets/js/auth-store.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script>
+      if (!AgriAuth.requireAuth("login.html")) {
+        document.documentElement.innerHTML = "";
+      }
+    </script>
+  </head>
+
+  <body class="min-h-screen flex overflow-x-hidden w-screen">
+    <!-- Side Navigation -->
+    <aside
+      class="agri-sidebar w-[240px] flex flex-col py-6 shrink-0 fixed h-screen z-50 text-white"
+    >
+      <div class="px-6 mb-8 flex items-center gap-3">
+        <div
+          class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center rounded-xl shadow-lg shrink-0"
+        >
+          <span class="material-symbols-outlined text-2xl text-emerald-400"
+            >agriculture</span
+          >
+        </div>
+        <div>
+          <h1
+            class="text-sm font-black tracking-wider leading-none uppercase text-white"
+          >
+            Sri Sri Sugar
+          </h1>
+          <p
+            class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-1"
+          >
+            Operations Portal
+          </p>
+        </div>
+      </div>
+      <nav class="flex-grow space-y-1">
+        <a
+          class="nav-link active flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
+          href="dashboard.html"
+        >
+          <span class="material-symbols-outlined text-lg">dashboard</span>
+          <span>My Dashboard</span>
+        </a>
+        <a
+          class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
+          href="employees.html"
+        >
+          <span class="material-symbols-outlined text-lg">person</span>
+          <span>My Profile</span>
+        </a>
+        <a
+          class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
+          href="reports.html"
+        >
+          <span class="material-symbols-outlined text-lg">assessment</span>
+          <span>My Reports</span>
+        </a>
+        <a
+          class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
+          href="work_submission.html"
+        >
+          <span class="material-symbols-outlined text-lg">task</span>
+          <span>Submit Work</span>
+        </a>
+        <a
+          class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
+          href="insights.html"
+        >
+          <span class="material-symbols-outlined text-lg">analytics</span>
+          <span>Analytics</span>
+        </a>
+      </nav>
+      <div class="mt-auto border-t border-white/5 pt-6 space-y-1">
+        <a
+          class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider"
+          href="support.html"
+        >
+          <span class="material-symbols-outlined text-lg">help</span>
+          <span>Support</span>
+        </a>
+        <a
+          class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider"
+          href="settings.html"
+        >
+          <span class="material-symbols-outlined text-lg">settings</span>
+          <span>Settings</span>
+        </a>
+        <a
+          id="navLogout"
+          class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider text-red-400 hover:bg-red-500/10 cursor-pointer"
+        >
+          <span class="material-symbols-outlined text-lg">logout</span>
+          <span>Sign Out</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Container -->
+    <div class="ml-[240px] flex-grow flex flex-col min-h-screen">
+      <!-- Top App Bar -->
+      <header
+        class="sticky top-0 w-full h-16 px-8 bg-white border-b border-slate-200 flex justify-between items-center z-40 shadow-sm"
+      >
+        <div>
+          <h2 class="text-base font-bold text-slate-800" id="headerGreeting">
+            Active Workspace
+          </h2>
+        </div>
+        <div class="flex items-center gap-6">
+          <!-- Notification alert -->
+          <div class="relative group">
+            <button
+              type="button"
+              class="p-2 hover:bg-slate-100 rounded-full transition-all text-slate-500 relative"
+              onclick="toggleAlertFeed()"
+            >
+              <span class="material-symbols-outlined">notifications</span>
+              <span
+                class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] flex items-center justify-center rounded-full font-bold"
+                id="badgeCount"
+                >2</span
+              >
+            </button>
+            <!-- Alerts dropdown panel -->
+            <div
+              id="alertsDropdown"
+              class="hidden absolute right-0 mt-2 w-80 bg-white border border-slate-200 shadow-xl rounded-xl p-4 space-y-3 z-50 text-xs"
+            >
+              <p
+                class="font-bold text-slate-800 border-b pb-2 uppercase tracking-wide flex justify-between items-center"
+              >
+                <span>Recent Alerts</span>
+                <span
+                  class="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-normal"
+                  >Active Notifications</span
+                >
+              </p>
+              <div id="alertsFeed" class="space-y-2 max-h-60 overflow-y-auto">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+          <div class="h-6 w-[1px] bg-slate-200"></div>
+          <div class="flex items-center gap-3 pl-2">
+            <div class="text-right">
+              <p
+                class="text-xs font-black text-slate-800 leading-none"
+                id="headerUserName"
+              >
+                Loading Officer
+              </p>
+              <p
+                class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider mt-1"
+                id="headerUserRole"
+              >
+                Field Officer
+              </p>
+            </div>
+            <div
+              class="w-9 h-9 rounded-xl bg-[#003527] text-emerald-300 font-bold text-xs flex items-center justify-center shadow"
+              id="avatarCircle"
+            >
+              A
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Viewport -->
+      <main class="flex-grow p-8 space-y-6">
+        <!-- Greeting & Banner -->
+        <section
+          class="flex flex-col md:flex-row md:items-center justify-between gap-4"
+        >
+          <div>
+            <h2
+              class="text-2xl font-black tracking-tight text-slate-900"
+              id="greetingName"
+            >
+              Hello, Field Officer
+            </h2>
+            <p class="text-xs text-slate-500 mt-1" id="currentDate">
+              Sugarcane season logs are active
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <div
+              class="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3.5 py-1.5 rounded-full border border-emerald-200 text-[10px] font-bold uppercase tracking-wider"
+            >
+              <span
+                class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"
+              ></span>
+              <span>Verified Secure Connection</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Operational Highlight Banner -->
+        <div
+          class="bg-gradient-to-r from-[#003527] to-[#005a41] text-white rounded-3xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl shadow-emerald-950/10"
+        >
+          <div>
+            <p
+              class="text-[9px] uppercase font-bold tracking-widest text-emerald-400 mb-1"
+            >
+              PRECISION GROWTH & SYSTEM MONITORING
+            </p>
+            <h3 class="text-lg font-black leading-tight mb-2">
+              My Operations & Sugarcane Telemetry
+            </h3>
+            <p class="text-xs text-emerald-100 max-w-xl">
+              Track cane registrations, monitor GPS telemetry points, complete
+              recovery operations, and evaluate farmer meetings to boost your
+              operational performance score.
+            </p>
+          </div>
+          <div
+            class="flex gap-4 shrink-0 bg-white/5 border border-white/10 px-6 py-4 rounded-2xl backdrop-blur"
+          >
+            <div class="text-center">
+              <p
+                class="text-xl font-black text-emerald-300"
+                id="totalTasksCount"
+              >
+                0
+              </p>
+              <p class="text-[9px] font-bold uppercase text-emerald-200 mt-0.5">
+                Farmer Tasks
+              </p>
+            </div>
+            <div class="w-[1px] h-8 bg-white/10"></div>
+            <div class="text-center">
+              <p
+                class="text-xl font-black text-emerald-300"
+                id="totalVillagesText"
+              >
+                0
+              </p>
+              <p class="text-[9px] font-bold uppercase text-emerald-200 mt-0.5">
+                Villages
+              </p>
+            </div>
+            <div class="w-[1px] h-8 bg-white/10"></div>
+            <div class="text-center">
+              <p
+                class="text-xl font-black text-emerald-300"
+                id="totalFarmersText"
+              >
+                0
+              </p>
+              <p class="text-[9px] font-bold uppercase text-emerald-200 mt-0.5">
+                Farmers
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Core Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- LEFT COLUMN: Profile and KPIs -->
+          <div class="lg:col-span-8 space-y-6">
+            <!-- A. Employee Profile Section & Score Widget Row -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+              <!-- Profile Card -->
+              <div
+                class="md:col-span-7 premium-card p-6 flex flex-col justify-between"
+              >
+                <div>
+                  <div
+                    class="flex items-center justify-between border-b pb-4 mb-4"
+                  >
+                    <h4
+                      class="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5"
+                    >
+                      <span
+                        class="material-symbols-outlined text-sm text-emerald-600"
+                        >badge</span
+                      >
+                      Employee Profile Section
+                    </h4>
+                    <span
+                      class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase"
+                      id="empStatus"
+                      >ACTIVE</span
+                    >
+                  </div>
+                  <div class="flex items-center gap-4 mb-5">
+                    <div
+                      class="w-14 h-14 rounded-2xl bg-slate-100 border flex items-center justify-center shadow-inner shrink-0"
+                    >
+                      <span
+                        class="text-lg font-black text-[#003527]"
+                        id="empInitials"
+                        >??</span
+                      >
+                    </div>
+                    <div>
+                      <h3
+                        class="text-base font-black text-slate-800 leading-tight"
+                        id="empName"
+                      >
+                        Loading Name...
+                      </h3>
+                      <p
+                        class="text-xs text-[#006c49] font-bold mt-1"
+                        id="empRole"
+                      >
+                        Loading Role...
+                      </p>
+                      <p
+                        class="text-[10px] text-slate-400 font-medium"
+                        id="empId"
+                      >
+                        ID: SS-0000
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 border-t pt-4 text-xs">
+                  <div>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase">
+                      Department
+                    </p>
+                    <p class="font-bold text-slate-700 mt-0.5" id="empDept">
+                      –
+                    </p>
+                  </div>
+                  <div>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase">
+                      Region Assigned
+                    </p>
+                    <p class="font-bold text-slate-700 mt-0.5" id="empRegion">
+                      –
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- C. Dynamic Performance Score Radial Widget -->
+              <div
+                class="md:col-span-5 premium-card p-6 flex flex-col items-center justify-between text-center relative overflow-hidden"
+              >
+                <h4
+                  class="text-[11px] font-bold text-slate-400 uppercase tracking-widest self-start w-full border-b pb-2 mb-3"
+                >
+                  Performance Score
+                </h4>
+
+                <div
+                  class="relative w-32 h-32 flex items-center justify-center my-1"
+                >
+                  <svg
+                    width="120"
+                    height="120"
+                    viewBox="0 0 100 100"
+                    class="w-28 h-28"
+                  >
+                    <!-- Outer background track -->
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      stroke-width="8"
+                      class="radial-bg"
+                    />
+                    <!-- Colored progress path -->
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      stroke-width="8"
+                      stroke="#10b981"
+                      class="radial-fill"
+                      id="radialProgress"
+                      stroke-dasharray="251.2"
+                      stroke-dashoffset="251.2"
+                    />
+                  </svg>
+                  <!-- Absolute percentage in center -->
+                  <div
+                    class="absolute inset-0 flex flex-col items-center justify-center"
+                  >
+                    <span
+                      class="text-2xl font-black text-slate-800 leading-none"
+                      id="radialPercent"
+                      >0%</span
+                    >
+                    <span
+                      class="text-[9px] text-[#006c49] font-extrabold uppercase mt-1"
+                      >Calculated</span
+                    >
+                  </div>
+                </div>
+
+                <div class="w-full">
+                  <!-- Math Formula Tooltip Breakdown -->
+                  <div
+                    class="bg-slate-50 border rounded-xl p-2.5 text-[10px] text-slate-500 font-medium leading-relaxed hover:bg-slate-100/70 transition-colors"
+                  >
+                    <span class="font-bold text-slate-800 uppercase block mb-1"
+                      >Score Formula Breakdown</span
+                    >
+                    40% Crushing + 20% Recovery + 20% Meetings + 20% KCC
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- B. 10 KPI Summary Cards -->
+            <div>
+              <h4
+                class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-sm text-[#006c49]"
+                  >dashboard_customize</span
+                >
+                B. KPI Target Summary Cards
+              </h4>
+              <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <!-- Cards 1-2: Demographics -->
+                <div class="premium-card p-3 border-l-4 border-l-slate-400">
+                  <p
+                    class="text-[9px] font-bold text-slate-400 uppercase tracking-wider"
+                  >
+                    Villages
+                  </p>
+                  <h3
+                    class="text-lg font-black text-slate-800 mt-1"
+                    id="kpiVillages"
+                  >
+                    0
+                  </h3>
+                  <p class="text-[8px] text-slate-500 mt-1">Assigned Count</p>
+                </div>
+                <div class="premium-card p-3 border-l-4 border-l-slate-500">
+                  <p
+                    class="text-[9px] font-bold text-slate-400 uppercase tracking-wider"
+                  >
+                    Farmers
+                  </p>
+                  <h3
+                    class="text-lg font-black text-slate-800 mt-1"
+                    id="kpiFarmers"
+                  >
+                    0
+                  </h3>
+                  <p class="text-[8px] text-slate-500 mt-1">Engagement Base</p>
+                </div>
+
+                <!-- Cards 3-5: Core Math Metrics -->
+                <div class="premium-card p-3 border-l-4 border-l-emerald-600">
+                  <p
+                    class="text-[9px] font-bold text-slate-400 uppercase tracking-wider"
+                  >
+                    Crushing (40%)
+                  </p>
+                  <h3
+                    class="text-lg font-black text-emerald-700 mt-1"
+                    id="kpiCrushing"
+                  >
+                    0%
+                  </h3>
+                  <p
+                    class="text-[8px] text-emerald-600 mt-1 font-semibold"
+                    id="kpiCrushingStatus"
+                  >
+                    On Track
+                  </p>
+                </div>
+                <div class="premium-card p-3 border-l-4 border-l-teal-600">
+                  <p
+                    class="text-[9px] font-bold text-slate-400 uppercase tracking-wider"
+                  >
+                    Cane Reg
+                  </p>
+                  <h3
+                    class="text-lg font-black text-teal-700 mt-1"
+                    id="kpiCaneReg"
+                  >
+                    0%
+                  </h3>
+                  <p
+                    class="text-[8px] text-teal-600 mt-1 font-semibold"
+                    id="kpiCaneRegStatus"
+                  >
+                    On Track
+                  </p>
+                </div>
+                <div class="premium-card p-3 border-l-4 border-l-green-600">
+                  <p
+                    class="text-[9px] font-bold text-slate-400 uppercase tracking-wider"
+                  >
+                    Recovery (20%)
+                  </p>
+                  <h3
+                    class="text-lg font-black text-green-700 mt-1"
+                    id="kpiRecovery"
+                  >
+                    0%
+                  </h3>
+                  <p
+                    class="text-[8px] text-green-600 mt-1 font-semibold"
+                    id="kpiRecoveryStatus"
+                  >
+                    On Track
+                  </p>
+                </div>
+
+                <!-- Cards 6-7: Relations & Finance -->
+                <div class="premium-card p-3 border-l-4 border-l-cyan-600">
+                  <p
+                    class="text-[9px] font-bold text-slate-400 uppercase tracking-wider"
+                  >
+                    Meetings (20%)
+                  </p>
+                  <h3
+                    class="text-lg font-black text-cyan-700 mt-1"
+                    id="kpiMeetings"
+                  >
+                    0%
+                  </h3>
+                  <p
+                    class="text-[8px] text-cyan-600 mt-1 font-semibold"
+                    id="kpiMeetingsStatus"
+                  >
+                    On Track
+                  </p>
+                </div>
+                <div class="premium-card p-3 border-l-4 border-l-indigo-600">
+                  <p
+                    class="text-[9px] font-bold text-slate-400 uppercase tracking-wider"
+                  >
+                    KCC (20%)
+                  </p>
+                  <h3
+                    class="text-lg font-black text-indigo-700 mt-1"
+                    id="kpiKcc"
+                  >
+                    0%
+                  </h3>
+                  <p
+                    class="text-[8px] text-indigo-600 mt-1 font-semibold"
+                    id="kpiKccStatus"
+                  >
+                    On Track
+                  </p>
+                </div>
+
+                <!-- Cards 8-10: Loan Agreements -->
+                <div class="premium-card p-3 border-l-4 border-l-violet-600">
+                  <p
+                    class="text-[9px] font-bold text-slate-400 uppercase tracking-wider"
+                  >
+                    H&T Agreement
+                  </p>
+                  <h3
+                    class="text-lg font-black text-violet-700 mt-1"
+                    id="kpiHt"
+                  >
+                    0%
+                  </h3>
+                  <p class="text-[8px] text-slate-500 mt-1">
+                    Contract Compliance
+                  </p>
+                </div>
+                <div class="premium-card p-3 border-l-4 border-l-purple-600">
+                  <p
+                    class="text-[9px] font-bold text-slate-400 uppercase tracking-wider"
+                  >
+                    Canara H&T
+                  </p>
+                  <h3
+                    class="text-lg font-black text-purple-700 mt-1"
+                    id="kpiCanara"
+                  >
+                    0%
+                  </h3>
+                  <p class="text-[8px] text-slate-500 mt-1">Loan Allocation</p>
+                </div>
+                <div class="premium-card p-3 border-l-4 border-l-amber-600">
+                  <p
+                    class="text-[9px] font-bold text-slate-400 uppercase tracking-wider"
+                  >
+                    Sangola H&T
+                  </p>
+                  <h3
+                    class="text-lg font-black text-amber-700 mt-1"
+                    id="kpiSangola"
+                  >
+                    0%
+                  </h3>
+                  <p class="text-[8px] text-slate-500 mt-1">Loan Allocation</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- D. Employee Analytics Charts -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Bar & Line Chart Panel -->
+              <div class="premium-card p-6">
+                <h4
+                  class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center justify-between"
+                >
+                  <span>Target Achievement Levels</span>
+                  <span
+                    class="text-[9px] text-[#006c49] font-bold uppercase tracking-wide bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100"
+                    >Cane vs Crushing</span
+                  >
+                </h4>
+                <!-- Interactive SVGs instead of static placeholders -->
+                <div
+                  class="h-44 w-full flex items-end gap-5 pt-6 pb-2 relative"
+                >
+                  <div
+                    class="absolute inset-0 flex flex-col justify-between pointer-events-none text-[8px] text-slate-300 font-bold border-b"
+                  >
+                    <div class="border-t w-full h-[1px] flex justify-end">
+                      <span>100%</span>
+                    </div>
+                    <div class="border-t w-full h-[1px] flex justify-end">
+                      <span>75%</span>
+                    </div>
+                    <div class="border-t w-full h-[1px] flex justify-end">
+                      <span>50%</span>
+                    </div>
+                    <div class="border-t w-full h-[1px] flex justify-end">
+                      <span>25%</span>
+                    </div>
+                    <div></div>
+                  </div>
+
+                  <!-- Crushing Target Bar -->
+                  <div
+                    class="flex-1 flex flex-col items-center group relative cursor-pointer z-10"
+                  >
+                    <div
+                      class="w-8 bg-[#003527] rounded-t-lg transition-all duration-500 group-hover:opacity-90 relative"
+                      id="barCrushing"
+                      style="height: 0%"
+                    >
+                      <!-- Tooltip -->
+                      <span
+                        class="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900 text-white font-bold text-[9px] py-0.5 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap"
+                        id="barCrushingVal"
+                        >0%</span
+                      >
+                    </div>
+                    <span
+                      class="text-[9px] font-bold text-slate-500 uppercase tracking-wide mt-2"
+                      >Crushing</span
+                    >
+                  </div>
+
+                  <!-- Cane Reg Bar -->
+                  <div
+                    class="flex-1 flex flex-col items-center group relative cursor-pointer z-10"
+                  >
+                    <div
+                      class="w-8 bg-[#006c49] rounded-t-lg transition-all duration-500 group-hover:opacity-90 relative"
+                      id="barCaneReg"
+                      style="height: 0%"
+                    >
+                      <span
+                        class="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900 text-white font-bold text-[9px] py-0.5 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap"
+                        id="barCaneRegVal"
+                        >0%</span
+                      >
+                    </div>
+                    <span
+                      class="text-[9px] font-bold text-slate-500 uppercase tracking-wide mt-2"
+                      >Cane Reg</span
+                    >
+                  </div>
+
+                  <!-- Recovery Target Bar -->
+                  <div
+                    class="flex-1 flex flex-col items-center group relative cursor-pointer z-10"
+                  >
+                    <div
+                      class="w-8 bg-emerald-500 rounded-t-lg transition-all duration-500 group-hover:opacity-90 relative"
+                      id="barRecovery"
+                      style="height: 0%"
+                    >
+                      <span
+                        class="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-900 text-white font-bold text-[9px] py-0.5 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap"
+                        id="barRecoveryVal"
+                        >0%</span
+                      >
+                    </div>
+                    <span
+                      class="text-[9px] font-bold text-slate-500 uppercase tracking-wide mt-2"
+                      >Recovery</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <!-- Donut / Pie Allocation SVG -->
+              <div class="premium-card p-6 flex flex-col justify-between">
+                <h4
+                  class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 flex items-center justify-between"
+                >
+                  <span>H&T Loan Targets Allocation</span>
+                  <span
+                    class="text-[9px] text-[#006c49] font-bold uppercase tracking-wide bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100"
+                    >Distribution</span
+                  >
+                </h4>
+
+                <div class="flex items-center gap-6 py-2">
+                  <svg
+                    width="110"
+                    height="110"
+                    viewBox="0 0 40 40"
+                    class="w-24 h-24 shrink-0"
+                  >
+                    <!-- Donut Segments with interactive CSS animations -->
+                    <circle
+                      cx="20"
+                      cy="20"
+                      r="15.915"
+                      fill="transparent"
+                      stroke="#003527"
+                      stroke-width="5"
+                      stroke-dasharray="35 65"
+                      stroke-dashoffset="25"
+                    />
+                    <circle
+                      cx="20"
+                      cy="20"
+                      r="15.915"
+                      fill="transparent"
+                      stroke="#006c49"
+                      stroke-width="5"
+                      stroke-dasharray="30 70"
+                      stroke-dashoffset="90"
+                    />
+                    <circle
+                      cx="20"
+                      cy="20"
+                      r="15.915"
+                      fill="transparent"
+                      stroke="#34d399"
+                      stroke-width="5"
+                      stroke-dasharray="35 65"
+                      stroke-dashoffset="160"
+                    />
+                  </svg>
+
+                  <div class="flex-grow space-y-2 text-xs">
+                    <div class="flex items-center justify-between">
+                      <span
+                        class="flex items-center gap-1.5 text-slate-500 font-medium"
+                        ><span class="w-2 h-2 rounded bg-[#003527]"></span> H&T
+                        Compliance</span
+                      >
+                      <span class="font-bold text-slate-700" id="donutHt"
+                        >0%</span
+                      >
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span
+                        class="flex items-center gap-1.5 text-slate-500 font-medium"
+                        ><span class="w-2 h-2 rounded bg-[#006c49]"></span>
+                        Canara Bank H&T</span
+                      >
+                      <span class="font-bold text-slate-700" id="donutCanara"
+                        >0%</span
+                      >
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span
+                        class="flex items-center gap-1.5 text-slate-500 font-medium"
+                        ><span class="w-2 h-2 rounded bg-[#34d399]"></span>
+                        Sangola H&T Loan</span
+                      >
+                      <span class="font-bold text-slate-700" id="donutSangola"
+                        >0%</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Weekly Target Achievement Heatmap Grid -->
+            <div class="premium-card p-6">
+              <h4
+                class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center justify-between"
+              >
+                <span>Weekly Operations Heatmap</span>
+                <span
+                  class="text-[9px] text-[#006c49] font-bold uppercase tracking-wide bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100"
+                  >Daily Target Completion</span
+                >
+              </h4>
+              <div class="grid grid-cols-7 gap-3 text-center">
+                <!-- Heatmap blocks populated dynamically in javascript -->
+                <div
+                  class="p-3.5 rounded-xl border flex flex-col justify-between items-center"
+                  id="heatMon"
+                >
+                  <span class="text-[9px] font-bold text-slate-400 uppercase"
+                    >Mon</span
+                  >
+                  <span
+                    class="font-black text-sm text-slate-800 mt-2"
+                    id="heatMonVal"
+                    >0%</span
+                  >
+                </div>
+                <div
+                  class="p-3.5 rounded-xl border flex flex-col justify-between items-center"
+                  id="heatTue"
+                >
+                  <span class="text-[9px] font-bold text-slate-400 uppercase"
+                    >Tue</span
+                  >
+                  <span
+                    class="font-black text-sm text-slate-800 mt-2"
+                    id="heatTueVal"
+                    >0%</span
+                  >
+                </div>
+                <div
+                  class="p-3.5 rounded-xl border flex flex-col justify-between items-center"
+                  id="heatWed"
+                >
+                  <span class="text-[9px] font-bold text-slate-400 uppercase"
+                    >Wed</span
+                  >
+                  <span
+                    class="font-black text-sm text-slate-800 mt-2"
+                    id="heatWedVal"
+                    >0%</span
+                  >
+                </div>
+                <div
+                  class="p-3.5 rounded-xl border flex flex-col justify-between items-center"
+                  id="heatThu"
+                >
+                  <span class="text-[9px] font-bold text-slate-400 uppercase"
+                    >Thu</span
+                  >
+                  <span
+                    class="font-black text-sm text-slate-800 mt-2"
+                    id="heatThuVal"
+                    >0%</span
+                  >
+                </div>
+                <div
+                  class="p-3.5 rounded-xl border flex flex-col justify-between items-center"
+                  id="heatFri"
+                >
+                  <span class="text-[9px] font-bold text-slate-400 uppercase"
+                    >Fri</span
+                  >
+                  <span
+                    class="font-black text-sm text-slate-800 mt-2"
+                    id="heatFriVal"
+                    >0%</span
+                  >
+                </div>
+                <div
+                  class="p-3.5 rounded-xl border flex flex-col justify-between items-center"
+                  id="heatSat"
+                >
+                  <span class="text-[9px] font-bold text-slate-400 uppercase"
+                    >Sat</span
+                  >
+                  <span
+                    class="font-black text-sm text-slate-800 mt-2"
+                    id="heatSatVal"
+                    >0%</span
+                  >
+                </div>
+                <div
+                  class="p-3.5 rounded-xl border flex flex-col justify-between items-center"
+                  id="heatSun"
+                >
+                  <span class="text-[9px] font-bold text-slate-400 uppercase"
+                    >Sun</span
+                  >
+                  <span
+                    class="font-black text-sm text-slate-800 mt-2"
+                    id="heatSunVal"
+                    >0%</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: Task board, Insights, Exports -->
+          <div class="lg:col-span-4 space-y-6">
+            <!-- H. Reports & Export Center -->
+            <div
+              class="premium-card p-6 text-center bg-gradient-to-br from-white to-slate-50"
+            >
+              <h4
+                class="text-xs font-bold text-slate-800 uppercase tracking-widest mb-4 text-left border-b pb-2 flex items-center gap-1.5"
+              >
+                <span class="material-symbols-outlined text-sm text-[#006c49]"
+                  >download</span
+                >
+                Reports & Export Center
+              </h4>
+              <p
+                class="text-[11px] text-slate-500 leading-relaxed mb-4 text-left"
+              >
+                Generate and download standard spreadsheets or printable
+                summaries of your agricultural telemetry records instantly.
+              </p>
+              <div class="grid grid-cols-3 gap-2">
+                <button
+                  class="bg-[#003527] hover:bg-[#002d21] text-emerald-300 py-2.5 px-1.5 rounded-xl font-bold text-[10px] tracking-wide transition-all shadow active:scale-[0.98] uppercase flex flex-col items-center justify-center gap-1 border border-emerald-900/40"
+                  onclick="exportData('PDF')"
+                >
+                  <span class="material-symbols-outlined text-base"
+                    >picture_as_pdf</span
+                  >
+                  PDF
+                </button>
+                <button
+                  class="bg-[#006c49] hover:bg-[#005a3d] text-emerald-100 py-2.5 px-1.5 rounded-xl font-bold text-[10px] tracking-wide transition-all shadow active:scale-[0.98] uppercase flex flex-col items-center justify-center gap-1 border border-emerald-800/40"
+                  onclick="exportData('CSV')"
+                >
+                  <span class="material-symbols-outlined text-base">csv</span>
+                  CSV
+                </button>
+                <button
+                  class="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-1.5 rounded-xl font-bold text-[10px] tracking-wide transition-all shadow active:scale-[0.98] uppercase flex flex-col items-center justify-center gap-1 border border-emerald-500/20"
+                  onclick="exportData('EXCEL')"
+                >
+                  <span class="material-symbols-outlined text-base"
+                    >table_chart</span
+                  >
+                  Excel
+                </button>
+              </div>
+            </div>
+
+            <!-- F. Employee Insights Panel -->
+            <div class="premium-card p-6 overflow-hidden">
+              <h4
+                class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-sm text-[#006c49]"
+                  >lightbulb</span
+                >
+                F. Smart Insights Panel
+              </h4>
+              <div class="space-y-3" id="insightsPanel">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+            <!-- E. Employee Task Tracking board -->
+            <div class="premium-card p-6">
+              <h4
+                class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center justify-between"
+              >
+                <span>E. My Assigned Work Plans</span>
+                <span
+                  class="text-[9px] text-[#006c49] font-black uppercase tracking-wide bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100"
+                  id="taskRatio"
+                  >0 plans</span
+                >
+              </h4>
+              <div class="space-y-3" id="tasksBoard">
+                <!-- Dynamic task items with checkbox triggers -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Work Submission Tracking Log -->
+        <section class="premium-card overflow-hidden">
+          <div
+            class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50"
+          >
+            <div>
+              <h4
+                class="text-xs font-bold text-slate-800 uppercase tracking-widest"
+              >
+                Live Telemetry & Work Submission Status
+              </h4>
+              <p class="text-[10px] text-slate-500 mt-0.5 font-medium">
+                Real-time GPS synchronization and cane logistics approvals log
+              </p>
+            </div>
+            <button
+              class="bg-[#003527] hover:bg-[#002d21] text-emerald-300 font-bold text-[10px] tracking-wide px-3.5 py-1.5 rounded-lg transition-all shadow"
+              onclick="location.href = 'work_submission.html'"
+            >
+              SUBMIT NEW ACTIVITY
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead class="bg-slate-100">
+                <tr>
+                  <th
+                    class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider"
+                  >
+                    GPS Log Code
+                  </th>
+                  <th
+                    class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider"
+                  >
+                    Farmer Registered
+                  </th>
+                  <th
+                    class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider"
+                  >
+                    Activity Type
+                  </th>
+                  <th
+                    class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider"
+                  >
+                    Assigned Sector
+                  </th>
+                  <th
+                    class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center"
+                  >
+                    Timestamp
+                  </th>
+                  <th
+                    class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-right"
+                  >
+                    Approval Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                id="telemetryBody"
+                class="divide-y divide-slate-100 text-xs text-slate-600 font-medium"
+              >
+                <!-- Rows are injected dynamically from this user's own localStorage submissions only.
+                 No other employee's data is ever loaded here. -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // ─── Dashboard: Load all data from the live backend API ───────────────────────
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        const session = AgriAuth.getSession();
+        if (!session) return;
+
+        // ── Fetch all data in parallel ──────────────────────────────────────────────
+        let profile = null,
+          metrics = null,
+          tasks = [],
+          alerts = [],
+          insights = [],
+          submissions = [],
+          activity = [];
+        let kpiSummary = null,
+          taskStatistics = null,
+          recentActivities = null;
+
+        try {
+          [profile, metrics, tasks, alerts, insights, submissions] =
+            // TASK_* migration: load officer tasks + activity history from /api/v1/me/*
+            await Promise.all([
+              AgriAPI.getProfile(),
+              AgriAPI.getMetrics(),
+              AgriAPI.getOfficerTasks(),
+              AgriAPI.getAlerts(),
+              AgriAPI.getInsights(),
+              AgriAPI.getMyActivity(),
+            ]);
+        } catch (err) {
+          console.error("Failed to load dashboard data:", err.message);
+          // Show a connection error banner — no static fallback
+          document.getElementById("greetingName").textContent =
+            `Hello, ${session.name || session.username || "Officer"}`;
+          document.getElementById("headerUserName").textContent =
+            session.name || session.username || "—";
+          document.getElementById("avatarCircle").textContent = (session.name ||
+            "?")[0].toUpperCase();
+          const main = document.querySelector("main");
+          if (main) {
+            const banner = document.createElement("div");
+            banner.className =
+              "bg-red-50 border border-red-200 text-red-700 rounded-xl px-6 py-4 text-sm font-semibold flex items-center gap-3";
+            banner.innerHTML =
+              '<span class="material-symbols-outlined text-lg">wifi_off</span> Could not connect to the server. Please ensure the backend is running and your SSMS database is reachable, then refresh the page.';
+            main.prepend(banner);
+          }
+          return;
+        }
+
+        // ── Calculated score ────────────────────────────────────────────────────────
+        const calculatedScore = metrics ? metrics.calculated_score : 0;
+
+        // ── Header & Greeting ───────────────────────────────────────────────────────
+        document.getElementById("headerGreeting").textContent =
+          "AgriPulse – Field Workspace";
+        document.getElementById("greetingName").textContent =
+          `Hello, ${profile.name}`;
+        document.getElementById("headerUserName").textContent = profile.name;
+        document.getElementById("headerUserRole").textContent = profile.role;
+        document.getElementById("avatarCircle").textContent = profile.initials;
+
+        // ── Employee Profile Card ───────────────────────────────────────────────────
+        document.getElementById("empName").textContent = profile.name;
+        document.getElementById("empRole").textContent = profile.role;
+        document.getElementById("empId").textContent = `ID: ${profile.id}`;
+        document.getElementById("empDept").textContent = profile.department;
+        document.getElementById("empRegion").textContent = profile.region;
+        document.getElementById("empStatus").textContent = profile.status;
+        document.getElementById("empInitials").textContent = profile.initials;
+
+        if (profile.status === "On Leave") {
+          document.getElementById("empStatus").className =
+            "bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase";
+        } else if (profile.status === "Inactive") {
+          document.getElementById("empStatus").className =
+            "bg-red-50 text-red-700 border border-red-200 px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase";
+        }
+
+        const now = new Date();
+        document.getElementById("currentDate").textContent =
+          now.toLocaleDateString("en-IN", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }) + " – Sugarcane season logs active";
+
+        // ── Performance Score Radial ────────────────────────────────────────────────
+        document.getElementById("radialPercent").textContent =
+          `${calculatedScore}%`;
+        const strokeDash = 251.2;
+        const strokeOffset = strokeDash - (strokeDash * calculatedScore) / 100;
+        setTimeout(() => {
+          document
+            .getElementById("radialProgress")
+            .setAttribute("stroke-dashoffset", strokeOffset);
+        }, 100);
+
+        // ── Banner Counts ───────────────────────────────────────────────────────────
+        // Count total farmer rows across all work plans
+        const totalFarmerRows = tasks.reduce(
+          (sum, p) => sum + (p.rows ? p.rows.length : 0),
+          0,
+        );
+        document.getElementById("totalTasksCount").textContent =
+          totalFarmerRows;
+        document.getElementById("totalVillagesText").textContent =
+          profile.villages_count;
+        document.getElementById("totalFarmersText").textContent =
+          profile.farmer_count;
+
+        // ── KPI Cards ───────────────────────────────────────────────────────────────
+        document.getElementById("kpiVillages").textContent =
+          profile.villages_count;
+        document.getElementById("kpiFarmers").textContent =
+          profile.farmer_count;
+
+        const m = metrics;
+        document.getElementById("kpiCrushing").textContent =
+          `${m.crushing_target}%`;
+        document.getElementById("kpiCaneReg").textContent =
+          `${m.cane_reg_target}%`;
+        document.getElementById("kpiRecovery").textContent =
+          `${m.recovery_target}%`;
+        document.getElementById("kpiMeetings").textContent =
+          `${m.farmer_meetings}%`;
+        document.getElementById("kpiKcc").textContent = `${m.kcc_target}%`;
+        document.getElementById("kpiHt").textContent = `${m.ht_agreement}%`;
+        document.getElementById("kpiCanara").textContent =
+          `${m.canara_ht_loan}%`;
+        document.getElementById("kpiSangola").textContent =
+          `${m.sangola_ht_loan}%`;
+
+        const cardStatus = (val) =>
+          val >= 85 ? "Excellent" : val >= 70 ? "On Track" : "Action Required";
+        const cardColor = (val) =>
+          val >= 85
+            ? "text-emerald-600 mt-1 font-semibold"
+            : val >= 70
+              ? "text-amber-500 mt-1 font-semibold"
+              : "text-red-500 mt-1 font-semibold animate-pulse";
+
+        [
+          ["kpiCrushingStatus", m.crushing_target],
+          ["kpiCaneRegStatus", m.cane_reg_target],
+          ["kpiRecoveryStatus", m.recovery_target],
+          ["kpiMeetingsStatus", m.farmer_meetings],
+          ["kpiKccStatus", m.kcc_target],
+        ].forEach(([id, val]) => {
+          const el = document.getElementById(id);
+          el.textContent = cardStatus(val);
+          el.className = cardColor(val);
+        });
+
+        // ── Bar Charts ──────────────────────────────────────────────────────────────
+        setTimeout(() => {
+          document.getElementById("barCrushing").style.height =
+            `${m.crushing_target}%`;
+          document.getElementById("barCrushingVal").textContent =
+            `${m.crushing_target}%`;
+          document.getElementById("barCaneReg").style.height =
+            `${m.cane_reg_target}%`;
+          document.getElementById("barCaneRegVal").textContent =
+            `${m.cane_reg_target}%`;
+          document.getElementById("barRecovery").style.height =
+            `${m.recovery_target}%`;
+          document.getElementById("barRecoveryVal").textContent =
+            `${m.recovery_target}%`;
+        }, 300);
+
+        // ── Donut Chart ─────────────────────────────────────────────────────────────
+        document.getElementById("donutHt").textContent = `${m.ht_agreement}%`;
+        document.getElementById("donutCanara").textContent =
+          `${m.canara_ht_loan}%`;
+        document.getElementById("donutSangola").textContent =
+          `${m.sangola_ht_loan}%`;
+
+        // ── Weekly Heatmap (derived from submission activity or fallback) ────────────
+        // Use the static employee data heatmap as a visual baseline (no live heatmap endpoint)
+        // Build day-of-week visit count from the user's own submissions
+        const dayCounts = [0, 0, 0, 0, 0, 0, 0]; // Mon=0 ... Sun=6
+        (submissions || []).forEach((s) => {
+          if (s.submitted_at) {
+            const d = new Date(s.submitted_at).getDay(); // 0=Sun ... 6=Sat
+            const idx = d === 0 ? 6 : d - 1; // remap to Mon=0 ... Sun=6
+            dayCounts[idx]++;
+          }
+        });
+        const maxCount = Math.max(...dayCounts, 1);
+        const heatPct = dayCounts.map((c) => Math.round((c / maxCount) * 100));
+        const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        const heatColor = (val) => {
+          if (val >= 90)
+            return "bg-emerald-600/90 text-white border-emerald-700 shadow-md shadow-emerald-600/10";
+          if (val >= 80)
+            return "bg-emerald-500/80 text-white border-emerald-600";
+          if (val >= 70)
+            return "bg-emerald-400/20 text-[#006c49] border-emerald-300/40";
+          if (val >= 40) return "bg-amber-100 text-amber-800 border-amber-200";
+          return "bg-red-50 text-red-700 border-red-200";
+        };
+        days.forEach((day, idx) => {
+          const el = document.getElementById(`heat${day}`);
+          const valEl = document.getElementById(`heat${day}Val`);
+          if (el && valEl) {
+            el.className = `p-3.5 rounded-xl border flex flex-col justify-between items-center ${heatColor(heatPct[idx])} transition-all duration-300`;
+            valEl.textContent = dayCounts[idx] > 0 ? `${dayCounts[idx]}` : "—";
+          }
+        });
+
+        // ── Alerts ──────────────────────────────────────────────────────────────────
+        const feed = document.getElementById("alertsFeed");
+        document.getElementById("badgeCount").textContent = alerts.length;
+        alerts.forEach((a) => {
+          const item = document.createElement("div");
+          item.className =
+            "flex gap-2.5 p-2 rounded-lg border hover:bg-slate-50 transition-colors";
+          const icon = document.createElement("span");
+          icon.className = "material-symbols-outlined text-base shrink-0";
+          if (a.type === "warning") {
+            icon.className += " text-amber-500";
+            icon.textContent = "warning";
+          } else if (a.type === "alert") {
+            icon.className += " text-red-500 animate-pulse";
+            icon.textContent = "error";
+          } else {
+            icon.className += " text-emerald-500";
+            icon.textContent = "info";
+          }
+          const timeStr = a.created_at
+            ? new Date(a.created_at).toLocaleString("en-IN", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })
+            : "";
+          const block = document.createElement("div");
+          block.className = "flex-grow";
+          block.innerHTML = `<p class="font-bold text-slate-800">${a.message}</p><span class="text-[9px] text-slate-400 mt-0.5 block">${timeStr}</span>`;
+          item.appendChild(icon);
+          item.appendChild(block);
+          feed.appendChild(item);
+        });
+
+        // ── Insights ────────────────────────────────────────────────────────────────
+        const insPanel = document.getElementById("insightsPanel");
+        insights.forEach((ins) => {
+          const block = document.createElement("div");
+          block.className =
+            "flex items-start gap-2.5 p-3 rounded-xl border border-emerald-100 bg-emerald-50/30 hover:bg-emerald-50/50 transition-colors";
+          block.innerHTML = `
+      <span class="material-symbols-outlined text-emerald-600 text-base mt-0.5 select-none">check_circle</span>
+      <p class="text-[11px] font-medium text-slate-700 leading-relaxed">${ins.content || ins}</p>
+    `;
+          insPanel.appendChild(block);
+        });
+
+        // ── Tasks Board ─────────────────────────────────────────────────────────────
+        renderWorkPlans(tasks);
+
+        // ── Telemetry Table ─────────────────────────────────────────────────────────
+        renderTelemetry(submissions);
+
+        // ── Logout ──────────────────────────────────────────────────────────────────
+        const logoutBtn = document.getElementById("navLogout");
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (confirm("Are you sure you want to sign out?")) {
+              AgriAPI.logout();
+              AgriAuth.clearSession();
+              window.location.replace("login.html");
+            }
+          });
+        }
+      });
+
+      // ─── Render Work Plans board (from Phase 1 FarmerManagement DB) ─────────────
+      function renderWorkPlans(plans) {
+        const board = document.getElementById("tasksBoard");
+        const ratio = document.getElementById("taskRatio");
+        board.innerHTML = "";
+
+        if (!plans || !plans.length) {
+          board.innerHTML = `
+      <div class="text-center py-6 text-slate-400">
+        <span class="material-symbols-outlined text-3xl block mb-2 opacity-30 select-none">assignment</span>
+        <p class="text-xs font-semibold">No work plans assigned yet.</p>
+        <p class="text-[10px] mt-1">Your manager will assign tasks to you.</p>
+      </div>`;
+          if (ratio) ratio.textContent = "0 plans";
+          return;
+        }
+
+        if (ratio)
+          ratio.textContent = `${plans.length} task${plans.length !== 1 ? "s" : ""}`;
+
+        plans.forEach((task) => {
+          const farmerCount = task.farmer_count ?? 0;
+          const completionPct = task.completion_pct ?? 0;
+          const dateRange =
+            task.from_date && task.to_date
+              ? `${task.from_date} → ${task.to_date}`
+              : task.from_date || task.to_date || "—";
+          const taskLabel = `Month ${task.month || "—"} / Week ${task.week || "—"}`;
+
+          // Task card wrapper
+          const card = document.createElement("div");
+          card.className =
+            "border border-slate-200 rounded-xl overflow-hidden bg-white hover:shadow-sm transition-all";
+
+          // Task header (always visible)
+          const header = document.createElement("div");
+          header.className =
+            "flex items-center justify-between px-3 py-2.5 bg-slate-50 border-b border-slate-100 select-none";
+
+          header.innerHTML = `
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="material-symbols-outlined text-[#006c49] text-base">assignment</span>
+        <div class="min-w-0">
+          <p class="text-[11px] font-black text-slate-800 truncate">Task #${task.task_master_id} — ${taskLabel}</p>
+          <p class="text-[9px] text-slate-400 font-medium mt-0.5 truncate">${dateRange}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="bg-emerald-50 text-emerald-700 border border-emerald-100 px-2 py-0.5 rounded-full text-[9px] font-black uppercase">${farmerCount} farmers</span>
+      </div>`;
+
+          // Detail line with required fields
+          const detail = document.createElement("div");
+          detail.className = "px-3 py-2 border-t border-slate-100 bg-white";
+          detail.innerHTML = `
+      <div class="flex items-center justify-between gap-3">
+        <div class="text-xs">
+          <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Status</p>
+          <p class="font-bold text-slate-800">${task.status || "—"}</p>
+        </div>
+        <div class="text-xs text-right">
+          <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Completion</p>
+          <p class="font-bold text-emerald-700">${completionPct}%</p>
+        </div>
+      </div>`;
+
+          card.appendChild(header);
+          card.appendChild(detail);
+          board.appendChild(card);
+        });
+      }
+
+      function renderTelemetry(submissions) {
+        const tbody = document.getElementById("telemetryBody");
+        if (!tbody) return;
+
+        if (!submissions || !submissions.length) {
+          tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="px-6 py-10 text-center">
+          <span class="material-symbols-outlined text-3xl text-slate-200 block mb-2 select-none">inbox</span>
+          <p class="text-xs font-semibold text-slate-400">No activity submissions yet.</p>
+          <p class="text-[10px] text-slate-400 mt-1">Use <a href="work_submission.html" class="text-[#006c49] font-bold hover:underline">Submit Work</a> to log your first field activity.</p>
+        </td>
+      </tr>`;
+          return;
+        }
+
+        const purposeMap = {
+          7: "Daily Visit",
+          2: "Fertilizer Distribution",
+          11: "Canara KCC",
+          12: "Canara HNT",
+          13: "Sangola HNT",
+          14: "Vahan Karar Magani",
+          15: "HNT Agreement",
+          16: "Organic Certification",
+        };
+
+        tbody.innerHTML = submissions
+          .map((log, i) => {
+            const code = `GPS-${String(log.id || Date.now() - i * 1000).slice(-6)}`;
+            const activity = purposeMap[log.purpose_code] || "Field Activity";
+            const sector = log.village
+              ? `${log.village}${log.city ? ", " + log.city : ""}`
+              : "–";
+            const time = log.submitted_at
+              ? new Date(log.submitted_at).toLocaleString("en-IN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                  day: "numeric",
+                  month: "short",
+                })
+              : "Recent";
+            return `
+      <tr class="hover:bg-slate-50/50 transition-colors">
+        <td class="px-6 py-3.5 font-mono font-bold text-slate-800 text-[11px]">${code}</td>
+        <td class="px-6 py-3.5 font-bold text-slate-800 text-sm">${log.farmer_name || "–"}</td>
+        <td class="px-6 py-3.5">${activity}</td>
+        <td class="px-6 py-3.5 uppercase text-slate-500 text-[10px] font-bold">${sector}</td>
+        <td class="px-6 py-3.5 text-center text-slate-500">${time}</td>
+        <td class="px-6 py-3.5 text-right">
+          <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider">Submitted</span>
+        </td>
+      </tr>`;
+          })
+          .join("");
+      }
+
+      // ─── Notification dropdown toggle ─────────────────────────────────────────────
+      function toggleAlertFeed() {
+        document.getElementById("alertsDropdown").classList.toggle("hidden");
+      }
+
+      // ─── Export Reports ────────────────────────────────────────────────────────────
+      function exportData(format) {
+        const session = AgriAuth.getSession();
+
+        // Gather current KPI values from the DOM (already populated from API)
+        const name = document.getElementById("empName").textContent;
+        const empId = document
+          .getElementById("empId")
+          .textContent.replace("ID: ", "");
+        const role = document.getElementById("empRole").textContent;
+        const region = document.getElementById("empRegion").textContent;
+        const score = document.getElementById("radialPercent").textContent;
+
+        const kpis = [
+          [
+            "Cane Crushing Target",
+            document.getElementById("kpiCrushing").textContent,
+            "80% (40% Weightage)",
+          ],
+          [
+            "Cane Registration",
+            document.getElementById("kpiCaneReg").textContent,
+            "80% (Compliance)",
+          ],
+          [
+            "Sugar Recovery",
+            document.getElementById("kpiRecovery").textContent,
+            "85% (20% Weightage)",
+          ],
+          [
+            "Farmer Meetings",
+            document.getElementById("kpiMeetings").textContent,
+            "80% (20% Weightage)",
+          ],
+          [
+            "KCC Loan Targets",
+            document.getElementById("kpiKcc").textContent,
+            "80% (20% Weightage)",
+          ],
+          [
+            "H&T Agreements",
+            document.getElementById("kpiHt").textContent,
+            "75% (Logistics)",
+          ],
+          [
+            "Canara H&T Loan Allocation",
+            document.getElementById("kpiCanara").textContent,
+            "70% (Finance)",
+          ],
+          [
+            "Sangola H&T Loan Allocation",
+            document.getElementById("kpiSangola").textContent,
+            "80% (Finance)",
+          ],
+        ];
+
+        let content = "",
+          mimeType = "text/plain",
+          extension = "txt";
+
+        if (format === "CSV") {
+          mimeType = "text/csv";
+          extension = "csv";
+          content = `AgriPulse Sugarcane Portal – Telemetry Summary Report\n`;
+          content += `Generated Date,${new Date().toLocaleDateString()}\n`;
+          content += `Employee Name,${name}\nEmployee ID,${empId}\nDesignation,${role}\nAssigned Region,${region}\nPerformance Score,${score}\n\n`;
+          content += `KPI Target Param,Achievement Percentage,Baseline Requirement\n`;
+          kpis.forEach(([k, v, b]) => {
+            content += `${k},${v},${b}\n`;
+          });
+        } else if (format === "EXCEL") {
+          mimeType = "application/vnd.ms-excel";
+          extension = "xls";
+          content = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"></head><body>`;
+          content += `<h2>AgriPulse Sugarcane Portal – Telemetry Summary Report</h2><table border="1">`;
+          content += `<tr><td><b>Employee Name</b></td><td>${name}</td></tr>`;
+          content += `<tr><td><b>Employee ID</b></td><td>${empId}</td></tr>`;
+          content += `<tr><td><b>Designation</b></td><td>${role}</td></tr>`;
+          content += `<tr><td><b>Assigned Region</b></td><td>${region}</td></tr>`;
+          content += `<tr><td><b>Performance Score</b></td><td><b>${score}</b></td></tr>`;
+          content += `<tr><td colspan="2"></td></tr>`;
+          content += `<tr style="background:#003527;color:#fff"><td><b>KPI Target Parameter</b></td><td><b>Achievement</b></td></tr>`;
+          kpis.forEach(([k, v]) => {
+            content += `<tr><td>${k}</td><td>${v}</td></tr>`;
+          });
+          content += `</table></body></html>`;
+        } else {
+          // PDF via print window
+          const printWin = window.open("", "_blank");
+          if (!printWin) {
+            alert("Please allow popups in your browser to export as PDF.");
+            return;
+          }
+          const kpiRows = kpis
+            .map(function (item) {
+              return (
+                "<tr><td>" +
+                item[0] +
+                "</td><td>" +
+                item[1] +
+                "</td><td>" +
+                item[2] +
+                "</td></tr>"
+              );
+            })
+            .join("");
+          const pdfHTML = [
+            "<html><head><title>AgriPulse - Telemetry Report</title>",
+            "<style>",
+            "body{font-family:sans-serif;padding:40px;color:#333}",
+            ".header{border-bottom:2px solid #003527;padding-bottom:12px;margin-bottom:30px}",
+            ".title{font-size:24px;font-weight:bold;color:#003527}",
+            "table{width:100%;border-collapse:collapse;margin-top:20px}",
+            "th{background:#003527;color:#fff;padding:8px 12px;text-align:left}",
+            "td{padding:8px 12px;border-bottom:1px solid #e2e8f0}",
+            "</style></head><body>",
+            '<div class="header"><div class="title">AgriPulse &ndash; Telemetry Summary Report</div></div>',
+            "<p><b>Employee:</b> " +
+              name +
+              " &nbsp;|&nbsp; <b>ID:</b> " +
+              empId +
+              " &nbsp;|&nbsp; <b>Role:</b> " +
+              role +
+              "</p>",
+            "<p><b>Region:</b> " +
+              region +
+              " &nbsp;|&nbsp; <b>Performance Score:</b> " +
+              score +
+              "</p>",
+            "<table><tr><th>KPI Parameter</th><th>Achievement</th><th>Baseline</th></tr>",
+            kpiRows,
+            "</table></body></html>",
+          ].join("");
+          printWin.document.write(pdfHTML);
+          printWin.document.close();
+          printWin.print();
+          return;
+        }
+
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `agripulse_report_${new Date().toISOString().slice(0, 10)}.${extension}`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    </script>
+  </body>
+</html>

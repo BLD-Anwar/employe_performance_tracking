@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriPulse — Performance</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Inter',sans-serif;background:#f4f6f8;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}
+  .sidebar{background:linear-gradient(180deg,#0f1f18 0%,#0a150f 100%);width:220px;min-height:100vh;position:fixed;left:0;top:0;z-index:50;display:flex;flex-direction:column;}
+  .nav-link{display:flex;align-items:center;gap:12px;padding:10px 16px;margin:2px 8px;border-radius:8px;color:rgba(209,250,229,0.65);font-size:13px;font-weight:600;text-decoration:none;transition:all 0.15s;}
+  .nav-link:hover{background:rgba(255,255,255,0.07);color:#fff;}
+  .nav-link.active{background:rgba(74,222,128,0.18);color:#86efac;}
+  .nav-link.active .material-symbols-outlined{color:#4ade80;}
+  .nav-link.logout{color:rgba(252,165,165,0.7);}
+  .nav-link.logout:hover{background:rgba(239,68,68,0.1);color:#fca5a5;}
+  .nav-link.settings-link{color:rgba(209,250,229,0.65);}
+  .card{background:#fff;border-radius:14px;border:1px solid #e5e7eb;}
+  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;}
+  .bar-track{height:10px;background:#f3f4f6;border-radius:99px;overflow:hidden;}
+  .bar-fill{height:100%;background:#006c49;border-radius:99px;transition:width 0.8s ease;}
+  .tbl-row:hover{background:#f9fafb;cursor:pointer;}
+  input,select{border:1.5px solid #d1d5db;border-radius:8px;padding:8px 12px;font-size:13px;color:#111827;font-family:inherit;background:#fff;}
+  input:focus,select:focus{outline:none;border-color:#006c49;box-shadow:0 0 0 3px rgba(0,108,73,0.08);}
+  .rank-medal{width:28px;height:28px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;}
+  .spark-bar{display:inline-block;width:4px;border-radius:2px;background:#003527;margin-right:1px;vertical-align:bottom;}
+</style>
+<script src="../assets/js/manager-auth-store.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+  <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
+    <div style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:#4ade80;font-size:20px;">agriculture</span></div>
+    <div><div style="color:#f0fdf4;font-weight:800;font-size:14px;">Sri Sri Sugar</div><div style="color:rgba(209,250,229,0.5);font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL</div></div>
+  </div>
+  <nav style="flex:1;padding:8px 0;">
+    <a class="nav-link" href="manager_dashboard.html"><span class="material-symbols-outlined" style="font-size:20px;">dashboard</span>Overview</a>
+    <a class="nav-link" href="manager_officers.html"><span class="material-symbols-outlined" style="font-size:20px;">group</span>Officers</a>
+    <a class="nav-link" href="manager_tasks.html"><span class="material-symbols-outlined" style="font-size:20px;">checklist</span>Tasks</a>
+    <a class="nav-link active" href="manager_performance.html"><span class="material-symbols-outlined" style="font-size:20px;">bar_chart</span>Performance</a>
+    <a class="nav-link" href="manager_reports.html"><span class="material-symbols-outlined" style="font-size:20px;">assessment</span>Reports</a>
+  </nav>
+  <div style="border-top:1px solid rgba(255,255,255,0.07);padding:8px 0;">
+    <a class="nav-link settings-link" href="manager_settings.html"><span class="material-symbols-outlined" style="font-size:20px;">settings</span>Settings</a>
+    <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined" style="font-size:20px;">logout</span>Logout</a>
+  </div>
+</aside>
+
+<div style="margin-left:220px;min-height:100vh;">
+  <header style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
+    <div>
+      <span style="font-size:18px;font-weight:800;color:#003527;">Performance Analytics</span>
+      <span style="font-size:12px;color:#6b7280;margin-left:10px;">Apr 1 – May 21, 2026 · Real data</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <select id="periodSel" onchange="filterPeriod()" style="font-size:12px;padding:7px 10px;">
+        <option value="all">All Period</option>
+        <option value="may">May 2026</option>
+        <option value="apr">April 2026</option>
+      </select>
+      <button onclick="exportCSV()" style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#003527;cursor:pointer;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px;">download</span>Export CSV</button>
+      <div style="width:36px;height:36px;border-radius:99px;background:#d1fae5;color:#003527;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;" id="avatarCircle">M</div>
+      <span style="font-size:13px;font-weight:600;color:#374151;" id="headerName">—</span>
+    </div>
+  </header>
+
+  <div style="padding:24px;display:flex;flex-direction:column;gap:20px;">
+
+    <!-- KPI cards -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #003527;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">Total Activities</div>
+        <div style="font-size:28px;font-weight:800;color:#003527;">4,696</div>
+        <div style="font-size:11px;color:#059669;margin-top:4px;font-weight:600;">↑ 12% vs last period</div>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #059669;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">Avg / Officer / Day</div>
+        <div style="font-size:28px;font-weight:800;color:#059669;">15.7</div>
+        <div style="font-size:11px;color:#6b7280;margin-top:4px;">Across 10 active officers</div>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #d97706;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">Peak Week</div>
+        <div style="font-size:28px;font-weight:800;color:#d97706;">1,517</div>
+        <div style="font-size:11px;color:#6b7280;margin-top:4px;">Week 17 (Apr 21–27)</div>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #0d9488;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">Villages Covered</div>
+        <div style="font-size:28px;font-weight:800;color:#0d9488;">345</div>
+        <div style="font-size:11px;color:#6b7280;margin-top:4px;">Across 216 cities</div>
+      </div>
+    </div>
+
+    <!-- Top performer callout -->
+    <div style="background:linear-gradient(135deg,#fef9c3,#fef3c7);border:1px solid #fde68a;border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:14px;">
+      <div style="font-size:32px;">🏆</div>
+      <div>
+        <div style="font-size:15px;font-weight:800;color:#92400e;">Top Performer: Rajendra Shrikhande</div>
+        <div style="font-size:13px;color:#92400e;margin-top:2px;">Handled <strong>1,605 activities — 34.2% of all 4,696 recorded</strong>. Highest individual contribution by far. Covers Nevare, Kondarpatta, and Pirachi Kuroli zones.</div>
+      </div>
+      <a href="manager_officers.html" style="margin-left:auto;background:#003527;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;">View Profile →</a>
+    </div>
+
+    <!-- Officer table + worktype breakdown -->
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:20px;">
+      <div class="card" style="overflow:hidden;">
+        <div style="padding:14px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:15px;font-weight:700;color:#111827;">Officer Performance Ranking</div>
+            <div style="font-size:11px;color:#6b7280;margin-top:2px;">Ranked by total activities · Click to view profile</div>
+          </div>
+          <input type="text" placeholder="Search officer..." id="perfSearch" oninput="filterTable()" style="width:180px;font-size:12px;padding:7px 10px;">
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;" id="perfTable">
+            <thead style="background:#f9fafb;">
+              <tr>
+                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Rank</th>
+                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Officer</th>
+                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Activities</th>
+                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Share</th>
+                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Top Work</th>
+                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Last Active</th>
+                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Trend</th>
+              </tr>
+            </thead>
+            <tbody id="perfBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Work type breakdown -->
+      <div class="card" style="padding:20px;">
+        <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:16px;">Work Type Distribution</div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;font-weight:600;color:#111827;">Daily Visit</span><span style="font-size:12px;font-weight:700;color:#003527;">4,403 <span style="color:#9ca3af;font-weight:400;">(93.8%)</span></span></div><div class="bar-track"><div class="bar-fill" style="width:0%" data-w="93.8%"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;font-weight:600;color:#111827;">Organic Cert.</span><span style="font-size:12px;font-weight:700;color:#003527;">155 <span style="color:#9ca3af;font-weight:400;">(3.3%)</span></span></div><div class="bar-track"><div class="bar-fill" style="width:0%;background:#059669;" data-w="3.3%"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;font-weight:600;color:#111827;">Vahan Karar</span><span style="font-size:12px;font-weight:700;color:#003527;">71 <span style="color:#9ca3af;font-weight:400;">(1.5%)</span></span></div><div class="bar-track"><div class="bar-fill" style="width:0%;background:#0d9488;" data-w="1.5%"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;font-weight:600;color:#111827;">Canara KCC</span><span style="font-size:12px;font-weight:700;color:#003527;">21</span></div><div class="bar-track"><div class="bar-fill" style="width:0%;background:#d97706;" data-w="0.45%"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;font-weight:600;color:#111827;">Sangola HNT</span><span style="font-size:12px;font-weight:700;color:#003527;">16</span></div><div class="bar-track"><div class="bar-fill" style="width:0%;background:#d97706;" data-w="0.34%"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;font-weight:600;color:#111827;">HNT Agreement</span><span style="font-size:12px;font-weight:700;color:#003527;">14</span></div><div class="bar-track"><div class="bar-fill" style="width:0%;background:#6b7280;" data-w="0.30%"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;font-weight:600;color:#111827;">Others</span><span style="font-size:12px;font-weight:700;color:#003527;">16</span></div><div class="bar-track"><div class="bar-fill" style="width:0%;background:#6b7280;" data-w="0.34%"></div></div></div>
+        </div>
+        <div style="margin-top:16px;padding:12px;background:#f0fdf4;border-radius:8px;font-size:11px;color:#003527;font-weight:600;">Total: 4,696 activities across 8 work types</div>
+      </div>
+    </div>
+
+    <!-- Village + Weekly side-by-side -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="card" style="padding:20px;">
+        <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:16px;">Top 8 Villages by Activity</div>
+        <div style="display:flex;flex-direction:column;gap:12px;" id="villageList"></div>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:16px;">Weekly Activity Trend</div>
+        <div style="display:flex;align-items:flex-end;gap:6px;height:120px;margin-bottom:8px;">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;"><div style="font-size:9px;color:#9ca3af;font-weight:600;">4</div><div style="width:100%;background:#e5e7eb;border-radius:4px 4px 0 0;height:1px;"></div><div style="font-size:9px;color:#9ca3af;">W14</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;"><div style="font-size:9px;color:#9ca3af;font-weight:600;">229</div><div style="width:100%;background:#006c49;border-radius:4px 4px 0 0;height:15px;"></div><div style="font-size:9px;color:#9ca3af;">W15</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;"><div style="font-size:9px;color:#9ca3af;font-weight:600;">513</div><div style="width:100%;background:#006c49;border-radius:4px 4px 0 0;height:32px;"></div><div style="font-size:9px;color:#9ca3af;">W16</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;"><div style="font-size:9px;color:#4ade80;font-weight:800;">1,517</div><div style="width:100%;background:#003527;border-radius:4px 4px 0 0;height:100px;border:2px solid #4ade80;box-sizing:border-box;"></div><div style="font-size:9px;color:#003527;font-weight:800;">W17▲</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;"><div style="font-size:9px;color:#9ca3af;font-weight:600;">340</div><div style="width:100%;background:#006c49;border-radius:4px 4px 0 0;height:22px;"></div><div style="font-size:9px;color:#9ca3af;">W18</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;"><div style="font-size:9px;color:#9ca3af;font-weight:600;">535</div><div style="width:100%;background:#006c49;border-radius:4px 4px 0 0;height:33px;"></div><div style="font-size:9px;color:#9ca3af;">W19</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;"><div style="font-size:9px;color:#9ca3af;font-weight:600;">962</div><div style="width:100%;background:#006c49;border-radius:4px 4px 0 0;height:60px;"></div><div style="font-size:9px;color:#9ca3af;">W20</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;"><div style="font-size:9px;color:#9ca3af;font-weight:600;">596</div><div style="width:100%;background:#006c49;border-radius:4px 4px 0 0;height:38px;"></div><div style="font-size:9px;color:#9ca3af;">W21</div></div>
+        </div>
+        <div style="background:#f0fdf4;border-radius:8px;padding:10px 14px;font-size:12px;color:#003527;font-weight:600;">Average: 587 activities/week · 8 weeks tracked</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const perfData=[
+  {rank:1,name:"Rajendra Shrikhande",id:"#20",acts:1605,pct:34.2,top:"Daily Visit",last:"21 May 2026",trend:[120,180,320,280,250,310,145],bg:"#f0fdf4",color:"#003527"},
+  {rank:2,name:"Dhanaji Pujari",id:"#75",acts:311,pct:6.6,top:"Daily Visit",last:"20 May 2026",trend:[20,40,60,50,55,45,41],bg:"#fff",color:"#6b7280"},
+  {rank:3,name:"Hemant Markad",id:"#148",acts:282,pct:6.0,top:"Organic Cert.",last:"19 May 2026",trend:[18,35,52,46,48,41,42],bg:"#fff",color:"#6b7280"},
+  {rank:4,name:"Santosh Pawar",id:"#71",acts:232,pct:4.9,top:"Daily Visit",last:"18 May 2026",trend:[15,28,45,38,40,34,32],bg:"#fff",color:"#6b7280"},
+  {rank:5,name:"Sarjerao Kachare",id:"#94",acts:232,pct:4.9,top:"Daily Visit",last:"17 May 2026",trend:[10,30,50,36,40,36,30],bg:"#fff",color:"#6b7280"},
+  {rank:6,name:"Ramchandra Shendge",id:"#129",acts:204,pct:4.3,top:"Daily Visit",last:"16 May 2026",trend:[12,24,38,34,36,30,30],bg:"#fff",color:"#6b7280"},
+  {rank:7,name:"Vijaya Patil",id:"#1073",acts:172,pct:3.7,top:"Daily Visit",last:"15 May 2026",trend:[10,20,32,26,30,26,28],bg:"#fff",color:"#6b7280"},
+  {rank:8,name:"Priya Mane",id:"#6",acts:142,pct:3.0,top:"Daily Visit",last:"14 May 2026",trend:[8,16,28,22,24,22,22],bg:"#fff",color:"#6b7280"},
+  {rank:9,name:"Kavita Shinde",id:"#70",acts:132,pct:2.8,top:"Daily Visit",last:"13 May 2026",trend:[8,14,24,20,22,22,22],bg:"#fff",color:"#6b7280"},
+  {rank:10,name:"Amol Kadam",id:"#614",acts:137,pct:2.9,top:"Daily Visit",last:"1 Jan 2026",trend:[20,25,28,22,16,10,16],bg:"#fff8f8",color:"#6b7280"},
+];
+
+const villages=[{n:"Pirachi Kuroli",c:596},{n:"Unnamed Road",c:336},{n:"Velapur",c:199},{n:"Dighanchi",c:146},{n:"Malashiras",c:109},{n:"Kondarpatta",c:87},{n:"Tulshi",c:76},{n:"Umbare",c:65}];
+
+function sparkline(data){
+  const max=Math.max(...data);
+  return data.map(v=>`<span class="spark-bar" style="height:${Math.round(v/max*18)+2}px;background:${v===max?'#4ade80':'#003527'};opacity:${0.4+v/max*0.6};"></span>`).join("");
+}
+
+function renderTable(q=""){
+  const body=document.getElementById("perfBody");
+  const medals=["🥇","🥈","🥉"];
+  body.innerHTML=perfData.filter(o=>!q||o.name.toLowerCase().includes(q.toLowerCase())).map(o=>`
+    <tr class="tbl-row" style="border-top:1px solid #f3f4f6;background:${o.bg};" onclick="window.location.href='manager_officers.html'">
+      <td style="padding:12px 16px;">
+        <div class="rank-medal" style="background:${o.rank<=3?'#003527':'#e5e7eb'};color:${o.rank<=3?'#fff':'#6b7280'};">
+          ${o.rank<=3?medals[o.rank-1]:o.rank}
+        </div>
+      </td>
+      <td style="padding:12px 16px;">
+        <div style="font-size:13px;font-weight:700;color:#111827;">${o.name}</div>
+        <div style="font-size:11px;color:#9ca3af;">ID ${o.id}</div>
+      </td>
+      <td style="padding:12px 16px;font-size:16px;font-weight:800;color:${o.color};">${o.acts.toLocaleString()}</td>
+      <td style="padding:12px 16px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:12px;font-weight:700;color:#374151;min-width:36px;">${o.pct}%</span>
+          <div class="bar-track" style="width:80px;"><div class="bar-fill" style="width:0%;background:${o.rank===1?'#003527':'#059669'};" data-w="${o.pct*2.9}%"></div></div>
+        </div>
+      </td>
+      <td style="padding:12px 16px;"><span class="badge" style="background:#d1fae5;color:#003527;font-size:10px;">${o.top}</span></td>
+      <td style="padding:12px 16px;font-size:12px;color:#6b7280;">${o.last}</td>
+      <td style="padding:12px 16px;line-height:1;">${sparkline(o.trend)}</td>
+    </tr>
+  `).join("");
+}
+
+function filterTable(){renderTable(document.getElementById("perfSearch").value);}
+function filterPeriod(){renderTable();}
+
+function exportCSV(){
+  const rows=[["Rank","Officer","Activities","Share","Top Work","Last Active"],...perfData.map(o=>[o.rank,o.name,o.acts,o.pct+"%",o.top,o.last])];
+  const csv=rows.map(r=>r.join(",")).join("\n");
+  const a=document.createElement("a");a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(csv);a.download="performance_report.csv";a.click();
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+  const s=AgriAuth.getSession();
+  if(s){const name=(s.name&&s.name!=="None")?s.name:s.username;document.getElementById("avatarCircle").textContent=name.charAt(0).toUpperCase();document.getElementById("headerName").textContent=name;}
+  renderTable();
+  const maxV=villages[0].c;
+  document.getElementById("villageList").innerHTML=villages.map((v,i)=>`
+    <div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span style="font-size:12px;font-weight:600;color:#111827;">${i+1}. ${v.n}</span>
+        <span style="font-size:12px;font-weight:700;color:#003527;">${v.c}</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:0%;background:#059669;" data-w="${Math.round(v.c/maxV*100)}%"></div></div>
+    </div>`).join("");
+  setTimeout(()=>document.querySelectorAll(".bar-fill[data-w]").forEach(b=>b.style.width=b.dataset.w),120);
+  document.getElementById("logoutBtn").addEventListener("click",e=>{e.preventDefault();if(confirm("Sign out?"))AgriAuth.clearSession(),window.location.replace("login.html");});
+});
+</script>
+</body>
+</html>
