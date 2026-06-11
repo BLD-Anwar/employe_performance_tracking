@@ -104,12 +104,6 @@
       }
     </style>
     <script src="../assets/js/auth-store.js"></script>
-    <script src="../assets/js/api.js"></script>
-    <script>
-      if (!AgriAuth.requireAuth("login.html")) {
-        document.documentElement.innerHTML = "";
-      }
-    </script>
   </head>
 
   <body class="min-h-screen flex">
@@ -453,213 +447,194 @@
     </div>
 
     <script>
-      const submittedLogs = [];
+      const API_BASE = "http://127.0.0.1:8002/api/v1";
+      const taskList = [];
+      let selectedRowId = null;
 
-      const purposeNames = {
-        7: "Daily Visit",
-        2: "Fertilizer Distribution",
-        11: "Canara KCC",
-        12: "Canara HNT",
-        13: "Sangola HNT",
-        14: "Vahan Karar Magani Application",
-        15: "HNT Agreement Jodani Complete",
-        16: "Organic Certification",
-      };
+      function getAuthToken() {
+        const session = AgriAuth.getSession();
+        return session && session.token ? session.token : null;
+      }
+
+      function getEmpCode() {
+        const stored = localStorage.getItem("agri_emp_code");
+        if (stored) return stored;
+        const session = AgriAuth.getSession();
+        if (session) return session.userId || session.username || null;
+        return null;
+      }
+
+      async function apiFetch(method, path, body) {
+        const token = getAuthToken();
+        const headers = { "Content-Type": "application/json" };
+        if (token) headers["Authorization"] = "Bearer " + token;
+        const opts = { method: method, headers: headers };
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(API_BASE + path, opts);
+        if (res.status === 401) {
+          AgriAuth.clearSession();
+          window.location.href = "login.html";
+          return null;
+        }
+        if (!res.ok) {
+          const err = await res.json().catch(function () { return { detail: "HTTP " + res.status }; });
+          throw new Error(err.detail || "Request failed: " + res.status);
+        }
+        if (res.status === 204) return null;
+        return res.json();
+      }
 
       function renderLogs() {
         const list = document.getElementById("submissionList");
         document.getElementById("logCount").textContent =
-          `${submittedLogs.length} Submission${submittedLogs.length !== 1 ? "s" : ""}`;
-        if (!submittedLogs.length) {
-          list.innerHTML = `<div class="text-center py-12 text-slate-400"><span class="material-symbols-outlined text-4xl block mb-2 opacity-30 select-none">inbox</span><p class="text-xs font-semibold">No submissions recorded yet.</p></div>`;
+          taskList.length + " Task" + (taskList.length !== 1 ? "s" : "");
+        if (!taskList.length) {
+          list.innerHTML = '<div class="text-center py-12 text-slate-400"><span class="material-symbols-outlined text-4xl block mb-2 opacity-30 select-none">inbox</span><p class="text-xs font-semibold">No tasks assigned yet.</p></div>';
           return;
         }
-        list.innerHTML = submittedLogs
-          .map(
-            (log) => `
-    <div class="p-4 border border-slate-200 hover:border-slate-300 rounded-xl space-y-2 hover:bg-slate-50/50 transition-all text-xs">
-      <div class="flex justify-between items-start">
-        <div>
-          <p class="font-bold text-slate-800">${log.farmer_name || log.farmer || "—"}</p>
-          <p class="text-[10px] text-slate-500 font-medium mt-0.5">${log.village || "—"} • ${purposeNames[log.purpose_code || log.purpose] || "—"}</p>
-        </div>
-        <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider">Submitted</span>
-      </div>
-      ${log.latitude || log.lat ? `<div class="text-[10px] text-slate-500 font-mono bg-slate-100 px-2.5 py-1.5 rounded border border-slate-200">Lat: ${log.latitude || log.lat} / Long: ${log.longitude || log.long}</div>` : ""}
-      ${log.description || log.desc ? `<p class="text-[10px] text-slate-500 italic font-medium">"${log.description || log.desc}"</p>` : ""}
-    </div>
-  `,
-          )
+        list.innerHTML = taskList
+          .map(function (task) {
+            var rowId = task.r_id ?? task.id ?? task.row_id;
+            var workCount = task.r_work_count ?? task.work_count ?? 0;
+            var status = task.r_status ?? task.status ?? 0;
+            var statusLabel = status === 1 ? "Completed" : status === 2 ? "In Progress" : "Pending";
+            var statusClass = status === 1 ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+              : status === 2 ? "bg-amber-50 text-amber-700 border-amber-200"
+              : "bg-slate-100 text-slate-600 border-slate-200";
+            var taskName = task.task_name || task.name || "—";
+            var farmerName = task.farmer_name || task.farmer || "—";
+            var village = task.village || task.location || "—";
+            var desc = task.description || task.notes || "";
+            return '<div class="p-4 border border-slate-200 hover:border-slate-300 rounded-xl space-y-2 hover:bg-slate-50/50 transition-all text-xs" data-row-id="' + rowId + '" data-work-count="' + workCount + '" data-status="' + status + '" onclick="selectTask(this)">' +
+              '<div class="flex justify-between items-start">' +
+              '<div>' +
+              '<p class="font-bold text-slate-800">' + farmerName + '</p>' +
+              '<p class="text-[10px] text-slate-500 font-medium mt-0.5">' + village + ' &bull; ' + taskName + '</p>' +
+              '</div>' +
+              '<span class="' + statusClass + ' border px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider">' + statusLabel + '</span>' +
+              '</div>' +
+              '<div class="flex items-center justify-between">' +
+              '<span class="text-[10px] text-slate-500 font-mono bg-slate-100 px-2.5 py-1 rounded border border-slate-200">Progress: ' + workCount + '</span>' +
+              (desc ? '<p class="text-[10px] text-slate-500 italic font-medium">&quot;' + desc + '&quot;</p>' : '') +
+              '</div>' +
+              '</div>';
+          })
           .join("");
+      }
+
+      function selectTask(el) {
+        var items = document.querySelectorAll("#submissionList > div[data-row-id]");
+        items.forEach(function (item) { item.classList.remove("ring-2", "ring-emerald-400"); });
+        el.classList.add("ring-2", "ring-emerald-400");
+        selectedRowId = el.getAttribute("data-row-id");
       }
 
       function syncGPS() {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
-            (pos) => {
-              document.getElementById("gpsLat").value =
-                pos.coords.latitude.toFixed(6);
-              document.getElementById("gpsLong").value =
-                pos.coords.longitude.toFixed(6);
+            function (pos) {
+              document.getElementById("gpsLat").value = pos.coords.latitude.toFixed(6);
+              document.getElementById("gpsLong").value = pos.coords.longitude.toFixed(6);
             },
-            () => {
-              document.getElementById("gpsLat").value = (
-                17.8 +
-                Math.random() * 0.15
-              ).toFixed(6);
-              document.getElementById("gpsLong").value = (
-                75.1 +
-                Math.random() * 0.15
-              ).toFixed(6);
-            },
+            function () {
+              document.getElementById("gpsLat").value = (17.8 + Math.random() * 0.15).toFixed(6);
+              document.getElementById("gpsLong").value = (75.1 + Math.random() * 0.15).toFixed(6);
+            }
           );
         } else {
-          document.getElementById("gpsLat").value = (
-            17.8 +
-            Math.random() * 0.15
-          ).toFixed(6);
-          document.getElementById("gpsLong").value = (
-            75.1 +
-            Math.random() * 0.15
-          ).toFixed(6);
+          document.getElementById("gpsLat").value = (17.8 + Math.random() * 0.15).toFixed(6);
+          document.getElementById("gpsLong").value = (75.1 + Math.random() * 0.15).toFixed(6);
+        }
+      }
+
+      async function loadTasks() {
+        var empCode = getEmpCode();
+        if (!empCode) {
+          console.warn("No emp_code available — cannot load tasks.");
+          return;
+        }
+        try {
+          var data = await apiFetch("GET", "/employee/tasks/" + encodeURIComponent(empCode));
+          taskList.length = 0;
+          if (Array.isArray(data)) {
+            taskList.push.apply(taskList, data);
+          }
+          renderLogs();
+        } catch (err) {
+          console.error("Failed to load tasks:", err.message);
         }
       }
 
       async function handleFormSubmit() {
-        const farmer = document.getElementById("farmerName").value.trim();
-        const mobile = document.getElementById("mobileNo").value.trim();
-        const purpose = document.getElementById("purposeWork").value;
-        const village = document.getElementById("villageName").value.trim();
-        const city = document.getElementById("cityName").value.trim();
-        const lat = document.getElementById("gpsLat").value;
-        const long = document.getElementById("gpsLong").value;
-        const desc = document.getElementById("workDesc").value.trim();
+        var farmer = document.getElementById("farmerName").value.trim();
+        var mobile = document.getElementById("mobileNo").value.trim();
+        var purpose = document.getElementById("purposeWork").value;
+        var village = document.getElementById("villageName").value.trim();
+        var city = document.getElementById("cityName").value.trim();
+        var lat = document.getElementById("gpsLat").value;
+        var long = document.getElementById("gpsLong").value;
+        var desc = document.getElementById("workDesc").value.trim();
 
-        // TASK_* integration context: mapping id is expected to be provided
-        // by the dashboard/task selection workflow (least disruptive approach).
-        // It can be supplied via query param or localStorage.
-        const mappingId =
-          new URLSearchParams(window.location.search).get(
-            "task_farmer_mapping_id",
-          ) || window.localStorage.getItem("task_farmer_mapping_id");
+        if (!farmer) { alert("Please enter the farmer's name."); return; }
+        if (!mobile) { alert("Please enter the mobile number."); return; }
+        if (!lat || !long) { alert("Please sync GPS coordinates before submitting."); return; }
 
-        if (!farmer) {
-          alert("Please enter the farmer's name.");
-          return;
-        }
-        if (!mobile) {
-          alert("Please enter the mobile number.");
-          return;
-        }
-        if (!lat || !long) {
-          alert("Please sync GPS coordinates before submitting.");
+        if (!selectedRowId) {
+          alert("Please select a task from the list before submitting.");
           return;
         }
 
-        if (!mappingId) {
-          alert(
-            "Missing task_farmer_mapping_id context. Open this page via a task selection workflow.",
-          );
-          return;
-        }
-
-        const submitBtn = document.querySelector(
-          'button[onclick="handleFormSubmit()"]',
-        );
-        const origText = submitBtn.innerHTML;
+        var submitBtn = document.querySelector('button[onclick="handleFormSubmit()"]');
+        var origText = submitBtn.innerHTML;
         submitBtn.disabled = true;
-        submitBtn.innerHTML =
-          '<span class="material-symbols-outlined animate-spin text-sm">sync</span><span>Submitting…</span>';
+        submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span><span>Submitting…</span>';
 
         try {
-          const evidencePayload = {
-            evidence_description: desc,
-            evidence_latitude: parseFloat(lat),
-            evidence_longitude: parseFloat(long),
-            actual_work_count: null,
-          };
+          var matchedTask = taskList.find(function (t) {
+            var rid = t.r_id ?? t.id ?? t.row_id;
+            return String(rid) === String(selectedRowId);
+          });
+          var workCount = matchedTask ? (matchedTask.r_work_count ?? matchedTask.work_count ?? 0) : 0;
+          var status = matchedTask ? (matchedTask.r_status ?? matchedTask.status ?? 0) : 0;
 
-          // NEW TASK_* evidence submission
-          await AgriAPI.submitTaskFarmerEvidence(mappingId, evidencePayload);
-
-          // NEW TASK_* completion workflow (evidence -> complete)
-          await AgriAPI.completeTaskFarmer(mappingId, {
-            completion_note: desc,
-            actual_work_count: null,
+          await apiFetch("POST", "/employee/update-progress", {
+            row_id: selectedRowId,
+            progress: Number(workCount),
+            status: Number(status)
           });
 
-          // For UI compatibility, keep existing local list shape by reusing legacy read.
-          // TODO(Phase 10.5): switch history panel to GET /me/activity.
-          const saved = await AgriAPI.getMyActivity();
-          submittedLogs.unshift(...(saved?.activities || []));
-          renderLogs();
-
-          // Clear form
-          [
-            "farmerName",
-            "mobileNo",
-            "villageName",
-            "cityName",
-            "gpsLat",
-            "gpsLong",
-            "workDesc",
-          ].forEach((id) => {
+          ["farmerName", "mobileNo", "villageName", "cityName", "gpsLat", "gpsLong", "workDesc"].forEach(function (id) {
             document.getElementById(id).value = "";
           });
           document.getElementById("purposeWork").selectedIndex = 0;
+          selectedRowId = null;
 
-          alert("Activity log submitted successfully.");
+          alert("Progress updated successfully.");
+          await loadTasks();
         } catch (err) {
           console.error(err);
-          alert(
-            "Submission failed: " +
-              (err.message || "Unknown error. Please try again."),
-          );
+          alert("Submission failed: " + (err.message || "Unknown error. Please try again."));
         } finally {
           submitBtn.disabled = false;
           submitBtn.innerHTML = origText;
         }
       }
 
-      document.addEventListener("DOMContentLoaded", async () => {
-        const session = AgriAuth.getSession();
+      document.addEventListener("DOMContentLoaded", async function () {
+        var session = AgriAuth.getSession();
         if (!session) return;
 
-        // ── Fetch profile from the live API for the header ──
-        try {
-          const profile = await AgriAPI.getProfile();
-          document.getElementById("headerUserName").textContent = profile.name;
-          document.getElementById("headerUserRole").textContent = profile.role;
-          document.getElementById("avatarCircle").textContent =
-            profile.initials;
-        } catch (err) {
-          // Fallback to session data if API is unreachable
-          document.getElementById("headerUserName").textContent =
-            session.name || session.username || "—";
-          document.getElementById("headerUserRole").textContent =
-            "Field Officer";
-          document.getElementById("avatarCircle").textContent = (session.name ||
-            "?")[0].toUpperCase();
-        }
+        document.getElementById("headerUserName").textContent = session.name || session.username || "—";
+        document.getElementById("headerUserRole").textContent = "Field Officer";
+        document.getElementById("avatarCircle").textContent = (session.name || "?")[0].toUpperCase();
 
-        // Load existing submissions from the backend
-        try {
-          const existing = await AgriAPI.getSubmissions(0, 50);
-          if (existing && existing.length) {
-            submittedLogs.push(...existing);
-          }
-        } catch (err) {
-          console.warn("Could not load submission history:", err.message);
-        }
-        renderLogs();
+        await loadTasks();
 
-        // Log out button
-        const logoutBtn = document.getElementById("navLogout");
+        var logoutBtn = document.getElementById("navLogout");
         if (logoutBtn) {
-          logoutBtn.addEventListener("click", (e) => {
+          logoutBtn.addEventListener("click", function (e) {
             e.preventDefault();
             if (confirm("Are you sure you want to sign out?")) {
-              AgriAPI.logout();
               AgriAuth.clearSession();
               window.location.replace("login.html");
             }
