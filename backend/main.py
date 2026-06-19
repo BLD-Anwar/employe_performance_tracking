@@ -1,34 +1,54 @@
 import traceback
+import sys
+import os
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, RedirectResponse
 
-from backend.database import (
+# Ensure backend directory is in sys.path so nested relative-like imports work
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from database import (
     build_phase1_connection_string,
     fetch_test_1,
     odbc_drivers,
     masked_connection_diagnostics,
 )
 
-from backend.routers.meta import router as meta_router
-
-
+# Import all routers
+from routers.meta        import router as meta_router
+from routers.auth        import router as auth_router
+from routers.dashboard   import router as dashboard_router
+from routers.officers    import router as officers_router
+from routers.tasks       import router as tasks_router
+from routers.performance import router as performance_router
+from routers.reports     import router as reports_router
+from routers.settings    import router as settings_router
+from routers.employee    import router as employee_router
+from routers.meeting     import router as meeting_router
 
 def _startup_log_db_config():
     try:
         diag = masked_connection_diagnostics()
-        # Passwords are already masked in connection_string; don't print that unless you want full string.
         print("[db-startup] server:", diag.get("server"))
         print("[db-startup] database:", diag.get("database"))
         print("[db-startup] trusted:", diag.get("trusted"))
         print("[db-startup] driver:", diag.get("driver"))
     except Exception as e:
-        # Fail loudly with clear env errors
         print("[db-startup-error]", str(e))
 
 
+app = FastAPI(title="AgriPulse Unified API", version="3.0.0")
 
-
-app = FastAPI(title="AgriPulse V2")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.on_event("startup")
@@ -36,10 +56,10 @@ def on_startup():
     _startup_log_db_config()
 
 
-
 @app.get("/health")
+@app.get("/api/health")
 def health():
-    return {"status": "ok"}
+    return {"status": "ok", "app": "AgriPulse Unified API", "version": "3.0.0"}
 
 
 @app.get("/test-db")
@@ -48,24 +68,18 @@ def test_db():
         fetch_test_1()
         return {"status": "connected"}
     except Exception as e:
-        # Provide structured details for root-cause analysis
         details = {
             "error_type": type(e).__name__,
             "error_message": str(e),
             "full_exception": traceback.format_exc(),
         }
-
-        # If this is a pyodbc.Error, it may contain multiple arguments with SQLSTATE/native error
         try:
-            import pyodbc  # local import to avoid hard dependency in module import
-
+            import pyodbc
             if isinstance(e, pyodbc.Error):
                 details["pyodbc_args"] = [str(arg) for arg in getattr(e, "args", ())]
         except Exception:
             pass
-
         return details
-
 
 
 @app.get("/debug/db")
@@ -95,20 +109,59 @@ def debug_odbc():
 @app.get("/debug/env")
 def debug_env():
     return {
-        "PHASE1_DB_SERVER": None if "PHASE1_DB_SERVER" not in __import__("os").environ else __import__("os").environ.get("PHASE1_DB_SERVER"),
-        "PHASE1_DB_NAME": None if "PHASE1_DB_NAME" not in __import__("os").environ else __import__("os").environ.get("PHASE1_DB_NAME"),
-        "PHASE1_DB_TRUSTED": None if "PHASE1_DB_TRUSTED" not in __import__("os").environ else __import__("os").environ.get("PHASE1_DB_TRUSTED"),
+        "PHASE1_DB_SERVER": os.getenv("PHASE1_DB_SERVER"),
+        "PHASE1_DB_NAME": os.getenv("PHASE1_DB_NAME"),
+        "PHASE1_DB_TRUSTED": os.getenv("PHASE1_DB_TRUSTED"),
     }
 
 
+# Include all routers
 app.include_router(meta_router)
-
-# Manager + Employee Sprint 2 routers (no auth/jwt changes)
-from backend.routers.employee import router as employee_router
-from backend.routers.tasks import router as tasks_router
-
-app.include_router(employee_router)
+app.include_router(auth_router)
+app.include_router(dashboard_router)
+app.include_router(officers_router)
 app.include_router(tasks_router)
+app.include_router(performance_router)
+app.include_router(reports_router)
+app.include_router(settings_router)
+app.include_router(employee_router)
+app.include_router(meeting_router)
+
+
+# ── Serve frontend static files ─────────────────────────────────────────────
+FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend")
+
+if os.path.exists(FRONTEND_DIR):
+    # Mount shared assets (JS, CSS)
+    assets_dir = os.path.join(FRONTEND_DIR, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+    # Mount uploads directory for meeting photos etc.
+    uploads_dir = os.path.join(FRONTEND_DIR, "uploads")
+    os.makedirs(uploads_dir, exist_ok=True)
+    app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
+
+    # Mount manager pages
+    manager_dir = os.path.join(FRONTEND_DIR, "manager")
+    if os.path.exists(manager_dir):
+        app.mount("/manager", StaticFiles(directory=manager_dir, html=True), name="manager")
+
+    # Mount employee pages
+    employee_dir = os.path.join(FRONTEND_DIR, "employee")
+    if os.path.exists(employee_dir):
+        app.mount("/employee", StaticFiles(directory=employee_dir, html=True), name="employee")
+
+    # Root → Unified login page
+    @app.get("/")
+    def root():
+        return RedirectResponse(url="/login.html")
+
+    @app.get("/login")
+    @app.get("/login.html")
+    def serve_login():
+        return FileResponse(os.path.join(FRONTEND_DIR, "login.html"))
+
 
 
 

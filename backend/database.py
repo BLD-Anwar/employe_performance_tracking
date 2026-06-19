@@ -157,4 +157,28 @@ def odbc_drivers() -> List[str]:
         return []
 
 
+from contextlib import contextmanager
+
+@contextmanager
+def db_cursor():
+    parts = build_phase1_connection_string()
+    conn = pyodbc.connect(parts["conn_str"], autocommit=False)
+    cur = conn.cursor()
+    try:
+        yield cur
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
+        conn.close()
+
+
+def rows_to_list(cursor, rows) -> list:
+    cols = [col[0] for col in cursor.description]
+    return [dict(zip(cols, row)) for row in rows]
+
+
+
 

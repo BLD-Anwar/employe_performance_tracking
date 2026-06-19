@@ -5,36 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AgriPulse — Reports Center</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <script id="tailwind-config">
       tailwind.config = {
         darkMode: "class",
         theme: {
           extend: {
             colors: {
-              primary: "#003527", // Deep Emerald
+              primary: "#003527",
               "primary-light": "#004d39",
-              secondary: "#006c49", // Forest Green
-              "secondary-light": "#00855a",
-              background: "#f4f6f8", // Cool light slate
+              secondary: "#006c49",
+              background: "#f4f6f8",
               surface: "#ffffff",
-              "surface-muted": "#f8fafc",
               "border-color": "#e2e8f0",
-              "text-main": "#0f172a", // Deep dark gray
-              "text-muted": "#64748b", // Slate gray
-              "accent-success": "#10b981", // Mint green
-              "accent-warning": "#f59e0b", // Warm amber
-              "accent-error": "#ef4444", // Soft red
-            },
-            borderRadius: {
-              DEFAULT: "0.25rem",
-              lg: "0.5rem",
-              xl: "0.75rem",
-              "2xl": "1rem",
-              full: "9999px",
+              "text-main": "#0f172a",
+              "text-muted": "#64748b",
             },
             fontFamily: { sans: ["Inter", "sans-serif"] },
           },
@@ -42,605 +27,475 @@
       };
     </script>
     <style>
-      body {
-        font-family: "Inter", sans-serif;
-        background-color: #f4f6f8;
-        color: #0f172a;
-      }
-      .material-symbols-outlined {
-        font-variation-settings:
-          "FILL" 0,
-          "wght" 400,
-          "GRAD" 0,
-          "opsz" 24;
-      }
-
-      /* Sidebar design with sleek gradient */
-      .agri-sidebar {
-        background: linear-gradient(180deg, #002b1f 0%, #001f16 100%);
-        box-shadow:
-          inset -1px 0 0 rgba(255, 255, 255, 0.03),
-          4px 0 24px rgba(0, 0, 0, 0.15);
-      }
-      .nav-link {
-        color: rgba(255, 255, 255, 0.7);
-        transition: all 0.2s ease;
-      }
-      .nav-link:hover {
-        background: rgba(255, 255, 255, 0.06);
-        color: #ffffff;
-        transform: translateX(2px);
-      }
-      .nav-link.active {
-        background: linear-gradient(
-          90deg,
-          rgba(16, 185, 129, 0.15),
-          rgba(16, 185, 129, 0.02)
-        );
-        color: #34d399;
-        border-left: 3px solid #10b981;
-        box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.04);
-      }
-      .nav-link.active .material-symbols-outlined {
-        color: #10b981;
-      }
-
-      /* Premium Cards */
-      .premium-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        box-shadow:
-          0 4px 6px -1px rgb(0 0 0 / 0.05),
-          0 2px 4px -2px rgb(0 0 0 / 0.05);
-        border-radius: 1rem;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      }
+      body { font-family: "Inter", sans-serif; background-color: #f4f6f8; color: #0f172a; }
+      .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; }
+      .agri-sidebar { background: linear-gradient(180deg, #002b1f 0%, #001f16 100%); box-shadow: inset -1px 0 0 rgba(255,255,255,0.03), 4px 0 24px rgba(0,0,0,0.15); }
+      .nav-link { display:flex; align-items:center; gap:12px; padding:10px 16px; margin:2px 8px; border-radius:8px; color:rgba(209,250,229,0.65); font-size:13px; font-weight:600; text-decoration:none; transition:all 0.15s; }
+      .nav-link:hover { background:rgba(255,255,255,0.07); color:#fff; }
+      .nav-link.active { background:rgba(74,222,128,0.18); color:#86efac; }
+      .nav-link.active .material-symbols-outlined { color:#4ade80; }
+      .premium-card { background:#fff; border:1px solid #e2e8f0; box-shadow:0 4px 6px -1px rgb(0 0 0/0.05); border-radius:1rem; transition:all 0.25s; }
+      .premium-card:hover { transform:translateY(-2px); box-shadow:0 10px 15px -3px rgb(0 0 0/0.08); }
+      .grade-badge { display:inline-flex; align-items:center; justify-content:center; width:56px; height:56px; border-radius:16px; font-size:22px; font-weight:900; letter-spacing:-0.5px; }
+      .kpi-bar { height:8px; border-radius:99px; transition:width 0.8s cubic-bezier(0.4,0,0.2,1); }
+      .trend-up { color:#10b981; }
+      .trend-down { color:#ef4444; }
+      @keyframes slideIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+      .report-card { animation: slideIn 0.3s ease forwards; }
     </style>
-
-    <script src="../assets/js/auth-store.js"></script>
-    <script src="../assets/js/api.js"></script>
+    <script src="/assets/js/auth-store.js"></script>
+    <script src="/assets/js/api.js"></script>
     <script>
-      if (!AgriAuth.requireAuth("login.html")) {
-        document.documentElement.innerHTML = "";
-      }
+      if (!AgriAuth.requireOfficer()) { document.documentElement.innerHTML = ""; }
     </script>
   </head>
 
   <body class="min-h-screen flex">
-    <!-- Side Navigation -->
-    <aside
-      class="agri-sidebar w-[240px] flex flex-col py-6 shrink-0 fixed h-screen z-50 text-white"
-    >
+    <!-- Sidebar -->
+    <aside class="agri-sidebar w-[220px] flex flex-col py-6 shrink-0 fixed h-screen z-50 text-white">
       <div class="px-6 mb-8 flex items-center gap-3">
-        <div
-          class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center rounded-xl shadow-lg shrink-0"
-        >
-          <span class="material-symbols-outlined text-2xl text-emerald-400"
-            >agriculture</span
-          >
+        <div class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center rounded-xl shadow-lg shrink-0">
+          <span class="material-symbols-outlined text-2xl text-emerald-400">agriculture</span>
         </div>
         <div>
-          <h1
-            class="text-sm font-black tracking-wider leading-none uppercase text-white"
-          >
-            Sri Sri Sugar
-          </h1>
-          <p
-            class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-1"
-          >
-            Operations Portal
-          </p>
+          <h1 class="text-sm font-black tracking-wider leading-none uppercase text-white">Sri Sri Sugar</h1>
+          <p class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-1">Operations Portal</p>
         </div>
       </div>
       <nav class="flex-grow space-y-1">
-        <a
-          class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
-          href="dashboard.html"
-        >
-          <span class="material-symbols-outlined text-lg">dashboard</span>
-          <span>My Dashboard</span>
-        </a>
-        <a
-          class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
-          href="employees.html"
-        >
-          <span class="material-symbols-outlined text-lg">person</span>
-          <span>My Profile</span>
-        </a>
-        <a
-          class="nav-link active flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
-          href="reports.html"
-        >
-          <span class="material-symbols-outlined text-lg">assessment</span>
-          <span>My Reports</span>
-        </a>
-        <a
-          class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
-          href="work_submission.html"
-        >
-          <span class="material-symbols-outlined text-lg">task</span>
-          <span>Submit Work</span>
-        </a>
-        <a
-          class="nav-link flex items-center gap-3 px-5 py-3 text-xs uppercase font-bold tracking-wider"
-          href="insights.html"
-        >
-          <span class="material-symbols-outlined text-lg">analytics</span>
-          <span>Analytics</span>
-        </a>
+        <a class="nav-link" href="dashboard.html"><span class="material-symbols-outlined text-lg">dashboard</span><span>My Dashboard</span></a>
+        <a class="nav-link" href="employees.html"><span class="material-symbols-outlined text-lg">person</span><span>My Profile</span></a>
+        <a class="nav-link active" href="reports.html"><span class="material-symbols-outlined text-lg">assessment</span><span>My Reports</span></a>
+        <a class="nav-link" href="work_submission.html"><span class="material-symbols-outlined text-lg">task</span><span>Submit Work</span></a>
+        <a class="nav-link" href="insights.html"><span class="material-symbols-outlined text-lg">analytics</span><span>Analytics</span></a>
       </nav>
       <div class="mt-auto border-t border-white/5 pt-6 space-y-1">
-        <a
-          class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider"
-          href="support.html"
-        >
-          <span class="material-symbols-outlined text-lg">help</span>
-          <span>Support</span>
-        </a>
-        <a
-          class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider"
-          href="settings.html"
-        >
-          <span class="material-symbols-outlined text-lg">settings</span>
-          <span>Settings</span>
-        </a>
-        <a
-          id="navLogout"
-          class="nav-link flex items-center gap-3 px-5 py-2.5 text-xs uppercase font-bold tracking-wider text-red-400 hover:bg-red-500/10 cursor-pointer"
-        >
-          <span class="material-symbols-outlined text-lg">logout</span>
-          <span>Sign Out</span>
-        </a>
+        <a class="nav-link" href="support.html"><span class="material-symbols-outlined text-lg">help</span><span>Support</span></a>
+        <a class="nav-link" href="settings.html"><span class="material-symbols-outlined text-lg">settings</span><span>Settings</span></a>
+        <a id="navLogout" class="nav-link text-red-400 hover:bg-red-500/10 cursor-pointer"><span class="material-symbols-outlined text-lg">logout</span><span>Sign Out</span></a>
       </div>
     </aside>
 
-    <!-- Main Container -->
-    <div class="ml-[240px] flex-grow flex flex-col min-h-screen">
-      <!-- Top App Bar -->
-      <header
-        class="sticky top-0 w-full h-16 px-8 bg-white border-b border-slate-200 flex justify-between items-center z-40 shadow-sm"
-      >
-        <h1 class="text-base font-bold text-slate-800">Reports Center</h1>
-        <div class="flex items-center gap-3 pl-2">
+    <!-- Main -->
+    <div class="ml-[220px] flex-grow flex flex-col min-h-screen">
+      <header class="sticky top-0 w-full h-[60px] px-6 bg-white border-b border-slate-200 flex justify-between items-center z-40 shadow-sm">
+        <h1 class="text-base font-bold text-slate-800">Performance Reports</h1>
+        <div class="flex items-center gap-3">
           <div class="text-right">
-            <p
-              class="text-xs font-black text-slate-800 leading-none"
-              id="headerUserName"
-            >
-              Loading Officer
-            </p>
-            <p
-              class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider mt-1"
-              id="headerUserRole"
-            >
-              Field Officer
-            </p>
+            <p class="text-xs font-black text-slate-800 leading-none" id="headerUserName">Loading</p>
+            <p class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider mt-1" id="headerUserRole">Officer</p>
           </div>
-          <div
-            class="w-9 h-9 rounded-xl bg-[#003527] text-emerald-300 font-bold text-xs flex items-center justify-center shadow"
-            id="avatarCircle"
-          >
-            A
-          </div>
+          <div class="w-9 h-9 rounded-xl bg-[#003527] text-emerald-300 font-bold text-xs flex items-center justify-center shadow" id="avatarCircle">A</div>
         </div>
       </header>
 
-      <!-- Reports Viewport -->
       <main class="flex-grow p-8 space-y-6">
-        <!-- Header -->
-        <section
-          class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4"
-        >
-          <div>
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight">
-              Cane Telemetry Reports
-            </h2>
-            <p class="text-xs text-slate-500 mt-1">
-              Compile, request, and download official reports and spreadsheets
-              for sugarcane season operations.
-            </p>
+        <!-- Summary Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="summaryStats">
+          <div class="premium-card p-5 border-l-4 border-l-emerald-600">
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Reports</p>
+            <h3 class="text-2xl font-black text-emerald-700 mt-1" id="statTotal">0</h3>
+            <p class="text-[10px] text-slate-500 mt-1">Auto-generated</p>
           </div>
-          <button
-            type="button"
-            class="flex items-center gap-1.5 bg-[#006c49] hover:bg-[#005a3d] text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md transition-all active:scale-[0.98]"
-            onclick="toggleCompileModal(true)"
-          >
-            <span class="material-symbols-outlined text-base">add_box</span>
-            REQUEST CUSTOM REPORT
-          </button>
-        </section>
-
-        <!-- Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="premium-card p-5">
-            <p
-              class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1"
-            >
-              My Total Tasks Logged
-            </p>
-            <h3 class="text-2xl font-black text-[#003527]" id="statTotalAct">
-              0 Tasks
-            </h3>
-            <p
-              class="text-xs text-emerald-600 mt-1 flex items-center gap-1 font-bold"
-            >
-              <span class="material-symbols-outlined text-sm">done_all</span>
-              <span id="statActRange">Active Season Telemetry</span>
-            </p>
+          <div class="premium-card p-5 border-l-4 border-l-indigo-600">
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Best Grade</p>
+            <h3 class="text-2xl font-black text-indigo-700 mt-1" id="statBestGrade">—</h3>
+            <p class="text-[10px] text-slate-500 mt-1">Highest achieved</p>
           </div>
-          <div class="premium-card p-5">
-            <p
-              class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1"
-            >
-              Highest Target Achievement
-            </p>
-            <h3 class="text-2xl font-black text-[#006c49]" id="statTopTarget">
-              0%
-            </h3>
-            <p class="text-xs text-slate-500 mt-1" id="statTopTargetName">
-              Target Parameter
-            </p>
+          <div class="premium-card p-5 border-l-4 border-l-teal-600">
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Current Rank</p>
+            <h3 class="text-2xl font-black text-teal-700 mt-1" id="statRank">—</h3>
+            <p class="text-[10px] text-slate-500 mt-1">Among all officers</p>
+          </div>
+          <div class="premium-card p-5 border-l-4 border-l-amber-600">
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Avg Score Trend</p>
+            <h3 class="text-2xl font-black mt-1" id="statTrend">—</h3>
+            <p class="text-[10px] text-slate-500 mt-1">vs. previous period</p>
           </div>
         </div>
 
-        <!-- Report Archive Table -->
-        <div class="premium-card overflow-hidden">
-          <div
-            class="px-6 py-4 border-b flex flex-wrap justify-between items-center bg-slate-50 gap-4"
-          >
-            <div>
-              <h4
-                class="text-xs font-bold text-slate-800 uppercase tracking-wider"
-              >
-                My Generated Report Archives
-              </h4>
-              <p class="text-[10px] text-slate-500 mt-0.5 font-medium">
-                Click download icon to save compiled spreadsheet or document
-              </p>
-            </div>
-            <div class="flex gap-2 text-xs">
-              <input
-                type="text"
-                id="reportSearch"
-                placeholder="Search archive..."
-                class="bg-white border border-slate-200 rounded-lg text-xs py-1.5 px-3 focus:ring-1 focus:ring-emerald-600 outline-none text-slate-700 placeholder-slate-400"
-                oninput="filterReports()"
-              />
-              <select
-                id="formatFilter"
-                onchange="filterReports()"
-                class="bg-white border border-slate-200 rounded-lg text-xs font-bold focus:ring-1 focus:ring-emerald-600 py-1.5 px-3 outline-none cursor-pointer text-slate-700"
-              >
-                <option value="">All Formats</option>
-                <option value="PDF">PDF Document</option>
-                <option value="CSV">CSV Spreadsheet</option>
-              </select>
-            </div>
+        <!-- Report Cards -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm text-[#006c49]">description</span>
+              My Performance Reports
+            </h4>
+            <button onclick="exportPDF()" class="flex items-center gap-1.5 bg-[#003527] hover:bg-[#002d21] text-emerald-300 font-bold text-[10px] px-4 py-2 rounded-lg shadow transition-all active:scale-[0.98] uppercase tracking-wider">
+              <span class="material-symbols-outlined text-sm">picture_as_pdf</span>
+              Export PDF
+            </button>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead class="bg-slate-100">
-                <tr>
-                  <th
-                    class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider"
-                  >
-                    Report Title
-                  </th>
-                  <th
-                    class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider"
-                  >
-                    Compiled On
-                  </th>
-                  <th
-                    class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider"
-                  >
-                    Format
-                  </th>
-                  <th
-                    class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-right"
-                  >
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody
-                id="reportsBody"
-                class="divide-y divide-slate-100 text-xs text-slate-600 font-medium"
-              ></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Request Modal -->
-        <div
-          id="compileModal"
-          class="hidden fixed inset-0 bg-slate-900/40 flex items-center justify-center z-50 p-4"
-        >
-          <div
-            class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full overflow-hidden"
-          >
-            <div
-              class="px-6 py-4 bg-slate-50 border-b flex justify-between items-center"
-            >
-              <h4
-                class="text-xs font-bold text-[#003527] uppercase tracking-wider"
-              >
-                Request Custom Operational Report
-              </h4>
-              <button
-                type="button"
-                onclick="toggleCompileModal(false)"
-                class="text-slate-400 hover:text-slate-600"
-              >
-                <span class="material-symbols-outlined">close</span>
-              </button>
-            </div>
-            <div class="p-6 space-y-4">
-              <div class="space-y-1 text-xs">
-                <label
-                  class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                  >Report Category</label
-                >
-                <select
-                  id="newReportType"
-                  class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 focus:ring-1 focus:ring-emerald-600 outline-none text-slate-700"
-                >
-                  <option value="Daily Operations Summary">
-                    Daily Operations Summary
-                  </option>
-                  <option value="Sugar Recovery Telemetry Log">
-                    Sugar Recovery Telemetry Log
-                  </option>
-                  <option value="Farmer Engagement Register">
-                    Farmer Engagement Register
-                  </option>
-                  <option value="KCC Application Audit">
-                    KCC Application Audit
-                  </option>
-                </select>
-              </div>
-              <div class="grid grid-cols-2 gap-4 text-xs">
-                <div class="space-y-1">
-                  <label
-                    class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                    >Start Date</label
-                  >
-                  <input
-                    type="date"
-                    id="newReportStart"
-                    class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 focus:ring-1 focus:ring-emerald-600 outline-none text-slate-700"
-                  />
-                </div>
-                <div class="space-y-1">
-                  <label
-                    class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                    >End Date</label
-                  >
-                  <input
-                    type="date"
-                    id="newReportEnd"
-                    class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 focus:ring-1 focus:ring-emerald-600 outline-none text-slate-700"
-                  />
-                </div>
-              </div>
-              <div class="space-y-1 text-xs">
-                <label
-                  class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                  >Export Format</label
-                >
-                <div class="flex gap-4 pt-1">
-                  <label
-                    class="flex items-center gap-2 cursor-pointer text-slate-600"
-                    ><input
-                      type="radio"
-                      name="newReportFormat"
-                      value="PDF"
-                      checked
-                      class="text-emerald-600 focus:ring-emerald-500"
-                    />
-                    PDF Document</label
-                  >
-                  <label
-                    class="flex items-center gap-2 cursor-pointer text-slate-600"
-                    ><input
-                      type="radio"
-                      name="newReportFormat"
-                      value="CSV"
-                      class="text-emerald-600 focus:ring-emerald-500"
-                    />
-                    CSV Spreadsheet</label
-                  >
-                </div>
-              </div>
-              <button
-                type="button"
-                onclick="handleCompile()"
-                class="w-full bg-[#003527] hover:bg-[#002d21] text-emerald-300 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 active:scale-[0.98]"
-              >
-                <span class="material-symbols-outlined text-sm">sync</span>
-                COMPILE PERSONAL REPORT
-              </button>
-            </div>
-          </div>
+          <div id="reportsContainer" class="space-y-4"></div>
         </div>
       </main>
     </div>
 
     <script>
-      let _profile = null;
-      let _metrics = null;
-      let _tasks = [];
-      const initialReports = [];
+      let _reports = [];
 
-      function renderReports(data) {
-        const body = document.getElementById("reportsBody");
-        if (!data || !data.length) {
-          body.innerHTML =
-            '<tr><td colspan="4" class="px-6 py-8 text-center text-sm text-slate-400">No reports match your search criteria.</td></tr>';
+      const GRADE_STYLES = {
+        "A+": { bg: "bg-emerald-100", text: "text-emerald-800", border: "border-emerald-300", label: "Outstanding" },
+        "A":  { bg: "bg-green-100", text: "text-green-800", border: "border-green-300", label: "Excellent" },
+        "B":  { bg: "bg-teal-100", text: "text-teal-800", border: "border-teal-300", label: "Good" },
+        "C":  { bg: "bg-amber-100", text: "text-amber-800", border: "border-amber-300", label: "Average" },
+        "D":  { bg: "bg-orange-100", text: "text-orange-800", border: "border-orange-300", label: "Below Avg" },
+        "F":  { bg: "bg-red-100", text: "text-red-800", border: "border-red-300", label: "Needs Work" },
+      };
+
+      function gradeStyle(grade) {
+        return GRADE_STYLES[grade] || GRADE_STYLES["F"];
+      }
+
+      function trendHTML(trend) {
+        if (trend === null || trend === undefined) return '<span class="text-slate-400 text-xs font-semibold">First report</span>';
+        const arrow = trend >= 0 ? "trending_up" : "trending_down";
+        const cls = trend >= 0 ? "trend-up" : "trend-down";
+        const sign = trend >= 0 ? "+" : "";
+        return `<span class="flex items-center gap-1 ${cls} font-black text-sm"><span class="material-symbols-outlined text-base">${arrow}</span>${sign}${trend.toFixed(1)}%</span>`;
+      }
+
+      function kpiBar(label, value, color) {
+        const pct = Math.min(Math.max(value, 0), 100);
+        return `
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-bold text-slate-500 uppercase w-20 shrink-0 tracking-wider">${label}</span>
+            <div class="flex-grow bg-slate-100 rounded-full h-2 overflow-hidden">
+              <div class="kpi-bar ${color}" style="width:${pct}%"></div>
+            </div>
+            <span class="text-[11px] font-black text-slate-700 w-10 text-right">${pct.toFixed(0)}%</span>
+          </div>`;
+      }
+
+      function renderReports(reports) {
+        const container = document.getElementById("reportsContainer");
+
+        if (!reports || !reports.length) {
+          container.innerHTML = `
+            <div class="premium-card p-12 text-center">
+              <span class="material-symbols-outlined text-5xl text-slate-200 block mb-3">assessment</span>
+              <p class="text-sm font-bold text-slate-600">No reports generated yet</p>
+              <p class="text-xs text-slate-400 mt-1">Reports are automatically generated when your tasks expire or complete. Submit your work and check back!</p>
+            </div>`;
           return;
         }
 
-        body.innerHTML = data
-          .map((r) => {
-            const fmt = r.format || "N/A";
-            const dateStr = r.generated_at
-              ? new Date(r.generated_at).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "short",
-                  day: "2-digit",
-                })
-              : "—";
+        container.innerHTML = reports.map((r, idx) => {
+          const gs = gradeStyle(r.performance_grade);
+          const schedBadge = r.schedule_type === "DAILY" ? "bg-amber-50 text-amber-700 border-amber-200"
+            : r.schedule_type === "MONTHLY" ? "bg-purple-50 text-purple-700 border-purple-200"
+            : "bg-emerald-50 text-emerald-700 border-emerald-200";
+          const missedCount = (r.missed_farmers || []).length;
 
-            const pillClass =
-              fmt === "PDF"
-                ? "bg-red-50 text-red-700 border border-red-100"
-                : "bg-emerald-50 text-emerald-700 border border-emerald-100";
+          return `
+          <div class="report-card premium-card overflow-hidden" style="animation-delay:${idx * 0.05}s">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+              <div class="flex items-center gap-4">
+                <div class="grade-badge ${gs.bg} ${gs.text} border-2 ${gs.border}">${r.performance_grade}</div>
+                <div>
+                  <h3 class="text-sm font-black text-slate-800">${r.task_name || r.report_type}</h3>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border ${schedBadge}">${r.schedule_type}</span>
+                    <span class="text-[10px] text-slate-400 font-medium">Task #${r.task_id} · ${r.generated_date}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-4">
+                <div class="text-right">
+                  <div class="text-lg font-black text-slate-800">${r.calculated_score.toFixed(0)}%</div>
+                  <div class="text-[9px] font-bold text-slate-400 uppercase">${gs.label}</div>
+                </div>
+                ${trendHTML(r.score_trend)}
+              </div>
+            </div>
 
-            return `
-              <tr class="hover:bg-slate-50/50 transition-colors">
-                <td class="px-6 py-4 font-bold text-slate-800 text-sm">${r.title}</td>
-                <td class="px-6 py-4 tabular-nums">${dateStr}</td>
-                <td class="px-6 py-4">
-                  <span class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${pillClass}">${fmt}</span>
-                </td>
-                <td class="px-6 py-4 text-right">
-                  <button type="button" class="p-1.5 border border-slate-200 hover:bg-slate-100 rounded text-emerald-700 transition-all" onclick="downloadReport('${r.report_master_id}')" title="Download">
-                    <span class="material-symbols-outlined text-sm">download</span>
-                  </button>
-                </td>
-              </tr>
-            `;
-          })
-          .join("");
+            <!-- Body -->
+            <div class="px-6 py-4 grid grid-cols-1 md:grid-cols-12 gap-6">
+              <!-- KPI Bars -->
+              <div class="md:col-span-7 space-y-2.5">
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2">KPI Breakdown</p>
+                ${kpiBar("KCC", r.kcc_pct, "bg-indigo-500")}
+                ${kpiBar("Canara HNT", r.canara_pct, "bg-purple-500")}
+                ${kpiBar("Sangola HNT", r.sangola_pct, "bg-amber-500")}
+                ${kpiBar("Cane Reg", r.cane_reg_pct, "bg-teal-500")}
+                ${kpiBar("Recovery", r.recovery_pct, "bg-green-500")}
+                ${kpiBar("Vehicle", r.vehicle_pct, "bg-cyan-500")}
+                ${kpiBar("Meetings", r.meetings_coverage_pct, "bg-emerald-500")}
+              </div>
+
+              <!-- Stats Column -->
+              <div class="md:col-span-5 space-y-3">
+                <!-- Rank Badge -->
+                <div class="bg-gradient-to-r from-[#003527] to-[#005a41] text-white rounded-xl p-4 text-center">
+                  <p class="text-[9px] font-bold text-emerald-300 uppercase tracking-widest">Officer Ranking</p>
+                  <p class="text-2xl font-black mt-1">#${r.officer_rank} <span class="text-sm font-medium text-emerald-200">of ${r.total_officers}</span></p>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="bg-slate-50 border rounded-lg p-2.5 text-center">
+                    <span class="text-sm font-black text-slate-800">${r.farmer_count}</span>
+                    <span class="text-[8px] font-bold text-slate-400 uppercase block mt-0.5">Farmers</span>
+                  </div>
+                  <div class="bg-slate-50 border rounded-lg p-2.5 text-center">
+                    <span class="text-sm font-black text-slate-800">${r.village_count}</span>
+                    <span class="text-[8px] font-bold text-slate-400 uppercase block mt-0.5">Villages</span>
+                  </div>
+                </div>
+
+                <!-- Missed Farmers Alert -->
+                ${missedCount > 0 ? `
+                <div class="bg-red-50 border border-red-200 rounded-xl p-3">
+                  <div class="flex items-center gap-2 mb-2 cursor-pointer" onclick="this.parentElement.querySelector('.missed-list').classList.toggle('hidden')">
+                    <span class="material-symbols-outlined text-red-500 text-base">warning</span>
+                    <span class="text-[10px] font-black text-red-700 uppercase tracking-wider">${missedCount} Missed Farmers</span>
+                    <span class="material-symbols-outlined text-red-400 text-sm ml-auto">expand_more</span>
+                  </div>
+                  <div class="missed-list hidden space-y-1 max-h-28 overflow-y-auto">
+                    ${(r.missed_farmers || []).map(f => `
+                      <div class="flex items-center gap-2 text-[10px] text-red-800 bg-red-100/50 rounded px-2 py-1">
+                        <span class="material-symbols-outlined text-xs">person_off</span>
+                        <span class="font-semibold">${f.name}</span>
+                        <span class="text-red-500 ml-auto">${f.village || '—'}</span>
+                      </div>
+                    `).join("")}
+                  </div>
+                </div>` : `
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center gap-2">
+                  <span class="material-symbols-outlined text-emerald-600 text-base">check_circle</span>
+                  <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">All Farmers Visited</span>
+                </div>`}
+
+                <!-- Download -->
+                <button onclick="AgriAPI.downloadReportCSV(${r.report_id})" class="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 border rounded-xl py-2.5 text-xs font-bold text-slate-700 transition-all">
+                  <span class="material-symbols-outlined text-sm">download</span>
+                  Download CSV
+                </button>
+              </div>
+            </div>
+
+            <!-- Farmer Meetings Section -->
+            <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/30">
+              <button onclick="toggleFarmerDetails(${r.task_id}, this)" class="flex items-center gap-1 text-[#006c49] font-bold text-xs hover:underline uppercase tracking-wider">
+                <span class="material-symbols-outlined text-base">expand_more</span>
+                <span>View Farmer Details</span>
+              </button>
+              <div class="farmer-details-container hidden mt-4 overflow-x-auto border border-slate-200 rounded-xl bg-white max-h-[300px]">
+                <table class="min-w-full text-xs text-left font-sans">
+                  <thead class="bg-slate-50 text-slate-500 uppercase tracking-wider sticky top-0 border-b border-slate-200">
+                    <tr>
+                      <th class="p-3">Farmer</th>
+                      <th class="p-3">Village</th>
+                      <th class="p-3">KCC</th>
+                      <th class="p-3">Canara HNT</th>
+                      <th class="p-3">Sangola HNT</th>
+                      <th class="p-3">Cane Reg.</th>
+                      <th class="p-3">Recovery</th>
+                      <th class="p-3">Vehicle Agree.</th>
+                      <th class="p-3">Expected Tons</th>
+                      <th class="p-3">Development</th>
+                      <th class="p-3">Feedback / Remark</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100 text-slate-700 font-medium farmer-rows">
+                    <tr>
+                      <td colspan="11" class="p-6 text-center text-slate-400">Loading details...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>`;
+        }).join("");
       }
 
-      function filterReports() {
-        const q = document.getElementById("reportSearch").value.toLowerCase();
-        const fmt = document.getElementById("formatFilter").value;
-        renderReports(
-          initialReports.filter(
-            (r) =>
-              (!q || r.title.toLowerCase().includes(q)) &&
-              (!fmt || r.format === fmt),
-          ),
-        );
-      }
+      async function toggleFarmerDetails(taskId, btn) {
+        const container = btn.nextElementSibling;
+        const icon = btn.querySelector('.material-symbols-outlined');
+        const textSpan = btn.querySelector('span:not(.material-symbols-outlined)');
+        
+        if (container.classList.contains('hidden')) {
+          container.classList.remove('hidden');
+          icon.textContent = 'expand_less';
+          textSpan.textContent = 'Hide Farmer Details';
+          
+          const tbody = container.querySelector('.farmer-rows');
+          if (tbody.dataset.loaded === 'true') return;
+          
+          try {
+            const data = await AgriAPI.getFarmerMeetings(taskId);
+            if (!data || !data.length) {
+              tbody.innerHTML = `<tr><td colspan="11" class="p-6 text-center text-slate-400">No farmer mapping or meeting details found for this task.</td></tr>`;
+              tbody.dataset.loaded = 'true';
+              return;
+            }
+            
+            tbody.innerHTML = data.map(f => {
+              const formatYesNo = (val, reason) => {
+                if (val === true) return '<span class="text-emerald-600 font-bold">✅ Yes</span>';
+                if (val === false) {
+                  return `<span class="text-rose-600 font-bold">❌ No</span>${reason ? `<div class="text-[9px] text-slate-400 mt-0.5">${reason}</div>` : ''}`;
+                }
+                return '<span class="text-slate-400">—</span>';
+              };
 
-      function toggleCompileModal(show) {
-        document
-          .getElementById("compileModal")
-          .classList.toggle("hidden", !show);
-        if (show) {
-          const today = new Date().toISOString().split("T")[0];
-          document.getElementById("newReportStart").value = today;
-          document.getElementById("newReportEnd").value = today;
+              const formatVehicle = (val, reason, working, workReason) => {
+                if (val === true) {
+                  let badge = '<span class="text-emerald-600 font-bold">✅ Yes</span>';
+                  if (working === true) badge += ' <span class="text-[10px] text-emerald-500 font-semibold">(Working)</span>';
+                  else if (working === false) badge += ` <span class="text-[10px] text-rose-500 font-semibold">(Not Working: ${workReason || '—'})</span>`;
+                  return badge;
+                }
+                if (val === false) {
+                  return `<span class="text-rose-600 font-bold">❌ No</span>${reason ? `<div class="text-[9px] text-slate-400 mt-0.5">${reason}</div>` : ''}`;
+                }
+                return '<span class="text-slate-400">—</span>';
+              };
+              
+              return `
+                <tr class="hover:bg-slate-50">
+                  <td class="p-3 border-b border-slate-100 font-bold">
+                    ${f.farmer_name}
+                    <div class="text-[10px] text-slate-400 font-medium">Code: ${f.farmer_code}</div>
+                  </td>
+                  <td class="p-3 border-b border-slate-100">${f.village || '—'}</td>
+                  <td class="p-3 border-b border-slate-100">${formatYesNo(f.kcc, f.kcc_reason)}</td>
+                  <td class="p-3 border-b border-slate-100">${formatYesNo(f.canara_hnt, f.canara_reason)}</td>
+                  <td class="p-3 border-b border-slate-100">${formatYesNo(f.sangola_hnt, f.sangola_reason)}</td>
+                  <td class="p-3 border-b border-slate-100">${formatYesNo(f.cane_registration, f.cane_registration_remark)}</td>
+                  <td class="p-3 border-b border-slate-100">${formatYesNo(f.recovery, f.recovery_reason)}</td>
+                  <td class="p-3 border-b border-slate-100">${formatVehicle(f.vehicle_agreement, f.vehicle_reason, f.is_working_vehicle, f.vehicle_working_reason)}</td>
+                  <td class="p-3 border-b border-slate-100 font-bold text-slate-800">${f.expected_tonnage ? f.expected_tonnage.toLocaleString() + ' kg' : '0'}</td>
+                  <td class="p-3 border-b border-slate-100">${f.cane_development || '—'}</td>
+                  <td class="p-3 border-b border-slate-100">
+                    ${f.feedback ? `<div class="text-slate-600 font-medium"><strong class="text-slate-400 uppercase text-[9px]">Feedback:</strong> ${f.feedback}</div>` : ''}
+                    ${f.remark ? `<div class="text-slate-600 font-medium"><strong class="text-slate-400 uppercase text-[9px]">Remark:</strong> ${f.remark}</div>` : ''}
+                    ${(!f.feedback && !f.remark) ? '<span class="text-slate-400">—</span>' : ''}
+                  </td>
+                </tr>
+              `;
+            }).join("");
+            tbody.dataset.loaded = 'true';
+          } catch (err) {
+            tbody.innerHTML = `<tr><td colspan="11" class="p-6 text-center text-rose-500 font-semibold">Error loading farmer details. Please try again.</td></tr>`;
+          }
+        } else {
+          container.classList.add('hidden');
+          icon.textContent = 'expand_more';
+          textSpan.textContent = 'View Farmer Details';
         }
       }
 
-      async function handleCompile() {
-        const type = document.getElementById("newReportType").value;
-        const fmt = document.querySelector(
-          'input[name="newReportFormat"]:checked',
-        ).value;
-        const periodFrom =
-          document.getElementById("newReportStart").value || null;
-        const periodTo = document.getElementById("newReportEnd").value || null;
+      function exportPDF() {
+        if (!_reports.length) { alert("No reports to export."); return; }
+        const r = _reports[0]; // Latest report
+        const gs = gradeStyle(r.performance_grade);
+        const session = AgriAuth.getSession();
+        const trendStr = r.score_trend !== null ? (r.score_trend >= 0 ? `+${r.score_trend.toFixed(1)}%` : `${r.score_trend.toFixed(1)}%`) : "N/A";
 
-        const payload = {
-          report_code: type,
-          period_from: periodFrom,
-          period_to: periodTo,
-          parameters: { requested_format: fmt },
-          related_task_master_id: null,
-        };
+        const html = `<html><head><title>AgriPulse Report</title>
+        <style>
+          body{font-family:'Segoe UI',sans-serif;padding:40px;color:#333;max-width:800px;margin:auto}
+          .header{border-bottom:3px solid #003527;padding-bottom:16px;margin-bottom:30px;display:flex;justify-content:space-between;align-items:center}
+          .logo{font-size:22px;font-weight:900;color:#003527;letter-spacing:1px}
+          .subtitle{font-size:11px;color:#006c49;font-weight:700;text-transform:uppercase;letter-spacing:2px}
+          .grade-box{width:70px;height:70px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;background:#d1fae5;color:#003527;border:3px solid #a7f3d0}
+          table{width:100%;border-collapse:collapse;margin:16px 0}
+          th{background:#003527;color:#fff;padding:10px 14px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:0.05em}
+          td{padding:10px 14px;border-bottom:1px solid #e5e7eb;font-size:13px}
+          .section{margin:24px 0 8px;font-size:14px;font-weight:800;color:#003527;text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid #d1fae5;padding-bottom:6px}
+          .stat{display:inline-block;margin-right:30px}
+          .stat-label{font-size:10px;color:#6b7280;text-transform:uppercase;font-weight:700}
+          .stat-val{font-size:18px;font-weight:800;color:#003527}
+        </style></head><body>
+        <div class="header">
+          <div><div class="logo">Sri Sri Sugar — AgriPulse</div><div class="subtitle">Performance Report · ${r.generated_date}</div></div>
+          <div class="grade-box">${r.performance_grade}</div>
+        </div>
+        <div style="margin-bottom:20px">
+          <div class="stat"><div class="stat-label">Officer</div><div class="stat-val">${session.name || session.username}</div></div>
+          <div class="stat"><div class="stat-label">Score</div><div class="stat-val">${r.calculated_score.toFixed(0)}%</div></div>
+          <div class="stat"><div class="stat-label">Rank</div><div class="stat-val">#${r.officer_rank} of ${r.total_officers}</div></div>
+          <div class="stat"><div class="stat-label">Trend</div><div class="stat-val">${trendStr}</div></div>
+        </div>
+        <div class="section">KPI Performance</div>
+        <table><tr><th>KPI Parameter</th><th>Achievement</th></tr>
+        <tr><td>KCC Compliance</td><td><b>${r.kcc_pct.toFixed(0)}%</b></td></tr>
+        <tr><td>Canara HNT</td><td><b>${r.canara_pct.toFixed(0)}%</b></td></tr>
+        <tr><td>Sangola HNT</td><td><b>${r.sangola_pct.toFixed(0)}%</b></td></tr>
+        <tr><td>Cane Registration</td><td><b>${r.cane_reg_pct.toFixed(0)}%</b></td></tr>
+        <tr><td>Recovery</td><td><b>${r.recovery_pct.toFixed(0)}%</b></td></tr>
+        <tr><td>Vehicle Agreement</td><td><b>${r.vehicle_pct.toFixed(0)}%</b></td></tr>
+        <tr><td>Farmer Meeting Coverage</td><td><b>${r.meetings_coverage_pct.toFixed(0)}%</b></td></tr></table>
+        <div class="section">Task Summary</div>
+        <p><b>Task:</b> ${r.task_name} · <b>Type:</b> ${r.schedule_type} · <b>Farmers:</b> ${r.farmer_count} · <b>Villages:</b> ${r.village_count}</p>
+        ${(r.missed_farmers || []).length > 0 ? `
+        <div class="section">Missed Farmers (${r.missed_farmers.length})</div>
+        <table><tr><th>Farmer Name</th><th>Village</th></tr>
+        ${r.missed_farmers.map(f => `<tr><td>${f.name}</td><td>${f.village || '—'}</td></tr>`).join("")}</table>` : ""}
+        <div style="margin-top:30px;padding-top:12px;border-top:2px solid #e5e7eb;font-size:10px;color:#9ca3af;text-align:center">
+          Generated by AgriPulse · Sri Sri Sugar Operations Portal · ${new Date().toLocaleDateString("en-IN")}
+        </div>
+        </body></html>`;
 
-        await AgriAPI.generateReport(payload);
-        toggleCompileModal(false);
-        alert("Report generated successfully.");
-      }
-
-      async function downloadReport(report_master_id) {
-        const data = await AgriAPI.downloadReport(report_master_id);
-        const title = data?.title || "report";
-
-        const blob = new Blob([JSON.stringify(data, null, 2)], {
-          type: "application/json",
-        });
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${title.replace(/\s+/g, "_")}_${report_master_id}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        const win = window.open("", "_blank");
+        if (!win) { alert("Please allow popups to export PDF."); return; }
+        win.document.write(html);
+        win.document.close();
+        win.print();
       }
 
       document.addEventListener("DOMContentLoaded", async () => {
         const session = AgriAuth.getSession();
         if (!session) return;
 
+        document.getElementById("navLogout").addEventListener("click", (e) => {
+          e.preventDefault();
+          if (confirm("Sign out?")) { AgriAPI.logout(); AgriAuth.clearSession(); window.location.replace("/login.html"); }
+        });
+
+        // Load profile for header
         try {
-          [_profile, _metrics, _tasks] = await Promise.all([
-            AgriAPI.getProfile(),
-            AgriAPI.getMetrics(),
-            AgriAPI.getTasks(),
-          ]);
+          const profile = await AgriAPI.getMyProfile();
+          document.getElementById("headerUserName").textContent = profile.name;
+          document.getElementById("headerUserRole").textContent = profile.role;
+          document.getElementById("avatarCircle").textContent = profile.initials || profile.name[0].toUpperCase();
+        } catch {}
+
+        // Load reports
+        try {
+          _reports = await AgriAPI.getMyReports();
         } catch (err) {
-          console.error("Failed to load reports data:", err.message);
-          document.getElementById("headerUserName").textContent =
-            session.name || session.username || "—";
-          document.getElementById("avatarCircle").textContent = (session.name ||
-            "?")[0].toUpperCase();
-          renderReports([]);
-          return;
+          console.error("Failed to load reports:", err);
+          _reports = [];
         }
 
-        document.getElementById("headerUserName").textContent = _profile.name;
-        document.getElementById("headerUserRole").textContent = _profile.role;
-        document.getElementById("avatarCircle").textContent = _profile.initials;
+        // Summary stats
+        document.getElementById("statTotal").textContent = _reports.length;
+        if (_reports.length > 0) {
+          const gradeOrder = ["A+", "A", "B", "C", "D", "F"];
+          const bestGrade = _reports.reduce((best, r) => {
+            const idx = gradeOrder.indexOf(r.performance_grade);
+            return idx >= 0 && idx < gradeOrder.indexOf(best) ? r.performance_grade : best;
+          }, "F");
+          document.getElementById("statBestGrade").textContent = bestGrade;
 
-        document.getElementById("statTotalAct").textContent =
-          `${_tasks.length} Active Tasks`;
+          const latestRank = _reports[0].officer_rank;
+          const totalOfficers = _reports[0].total_officers;
+          document.getElementById("statRank").textContent = `#${latestRank} / ${totalOfficers}`;
 
-        const metricsArr = [
-          { name: "Sugarcane Crushing Target", val: _metrics.crushing_target },
-          { name: "Cane Registration", val: _metrics.cane_reg_target },
-          { name: "Sugar Recovery Rates", val: _metrics.recovery_target },
-          { name: "Farmer Meetings", val: _metrics.farmer_meetings },
-          { name: "KCC Loan Target", val: _metrics.kcc_target },
-        ];
-        metricsArr.sort((x, y) => y.val - x.val);
-        document.getElementById("statTopTarget").textContent =
-          `${metricsArr[0].val}%`;
-        document.getElementById("statTopTargetName").textContent =
-          `Highest: ${metricsArr[0].name}`;
-
-        // Load generated reports from backend.
-        try {
-          const reports = await AgriAPI.getReports({ skip: 0, limit: 50 });
-          // Backend may return { reports, total, skip, limit } or a raw list.
-          const list = Array.isArray(reports)
-            ? reports
-            : reports?.reports || [];
-          renderReports(list);
-        } catch (e) {
-          console.error("Failed to load reports list:", e);
-          renderReports([]);
+          const trends = _reports.filter(r => r.score_trend !== null).map(r => r.score_trend);
+          if (trends.length > 0) {
+            const avg = trends.reduce((a, b) => a + b, 0) / trends.length;
+            const el = document.getElementById("statTrend");
+            el.textContent = (avg >= 0 ? "+" : "") + avg.toFixed(1) + "%";
+            el.className = "text-2xl font-black mt-1 " + (avg >= 0 ? "trend-up" : "trend-down");
+          }
         }
 
-        const logoutBtn = document.getElementById("navLogout");
-        if (logoutBtn) {
-          logoutBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            if (confirm("Are you sure you want to sign out?")) {
-              AgriAPI.logout();
-              AgriAuth.clearSession();
-              window.location.replace("login.html");
-            }
-          });
-        }
+        renderReports(_reports);
       });
     </script>
   </body>

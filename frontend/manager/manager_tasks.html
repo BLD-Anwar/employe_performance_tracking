@@ -616,28 +616,28 @@
           });
         }
 
-        // MVP: Nonexistent endpoints removed.
-        // - Officers: placeholder UI only
-        // - Taluka/Village/Farmers: hidden in MVP, user can manually enter emp_code.
-        document.getElementById("districtSel").disabled = true;
-        document.getElementById("villageSel").disabled = true;
-        document.getElementById("subVillageSel").disabled = true;
-        document.getElementById("locationHint").innerHTML = `<span class="material-symbols-outlined" style="font-size:16px;">info</span> Location/farmer assignment coming soon.`;
-
-        // Replace officer cards with static placeholder
-        const officerCards = document.getElementById("officerCards");
-        if (officerCards) {
-          officerCards.innerHTML = `<div style="grid-column: span 3; padding: 20px; text-align: center; color: #9ca3af;">
-        Officer assignment coming soon
-      </div>`;
+        // 2. Fetch talukas for district dropdown
+        const resTaluka = await fetch("/api/tasks/talukas");
+        if (resTaluka.ok) {
+          const talukas = await resTaluka.json();
+          const dSel = document.getElementById("districtSel");
+          dSel.disabled = false;
+          talukas.forEach(t => {
+            const opt = document.createElement("option");
+            opt.value = t;
+            opt.textContent = t;
+            dSel.appendChild(opt);
+          });
         }
 
-        // MVP: remove/block broken assignment flow that depends on nonexistent endpoints.
-        const btn = document.querySelector('button[onclick="assignTask()"]');
-        if (btn) {
-          btn.onclick = () => showToast("Officer/location assignment is coming soon. Use employee portal to submit progress.", "error");
+        // 3. Fetch assignable officers
+        const resOff = await fetch("/api/tasks/officers");
+        if (resOff.ok) {
+          officers = await resOff.json();
+          renderOfficers();
         }
 
+        document.getElementById("locationHint").innerHTML = `<span class="material-symbols-outlined" style="font-size:16px;">info</span> Select a taluka first to load villages.`;
 
       } catch (err) {
         console.error("Initial data load error:", err);
@@ -646,10 +646,9 @@
 
     async function loadTaskHistory() {
       try {
-        const res = await fetch("/tasks/list");
+        const res = await fetch("/api/tasks");
         if (res.ok) {
           const data = await res.json();
-          // API returns {count, tasks:[...]}
           assignedTasks = data.tasks || data;
           renderAssignedTasks();
         }
@@ -753,6 +752,7 @@
     async function loadFarmersForLocation() {
       const village = document.getElementById("villageSel").value;
       const taluka = document.getElementById("districtSel").value;
+      const subVillage = document.getElementById("subVillageSel").value;
       if (!village) {
         currentFarmers = [];
         renderFarmerTable();
@@ -760,6 +760,7 @@
       }
       const params = new URLSearchParams({ village });
       if (taluka) params.set("taluka", taluka);
+      if (subVillage) params.set("sub_village", subVillage);
       const body = document.getElementById("farmerSectionBody");
       body.innerHTML = `<div style="padding:48px;text-align:center;color:#9ca3af;"><span class="material-symbols-outlined" style="font-size:40px;display:block;margin-bottom:10px;opacity:0.4;">hourglass_empty</span><div style="font-size:14px;font-weight:600;color:#374151;">Loading farmers…</div></div>`;
       try {
@@ -1015,15 +1016,56 @@
     }
 
     async function assignTask() {
-      // MVP: Assignment endpoint removed in backend surface.
-      // Provide a clear message instead of calling nonexistent APIs.
-      showToast("Officer/location assignment is coming soon in this MVP manager UI.", "error");
+      if (!validate()) return;
+
+      const session = AgriAuth.getSession();
+      const workTypeDropdown = document.getElementById("workType");
+      const workTypeName = workTypeDropdown.options[workTypeDropdown.selectedIndex].textContent;
+
+      const payload = {
+        task_name: document.getElementById("taskName").value.trim(),
+        officer_id: selectedOfficer,
+        work_type_name: workTypeName,
+        priority: selectedPriority,
+        from_date: document.getElementById("startDate").value,
+        to_date: document.getElementById("endDate").value,
+        schedule_type: "WEEKLY",
+        remarks: document.getElementById("remarks").value.trim(),
+        district: document.getElementById("districtSel").value,
+        village: document.getElementById("villageSel").value,
+        sub_village: document.getElementById("subVillageSel").value,
+        farmers: Array.from(selectedFarmers).map(Number),
+        manager_id: session ? session.userId : 1,
+      };
+
+      try {
+        const res = await fetch("/api/tasks/assign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Assignment failed");
+        showToast(`Task assigned successfully! ID: ${data.plan_id}, ${data.farmer_count} farmers assigned.`);
+        resetForm();
+        await loadTaskHistory();
+      } catch (err) {
+        console.error("Assign task error:", err);
+        showToast(err.message || "Failed to assign task", "error");
+      }
     }
 
 
     async function reloadOfficers() {
-      // MVP: officers endpoint removed.
-      return;
+      try {
+        const res = await fetch("/api/tasks/officers");
+        if (res.ok) {
+          officers = await res.json();
+          renderOfficers();
+        }
+      } catch (err) {
+        console.error("Reload officers error:", err);
+      }
     }
 
 

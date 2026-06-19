@@ -20,8 +20,23 @@
   .card{background:#fff;border-radius:14px;border:1px solid #e5e7eb;}
   .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;}
   .tbl-row:hover{background:#f9fafb;}
-  input,select{border:1.5px solid #d1d5db;border-radius:8px;padding:8px 12px;font-size:13px;color:#111827;font-family:inherit;background:#fff;}
+  body input, body select, body textarea {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13px !important;
+  }
+  input,select{border:1.5px solid #d1d5db;border-radius:8px;padding:8px 12px;color:#111827;background:#fff;}
   input:focus,select:focus{outline:none;border-color:#006c49;box-shadow:0 0 0 3px rgba(0,108,73,0.08);}
+  body select{
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E") !important;
+    background-position: right 10px center !important;
+    background-repeat: no-repeat !important;
+    background-size: 1.25rem !important;
+    padding-right: 32px !important;
+    cursor: pointer !important;
+  }
   .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:100;display:none;align-items:center;justify-content:center;padding:16px;}
   .modal-bg.show{display:flex;}
   label.flabel{font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:5px;}
@@ -36,7 +51,12 @@
   .toast{position:fixed;top:70px;right:20px;background:#003527;color:#fff;border-radius:10px;padding:12px 20px;font-size:13px;font-weight:600;z-index:999;transform:translateX(140%);transition:transform 0.3s ease;}
   .toast.show{transform:translateX(0);}
 </style>
-<script src="../assets/js/manager-auth-store.js"></script>
+<script src="/assets/js/auth-store.js"></script>
+<script>
+  if (!AgriAuth.requireManager()) {
+    document.documentElement.innerHTML = "";
+  }
+</script>
 </head>
 <body>
 <aside class="sidebar">
@@ -124,6 +144,7 @@
     <!-- Tabs -->
     <div style="display:flex;gap:8px;align-items:center;">
       <button class="tab-btn active" id="tabAll" onclick="switchTab('all')"><span class="material-symbols-outlined" style="font-size:16px;vertical-align:-3px;">folder</span> All Reports</button>
+      <button class="tab-btn" id="tabLeaderboard" onclick="switchTab('leaderboard')"><span class="material-symbols-outlined" style="font-size:16px;vertical-align:-3px;">leaderboard</span> Leaderboard</button>
       <button class="tab-btn" id="tabOfficer" onclick="switchTab('officer')"><span class="material-symbols-outlined" style="font-size:16px;vertical-align:-3px;">person_search</span> By Officer</button>
       <button class="tab-btn" id="tabActivities" onclick="switchTab('activities')"><span class="material-symbols-outlined" style="font-size:16px;vertical-align:-3px;">fact_check</span> Activity Log</button>
     </div>
@@ -145,12 +166,35 @@
             <thead style="background:#f9fafb;"><tr>
               <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Report Title</th>
               <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Officer</th>
+              <th style="padding:10px 16px;text-align:center;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Grade</th>
+              <th style="padding:10px 16px;text-align:center;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Score</th>
               <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Generated</th>
-              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Period</th>
-              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Format</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Status</th>
               <th style="padding:10px 16px;text-align:right;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Download</th>
             </tr></thead>
             <tbody id="rBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD TAB -->
+    <div id="tabLeaderboardContent" style="display:none;">
+      <div class="card" style="overflow:hidden;">
+        <div style="padding:14px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;">
+          <div style="font-size:14px;font-weight:700;color:#111827;">Officer Performance Leaderboard</div>
+          <div style="font-size:11px;color:#6b7280;margin-top:2px;">All officers ranked by weighted KPI score (40% Crushing + 20% Recovery + 20% Meetings + 20% KCC)</div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead style="background:#f9fafb;"><tr>
+              <th style="padding:10px 16px;text-align:center;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;width:60px;">Rank</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Officer</th>
+              <th style="padding:10px 16px;text-align:center;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Grade</th>
+              <th style="padding:10px 16px;text-align:center;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Score</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Performance Bar</th>
+            </tr></thead>
+            <tbody id="leaderboardBody"></tbody>
           </table>
         </div>
       </div>
@@ -228,23 +272,37 @@ let filteredActivities=[];
 let actPage=1;
 let selectedOfficerId=null;
 
+const GRADE_COLORS = {
+  'A+': {bg:'#d1fae5',color:'#003527'},
+  'A':  {bg:'#d1fae5',color:'#065f46'},
+  'B':  {bg:'#ccfbf1',color:'#0d9488'},
+  'C':  {bg:'#fef3c7',color:'#92400e'},
+  'D':  {bg:'#ffedd5',color:'#c2410c'},
+  'F':  {bg:'#fee2e2',color:'#b91c1c'},
+};
+function gradeStyle(g){ return GRADE_COLORS[g]||GRADE_COLORS['F']; }
+
 function switchTab(tab){
-  ["All","Officer","Activities"].forEach(t=>{
-    document.getElementById("tab"+t+"Content").style.display="none";
-    document.getElementById("tab"+t).classList.remove("active");
+  ["All","Leaderboard","Officer","Activities"].forEach(t=>{
+    const el=document.getElementById("tab"+t+"Content"); if(el) el.style.display="none";
+    const btn=document.getElementById("tab"+t); if(btn) btn.classList.remove("active");
   });
   const capTab = tab.charAt(0).toUpperCase()+tab.slice(1);
   document.getElementById("tab"+capTab+"Content").style.display="block";
   document.getElementById("tab"+capTab).classList.add("active");
   if(tab==="officer")renderOfficerList();
   if(tab==="activities"){actPage=1;fetchActivities();}
+  if(tab==="leaderboard")loadLeaderboard();
 }
 
 function renderReports(data){
   const b=document.getElementById("rBody");
   document.getElementById("reportCount").textContent=data.length;
-  if(!data.length){b.innerHTML=`<tr><td colspan="6" style="padding:32px;text-align:center;color:#9ca3af;font-size:13px;">No reports generated yet. Click 'Generate Report' or 'Auto-Generate All' to create task reports.</td></tr>`;return;}
-  b.innerHTML=data.map(r=>`
+  if(!data.length){b.innerHTML=`<tr><td colspan="7" style="padding:32px;text-align:center;color:#9ca3af;font-size:13px;">No reports generated yet. Click 'Generate Report' or 'Auto-Generate All' to create task reports.</td></tr>`;return;}
+  b.innerHTML=data.map(r=>{
+    const gs=gradeStyle(r.performance_grade||'F');
+    const trendStr=r.score_trend!==null&&r.score_trend!==undefined?(r.score_trend>=0?`<span style="color:#10b981;font-weight:800;">↑+${r.score_trend.toFixed(1)}%</span>`:`<span style="color:#ef4444;font-weight:800;">↓${r.score_trend.toFixed(1)}%</span>`):'—';
+    return `
     <tr class="tbl-row" style="border-top:1px solid #f3f4f6;">
       <td style="padding:12px 16px;">
         <div style="display:flex;align-items:center;gap:8px;">
@@ -253,19 +311,48 @@ function renderReports(data){
           </div>
           <div>
             <div style="font-size:13px;font-weight:600;color:#111827;">${r.task_name || r.report_type}</div>
-            <div style="font-size:10px;color:#9ca3af;">Task #${r.task_id} · ${r.report_type}</div>
+            <div style="font-size:10px;color:#9ca3af;">Task #${r.task_id} · #${r.officer_rank||'—'} of ${r.total_officers||'—'} · ${trendStr}</div>
           </div>
         </div>
       </td>
       <td style="padding:12px 16px;font-size:12px;color:#6b7280;">${r.officer_name}</td>
+      <td style="padding:12px 16px;text-align:center;"><span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;font-size:14px;font-weight:900;background:${gs.bg};color:${gs.color};">${r.performance_grade||'—'}</span></td>
+      <td style="padding:12px 16px;text-align:center;font-size:14px;font-weight:800;color:#003527;">${(r.calculated_score||0).toFixed(0)}%</td>
       <td style="padding:12px 16px;font-size:12px;color:#6b7280;">${r.generated_date}</td>
       <td style="padding:12px 16px;"><span class="badge" style="background:${r.task_status==='OVERDUE'?'#fee2e2;color:#b91c1c':r.task_status==='COMPLETED'?'#d1fae5;color:#003527':'#dbeafe;color:#1e40af'};">${r.task_status}</span></td>
-      <td style="padding:12px 16px;"><span class="badge" style="background:#d1fae5;color:#003527;">CSV</span></td>
       <td style="padding:12px 16px;text-align:right;display:flex;gap:6px;justify-content:flex-end;">
+        <button onclick="event.stopPropagation(); toggleManagerFarmerDetails(${r.task_id}, this, false)" style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;color:#1e40af;cursor:pointer;display:flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:15px;">expand_more</span>Details</button>
         <button onclick="downloadTaskReport(${r.report_id})" style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;color:#003527;cursor:pointer;display:flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:15px;">download</span>Download</button>
-        <button onclick="viewSnapshot(${r.report_id})" style="background:#f3f4f6;border:1.5px solid #e5e7eb;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;color:#374151;cursor:pointer;display:flex;align-items:center;gap:4px;"><span class="material-symbols-outlined" style="font-size:15px;">visibility</span></button>
       </td>
-    </tr>`).join("");
+    </tr>
+    <tr class="details-row hidden" id="details-row-${r.task_id}" style="background:#fafafa;">
+      <td colspan="7" style="padding:16px 20px;">
+        <div style="overflow-x:auto; border:1px solid #e5e7eb; border-radius:10px; background:#fff; max-height:250px;">
+          <table style="width:100%; border-collapse:collapse; text-align:left; font-size:12px; font-family:sans-serif;">
+            <thead style="background:#f9fafb; position:sticky; top:0; border-bottom:1px solid #e5e7eb;">
+              <tr>
+                <th style="padding:8px 12px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:10px;">Farmer</th>
+                <th style="padding:8px 12px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:10px;">Village</th>
+                <th style="padding:8px 12px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:10px;">KCC</th>
+                <th style="padding:8px 12px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:10px;">Canara HNT</th>
+                <th style="padding:8px 12px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:10px;">Sangola HNT</th>
+                <th style="padding:8px 12px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:10px;">Cane Reg.</th>
+                <th style="padding:8px 12px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:10px;">Recovery</th>
+                <th style="padding:8px 12px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:10px;">Vehicle Agree.</th>
+                <th style="padding:8px 12px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:10px;">Expected Tons</th>
+                <th style="padding:8px 12px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:10px;">Development</th>
+                <th style="padding:8px 12px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:10px;">Feedback / Remark</th>
+              </tr>
+            </thead>
+            <tbody id="farmer-rows-${r.task_id}" style="font-weight:500; color:#374151;">
+              <tr>
+                <td colspan="11" style="padding:20px; text-align:center; color:#9ca3af;">Loading details...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </td>
+    </tr>`}).join("");
 }
 
 function filterReports(){
@@ -436,20 +523,127 @@ function selectOfficerReport(id){
         </div>
         ${officerReports.length === 0 ? `<div style="padding:32px;text-align:center;color:#9ca3af;font-size:13px;">No reports for this officer yet.</div>` :
         officerReports.map(r=>`
-          <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #f3f4f6;transition:background 0.12s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background=''">
-            <div style="width:36px;height:36px;border-radius:8px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-              <span class="material-symbols-outlined" style="font-size:18px;color:#003527;">description</span>
+          <div style="border-bottom:1px solid #f3f4f6;transition:background 0.12s;">
+            <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background=''">
+              <div style="width:36px;height:36px;border-radius:8px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <span class="material-symbols-outlined" style="font-size:18px;color:#003527;">description</span>
+              </div>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;color:#111827;">${r.task_name || r.report_type}</div>
+                <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Task #${r.task_id} \u00b7 ${r.generated_date} \u00b7 ${r.farmer_count} farmers \u00b7 ${r.completion_rate}% complete</div>
+              </div>
+              <span class="badge" style="background:${r.task_status==='OVERDUE'?'#fee2e2;color:#b91c1c':r.task_status==='COMPLETED'?'#d1fae5;color:#003527':'#dbeafe;color:#1e40af'};">${r.task_status}</span>
+              <button onclick="toggleManagerFarmerDetails(${r.task_id}, this, true)" style="background:#eff6ff;border:none;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;color:#1e40af;cursor:pointer;display:flex;align-items:center;gap:3px;"><span class="material-symbols-outlined" style="font-size:14px;">expand_more</span>Details</button>
+              <button onclick="downloadTaskReport(${r.report_id})" style="background:#d1fae5;border:none;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;color:#003527;cursor:pointer;display:flex;align-items:center;gap:3px;"><span class="material-symbols-outlined" style="font-size:14px;">download</span>CSV</button>
             </div>
-            <div style="flex:1;">
-              <div style="font-size:13px;font-weight:600;color:#111827;">${r.task_name || r.report_type}</div>
-              <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Task #${r.task_id} \u00b7 ${r.generated_date} \u00b7 ${r.farmer_count} farmers \u00b7 ${r.completion_rate}% complete</div>
+            <div class="officer-farmer-details hidden" id="officer-details-${r.task_id}" style="padding:0 16px 14px 16px; background:#fafafa;">
+              <div style="overflow-x:auto; border:1px solid #e5e7eb; border-radius:10px; background:#fff; max-height:200px;">
+                <table style="width:100%; border-collapse:collapse; text-align:left; font-size:11px; font-family:sans-serif;">
+                  <thead style="background:#f9fafb; position:sticky; top:0; border-bottom:1px solid #e5e7eb;">
+                    <tr>
+                      <th style="padding:6px 10px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:9px;">Farmer</th>
+                      <th style="padding:6px 10px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:9px;">Village</th>
+                      <th style="padding:6px 10px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:9px;">KCC</th>
+                      <th style="padding:6px 10px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:9px;">Canara HNT</th>
+                      <th style="padding:6px 10px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:9px;">Sangola HNT</th>
+                      <th style="padding:6px 10px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:9px;">Cane Reg.</th>
+                      <th style="padding:6px 10px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:9px;">Recovery</th>
+                      <th style="padding:6px 10px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:9px;">Vehicle Agree.</th>
+                      <th style="padding:6px 10px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:9px;">Expected Tons</th>
+                      <th style="padding:6px 10px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:9px;">Development</th>
+                      <th style="padding:6px 10px; font-weight:700; color:#6b7280; text-transform:uppercase; font-size:9px;">Feedback / Remark</th>
+                    </tr>
+                  </thead>
+                  <tbody id="officer-farmer-rows-${r.task_id}" style="font-weight:500; color:#374151;">
+                    <tr>
+                      <td colspan="11" style="padding:15px; text-align:center; color:#9ca3af;">Loading details...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <span class="badge" style="background:${r.task_status==='OVERDUE'?'#fee2e2;color:#b91c1c':r.task_status==='COMPLETED'?'#d1fae5;color:#003527':'#dbeafe;color:#1e40af'};">${r.task_status}</span>
-            <button onclick="downloadTaskReport(${r.report_id})" style="background:#d1fae5;border:none;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;color:#003527;cursor:pointer;display:flex;align-items:center;gap:3px;"><span class="material-symbols-outlined" style="font-size:14px;">download</span>CSV</button>
           </div>`).join("")}
       </div>
     </div>
   `;
+}
+
+async function toggleManagerFarmerDetails(taskId, btn, isOfficerTab = false) {
+  const targetId = isOfficerTab ? `officer-details-${taskId}` : `details-row-${taskId}`;
+  const rowsId = isOfficerTab ? `officer-farmer-rows-${taskId}` : `farmer-rows-${taskId}`;
+  const container = document.getElementById(targetId);
+  const tbody = document.getElementById(rowsId);
+  const icon = btn.querySelector('.material-symbols-outlined');
+  
+  if (container.classList.contains('hidden')) {
+    container.classList.remove('hidden');
+    if (icon) icon.textContent = 'expand_less';
+    
+    if (tbody.dataset.loaded === 'true') return;
+    
+    try {
+      const res = await fetch(`/api/reports/farmer-meetings/${taskId}`);
+      if (!res.ok) throw new Error("Failed to load");
+      const data = await res.json();
+      if (!data || !data.length) {
+        tbody.innerHTML = `<tr><td colspan="11" style="padding:16px; text-align:center; color:#9ca3af;">No farmer details found for this task.</td></tr>`;
+        tbody.dataset.loaded = 'true';
+        return;
+      }
+      
+      tbody.innerHTML = data.map(f => {
+        const formatYesNo = (val, reason) => {
+          if (val === true) return '<span style="color:#059669; font-weight:bold;">✅ Yes</span>';
+          if (val === false) {
+            return `<span style="color:#dc2626; font-weight:bold;">❌ No</span>${reason ? `<div style="font-size:9px; color:#9ca3af; margin-top:2px;">${reason}</div>` : ''}`;
+          }
+          return '<span style="color:#9ca3af;">—</span>';
+        };
+
+        const formatVehicle = (val, reason, working, workReason) => {
+          if (val === true) {
+            let badge = '<span style="color:#059669; font-weight:bold;">✅ Yes</span>';
+            if (working === true) badge += ' <span style="font-size:9px; color:#10b981; font-weight:600;">(Working)</span>';
+            else if (working === false) badge += ` <span style="font-size:9px; color:#ef4444; font-weight:600;">(Not Working: ${workReason || '—'})</span>`;
+            return badge;
+          }
+          if (val === false) {
+            return `<span style="color:#dc2626; font-weight:bold;">❌ No</span>${reason ? `<div style="font-size:9px; color:#9ca3af; margin-top:2px;">${reason}</div>` : ''}`;
+          }
+          return '<span style="color:#9ca3af;">—</span>';
+        };
+        
+        return `
+          <tr style="border-bottom:1px solid #f3f4f6;">
+            <td style="padding:8px 10px; font-weight:bold;">
+              ${f.farmer_name}
+              <div style="font-size:9px; color:#9ca3af; font-weight:normal;">Code: ${f.farmer_code}</div>
+            </td>
+            <td style="padding:8px 10px;">${f.village || '—'}</td>
+            <td style="padding:8px 10px;">${formatYesNo(f.kcc, f.kcc_reason)}</td>
+            <td style="padding:8px 10px;">${formatYesNo(f.canara_hnt, f.canara_reason)}</td>
+            <td style="padding:8px 10px;">${formatYesNo(f.sangola_hnt, f.sangola_reason)}</td>
+            <td style="padding:8px 10px;">${formatYesNo(f.cane_registration, f.cane_registration_remark)}</td>
+            <td style="padding:8px 10px;">${formatYesNo(f.recovery, f.recovery_reason)}</td>
+            <td style="padding:8px 10px;">${formatVehicle(f.vehicle_agreement, f.vehicle_reason, f.is_working_vehicle, f.vehicle_working_reason)}</td>
+            <td style="padding:8px 10px; font-weight:bold;">${f.expected_tonnage ? f.expected_tonnage.toLocaleString() + ' kg' : '0'}</td>
+            <td style="padding:8px 10px;">${f.cane_development || '—'}</td>
+            <td style="padding:8px 10px;">
+              ${f.feedback ? `<div style="color:#4b5563; font-weight:normal;"><strong style="color:#9ca3af; text-transform:uppercase; font-size:8px;">Feedback:</strong> ${f.feedback}</div>` : ''}
+              ${f.remark ? `<div style="color:#4b5563; font-weight:normal;"><strong style="color:#9ca3af; text-transform:uppercase; font-size:8px;">Remark:</strong> ${f.remark}</div>` : ''}
+              ${(!f.feedback && !f.remark) ? '<span style="color:#9ca3af;">—</span>' : ''}
+            </td>
+          </tr>
+        `;
+      }).join("");
+      tbody.dataset.loaded = 'true';
+    } catch (err) {
+      tbody.innerHTML = `<tr><td colspan="11" style="padding:16px; text-align:center; color:#dc2626;">Error loading details.</td></tr>`;
+    }
+  } else {
+    container.classList.add('hidden');
+    if (icon) icon.textContent = 'expand_more';
+  }
 }
 
 function downloadTaskReport(reportId){
@@ -520,11 +714,50 @@ async function submitReport(){
   }
 }
 
+async function loadLeaderboard(){
+  const body=document.getElementById('leaderboardBody');
+  body.innerHTML='<tr><td colspan="5" style="padding:20px;text-align:center;color:#9ca3af;">Loading...</td></tr>';
+  try{
+    const res=await fetch('/api/reports/officer-ranking');
+    if(!res.ok) throw new Error('Failed');
+    const data=await res.json();
+    if(!data.length){body.innerHTML='<tr><td colspan="5" style="padding:32px;text-align:center;color:#9ca3af;font-size:13px;">No officers with tasks yet.</td></tr>';return;}
+    body.innerHTML=data.map((o,idx)=>{
+      const gs=gradeStyle(o.grade);
+      const medalIcon=idx===0?'🥇':idx===1?'🥈':idx===2?'🥉':'';
+      const barWidth=Math.min(Math.max(o.score,0),100);
+      const barColor=o.score>=85?'#10b981':o.score>=70?'#0d9488':o.score>=50?'#f59e0b':'#ef4444';
+      return `
+      <tr class="tbl-row" style="border-top:1px solid #f3f4f6;${idx<3?'background:#f0fdf4;':''};">
+        <td style="padding:12px 16px;text-align:center;font-size:18px;font-weight:900;color:#003527;">${medalIcon||'#'+o.rank}</td>
+        <td style="padding:12px 16px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:99px;background:#d1fae5;color:#003527;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${o.name.charAt(0)}</div>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#111827;">${o.name}</div>
+              <div style="font-size:10px;color:#9ca3af;">${o.username}</div>
+            </div>
+          </div>
+        </td>
+        <td style="padding:12px 16px;text-align:center;"><span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;font-size:14px;font-weight:900;background:${gs.bg};color:${gs.color};">${o.grade}</span></td>
+        <td style="padding:12px 16px;text-align:center;font-size:16px;font-weight:800;color:#003527;">${o.score.toFixed(0)}%</td>
+        <td style="padding:12px 16px;">
+          <div style="background:#e5e7eb;border-radius:99px;height:8px;width:100%;overflow:hidden;">
+            <div style="background:${barColor};height:100%;border-radius:99px;width:${barWidth}%;transition:width 0.8s;"></div>
+          </div>
+        </td>
+      </tr>`}).join('');
+  }catch(err){
+    console.error('Leaderboard error:',err);
+    body.innerHTML='<tr><td colspan="5" style="padding:32px;text-align:center;color:#ef4444;font-size:13px;">Failed to load leaderboard.</td></tr>';
+  }
+}
+
 document.addEventListener("DOMContentLoaded", async ()=>{
   const s=AgriAuth.getSession();
   if(s){const name=(s.name&&s.name!=="None")?s.name:s.username;document.getElementById("avatarCircle").textContent=name.charAt(0).toUpperCase();document.getElementById("headerName").textContent=name;}
   
-  document.getElementById("logoutBtn").addEventListener("click",e=>{e.preventDefault();if(confirm("Sign out?"))AgriAuth.clearSession(),window.location.replace("login.html");});
+  document.getElementById("logoutBtn").addEventListener("click",e=>{e.preventDefault();if(confirm("Sign out?"))AgriAuth.clearSession(),window.location.replace("/login.html");});
 
   // Load all data
   await loadSummary();
