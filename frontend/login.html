@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to AgriPulse Portal Selection</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0c0d14;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-hover-border: rgba(255, 255, 255, 0.2);
+            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent-glow-primary: rgba(59, 130, 246, 0.15);
+            --accent-glow-secondary: rgba(16, 185, 129, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Abstract glowing backgrounds */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+            animation: pulse 12s infinite alternate ease-in-out;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #3b82f6 0%, transparent 80%);
+            top: -100px;
+            left: -100px;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #8b5cf6 0%, transparent 80%);
+            bottom: -150px;
+            right: -100px;
+            animation-delay: -6s;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.4; }
+            100% { transform: scale(1.15) translate(30px, 30px); opacity: 0.6; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            padding: 2rem;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3rem;
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .logo-text {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            background: linear-gradient(to right, #ffffff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #ffffff, #e5e7eb, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.15rem;
+            font-weight: 400;
+        }
+
+        .portal-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        @media (min-width: 768px) {
+            .portal-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .portal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            padding: 1px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        /* Hover states */
+        .portal-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--card-hover-border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .portal-card.manager-card:hover {
+            background: radial-gradient(circle at top, var(--accent-glow-primary) 0%, rgba(255, 255, 255, 0.02) 80%);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1), 0 0 0 1px rgba(59, 130, 246, 0.3);
+        }
+
+        .portal-card.officer-card:hover {
+            background: radial-gradient(circle at top, var(--accent-glow-secondary) 0%, rgba(255, 255, 255, 0.02) 80%);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.1), 0 0 0 1px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Card elements */
+        .icon-wrapper {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            position: relative;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .portal-card:hover .icon-wrapper {
+            transform: scale(1.1) rotate(3deg);
+        }
+
+        .manager-card .icon-wrapper {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .officer-card .icon-wrapper {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .icon-wrapper svg {
+            width: 38px;
+            height: 38px;
+            fill: currentColor;
+        }
+
+        .card-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 2.5rem;
+            flex-grow: 1;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .manager-card .action-btn {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
+        }
+
+        .officer-card .action-btn {
+            background: var(--secondary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+        }
+
+        .portal-card:hover .action-btn {
+            transform: translateY(-2px);
+        }
+
+        .manager-card:hover .action-btn {
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+        }
+
+        .officer-card:hover .action-btn {
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+        }
+
+        .footer {
+            margin-top: 4rem;
+            font-size: 0.9rem;
+            color: #4b5563;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient background glows -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="container">
+        <!-- Logo & Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 5.5c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5zM7.5 18c0-1.5 3-2.3 4.5-2.3s4.5.8 4.5 2.3v1h-9v-1z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">AgriPulse</span>
+            </div>
+            <h1>Unified Workspace Portal</h1>
+            <p>Select your dashboard workspace to log in and manage performance tracking.</p>
+        </div>
+
+        <!-- Portal Cards Grid -->
+        <div class="portal-grid">
+            
+            <!-- Manager Portal -->
+            <a href="/manager/login.html" class="portal-card manager-card">
+                <div class="icon-wrapper">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                    </svg>
+                </div>
+                <h2 class="card-title">Manager Workspace</h2>
+                <p class="card-description">Administer systems, configure tasks, view officer performance, track field activities, and generate department reports.</p>
+                <button class="action-btn">
+                    <span>Enter Manager Portal</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+            </a>
+
+            <!-- Employee Portal -->
+            <a href="/employee/login.html" class="portal-card officer-card">
+                <div class="icon-wrapper">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                    </svg>
+                </div>
+                <h2 class="card-title">Officer Workspace</h2>
+                <p class="card-description">Track assigned field visits, update task completion status, register farmer meeting notes, and view personal metrics.</p>
+                <button class="action-btn">
+                    <span>Enter Officer Portal</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+            </a>
+
+        </div>
+
+        <div class="footer">
+            &copy; 2026 AgriPulse Performance Tracking System. All rights reserved.
+        </div>
+    </div>
+
+</body>
+</html>
