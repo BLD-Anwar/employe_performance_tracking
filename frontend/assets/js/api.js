@@ -144,7 +144,16 @@ const AgriAPI = {
   },
 
   // ── Manager Settings ─────────────────────────────────────────────────────
-  getProfile(userId)         { return this._request("GET", `/settings/profile/${userId}`); },
+  getManagerProfile(userId)  { return this._request("GET", `/settings/profile/${userId}`); },
+  getProfile(userId)         {
+    // If userId explicitly passed, use manager settings endpoint
+    // If called with no args (employee dashboard), use the /me/profile endpoint
+    if (userId !== undefined && userId !== null) {
+      return this._request("GET", `/settings/profile/${userId}`);
+    }
+    const s = AgriAuth.getSession();
+    return this._request("GET", `/me/profile/${s.userId}`);
+  },
   updateProfile(userId, d)   { return this._request("PUT", `/settings/profile/${userId}`, d); },
   changePassword(userId, d)  { return this._request("POST", `/settings/change-password/${userId}`, d); },
 

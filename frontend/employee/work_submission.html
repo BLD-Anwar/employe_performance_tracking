@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AgriPulse — Work Submission</title>
+    <title>AgriPulse — Farmer Meeting Checklist</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
       rel="stylesheet"
     />
     <script id="tailwind-config">
@@ -102,8 +102,21 @@
         border-radius: 1rem;
         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       }
+      
+      /* Toggle Buttons Selected State */
+      .toggle-btn-selected-yes {
+        background-color: #10b981 !important;
+        color: white !important;
+        border-color: #10b981 !important;
+      }
+      .toggle-btn-selected-no {
+        background-color: #ef4444 !important;
+        color: white !important;
+        border-color: #ef4444 !important;
+      }
     </style>
     <script src="../assets/js/auth-store.js"></script>
+    <script src="../assets/js/api.js"></script>
   </head>
 
   <body class="min-h-screen flex">
@@ -201,7 +214,7 @@
         class="sticky top-0 w-full h-16 px-8 bg-white border-b border-slate-200 flex justify-between items-center z-40 shadow-sm"
       >
         <h1 class="text-base font-bold text-slate-800">
-          Field Activity Submission
+          Field Operations Checklist
         </h1>
         <div class="flex items-center gap-3 pl-2">
           <div class="text-right">
@@ -228,400 +241,761 @@
       </header>
 
       <!-- Work Submission Viewport -->
-      <main class="flex-grow p-8 grid grid-cols-12 gap-6">
-        <!-- Submission Form -->
-        <div class="col-span-12 lg:col-span-7 premium-card overflow-hidden">
-          <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
-            <span class="material-symbols-outlined text-[#003527] text-lg"
-              >app_registration</span
-            >
-            <h3
-              class="text-xs font-bold text-[#003527] uppercase tracking-widest"
-            >
-              New Telemetry & Activity Log
-            </h3>
-          </div>
-          <div class="p-6 space-y-4">
-            <!-- Farmer Name -->
-            <div class="space-y-1 text-xs">
-              <label
-                class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                for="farmerName"
-                >Farmer Full Name</label
-              >
-              <input
-                type="text"
-                id="farmerName"
-                class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700 font-semibold"
-                placeholder="e.g. Sanjay Mahadev Patil"
-              />
+      <main class="flex-grow p-8 grid grid-cols-12 gap-6 items-start">
+        
+        <!-- Left Side Dashboard & Checklist Form -->
+        <div class="col-span-12 lg:col-span-7 space-y-6">
+          
+          <!-- Card 1: Task Selection & Farmer List -->
+          <div class="premium-card overflow-hidden">
+            <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
+              <span class="material-symbols-outlined text-[#003527] text-lg">assignment</span>
+              <h3 class="text-xs font-bold text-[#003527] uppercase tracking-widest">
+                Select Assignment Task & Farmer
+              </h3>
             </div>
-
-            <!-- Mobile + Purpose -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div class="space-y-1">
-                <label
-                  class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                  for="mobileNo"
-                  >Mobile Number</label
-                >
-                <input
-                  type="tel"
-                  id="mobileNo"
-                  class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700"
-                  placeholder="e.g. 9876543210"
-                />
-              </div>
-              <div class="space-y-1">
-                <label
-                  class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                  for="purposeWork"
-                  >Purpose of Work</label
-                >
+            
+            <div class="p-6 space-y-4">
+              <!-- Task Select dropdown -->
+              <div class="space-y-1 text-xs">
+                <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400" for="taskSelect">
+                  Assigned Tasks
+                </label>
                 <select
-                  id="purposeWork"
+                  id="taskSelect"
                   class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700 font-bold"
+                  onchange="onTaskSelect(this.value)"
                 >
-                  <option value="7">Daily Visit</option>
-                  <option value="2">Fertilizer Distribution</option>
-                  <option value="11">Canara KCC</option>
-                  <option value="12">Canara HNT</option>
-                  <option value="13">Sangola HNT</option>
-                  <option value="14">Vahan Karar Magani Application</option>
-                  <option value="15">HNT Agreement Jodani Complete</option>
-                  <option value="16">Organic Certification</option>
+                  <option value="">Select a task...</option>
                 </select>
               </div>
-            </div>
 
-            <!-- Village + City -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div class="space-y-1">
-                <label
-                  class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                  for="villageName"
-                  >Village</label
-                >
-                <input
-                  type="text"
-                  id="villageName"
-                  class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700 font-semibold"
-                  placeholder="e.g. Velapur"
-                />
-              </div>
-              <div class="space-y-1">
-                <label
-                  class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                  for="cityName"
-                  >City</label
-                >
-                <input
-                  type="text"
-                  id="cityName"
-                  class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700 font-semibold"
-                  placeholder="e.g. Malashiras"
-                />
+              <!-- Farmer Selector grid -->
+              <div id="farmerSelectionContainer" class="hidden space-y-2 mt-4">
+                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Select Farmer Checklist to Complete
+                </p>
+                <div id="farmerCardsList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <!-- Farmer Cards populated dynamically -->
+                </div>
               </div>
             </div>
+          </div>
 
-            <!-- GPS Coordinates -->
-            <div
-              class="bg-emerald-50/30 rounded-xl p-4 border border-emerald-500/20 space-y-3 text-xs"
-            >
-              <div
-                class="flex justify-between items-center border-b border-emerald-500/10 pb-2"
-              >
-                <span
-                  class="text-xs font-bold text-[#003527] flex items-center gap-1.5"
-                  ><span class="material-symbols-outlined text-sm"
-                    >my_location</span
-                  >
-                  GPS Coordinates Logging</span
-                >
+          <!-- Card 2: Farmer Meeting Checklist Form -->
+          <div id="checklistFormContainer" class="hidden premium-card overflow-hidden">
+            <div class="px-6 py-4 border-b bg-[#003527] flex justify-between items-center text-white">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-emerald-400 text-lg">fact_check</span>
+                <h3 class="text-xs font-bold uppercase tracking-widest text-emerald-100" id="checklistFormTitle">
+                  Checklist Form
+                </h3>
+              </div>
+              <button onclick="deselectFarmer()" class="text-xs font-semibold hover:underline text-emerald-300">
+                Cancel Selection
+              </button>
+            </div>
+            
+            <form id="meetingForm" class="p-6 space-y-6 text-xs">
+              
+              <!-- Selected Farmer Info Badge -->
+              <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 grid grid-cols-2 gap-4">
+                <div>
+                  <span class="text-[9px] font-bold text-slate-400 uppercase">Selected Farmer</span>
+                  <p id="infoFarmerName" class="font-bold text-slate-800 text-sm mt-0.5">—</p>
+                </div>
+                <div>
+                  <span class="text-[9px] font-bold text-slate-400 uppercase">Mobile & Village</span>
+                  <p id="infoFarmerMeta" class="font-semibold text-slate-600 text-xs mt-0.5">—</p>
+                </div>
+              </div>
+
+              <!-- ── Checklist Questions Section ── -->
+              <div class="space-y-4">
+                <h4 class="text-slate-800 font-extrabold border-b pb-1 text-[11px] uppercase tracking-wider text-emerald-800 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm">checklist</span> Checklist Compliance
+                </h4>
+
+                <!-- KCC Check -->
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-50/50">
+                    <div>
+                      <p class="font-bold text-slate-800 text-xs">Kisan Credit Card (KCC)</p>
+                      <p class="text-[10px] text-slate-500 font-medium">Has the farmer updated / opted for KCC?</p>
+                    </div>
+                    <div class="flex gap-2">
+                      <button type="button" onclick="setChecklistValue('kcc', true)" id="kcc-yes" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200">Yes</button>
+                      <button type="button" onclick="setChecklistValue('kcc', false)" id="kcc-no" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200">No</button>
+                    </div>
+                  </div>
+                  <div id="kcc-reason-container" class="hidden transition-all duration-200">
+                    <textarea id="kccReason" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs" placeholder="Describe the reason/remarks regarding KCC status..."></textarea>
+                  </div>
+                </div>
+
+                <!-- Canara HNT Check -->
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-50/50">
+                    <div>
+                      <p class="font-bold text-slate-800 text-xs">Canara Harvester & Tractor Loan (Canara HNT)</p>
+                      <p class="text-[10px] text-slate-500 font-medium">Is Canara HNT loan status clear / applied?</p>
+                    </div>
+                    <div class="flex gap-2">
+                      <button type="button" onclick="setChecklistValue('canaraHnt', true)" id="canaraHnt-yes" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200">Yes</button>
+                      <button type="button" onclick="setChecklistValue('canaraHnt', false)" id="canaraHnt-no" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200">No</button>
+                    </div>
+                  </div>
+                  <div id="canaraHnt-reason-container" class="hidden transition-all duration-200">
+                    <textarea id="canaraHntReason" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs" placeholder="Describe the reason/remarks regarding Canara HNT..."></textarea>
+                  </div>
+                </div>
+
+                <!-- Sangola HNT Check -->
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-50/50">
+                    <div>
+                      <p class="font-bold text-slate-800 text-xs">Sangola Harvester & Tractor Loan (Sangola HNT)</p>
+                      <p class="text-[10px] text-slate-500 font-medium">Is Sangola HNT loan status clear / applied?</p>
+                    </div>
+                    <div class="flex gap-2">
+                      <button type="button" onclick="setChecklistValue('sangolaHnt', true)" id="sangolaHnt-yes" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200">Yes</button>
+                      <button type="button" onclick="setChecklistValue('sangolaHnt', false)" id="sangolaHnt-no" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200">No</button>
+                    </div>
+                  </div>
+                  <div id="sangolaHnt-reason-container" class="hidden transition-all duration-200">
+                    <textarea id="sangolaHntReason" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs" placeholder="Describe the reason/remarks regarding Sangola HNT..."></textarea>
+                  </div>
+                </div>
+
+                <!-- Cane Registration Check -->
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-50/50">
+                    <div>
+                      <p class="font-bold text-slate-800 text-xs">Cane Registration</p>
+                      <p class="text-[10px] text-slate-500 font-medium">Is the cane field registration completed?</p>
+                    </div>
+                    <div class="flex gap-2">
+                      <button type="button" onclick="setChecklistValue('caneRegistration', true)" id="caneRegistration-yes" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200">Yes</button>
+                      <button type="button" onclick="setChecklistValue('caneRegistration', false)" id="caneRegistration-no" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200">No</button>
+                    </div>
+                  </div>
+                  <div id="caneRegistration-reason-container" class="hidden transition-all duration-200">
+                    <textarea id="caneRegistrationRemark" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs" placeholder="Provide details/remarks regarding registration..."></textarea>
+                  </div>
+                </div>
+
+                <!-- Recovery Check -->
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-50/50">
+                    <div>
+                      <p class="font-bold text-slate-800 text-xs">Recovery Compliance</p>
+                      <p class="text-[10px] text-slate-500 font-medium">Is there any outstanding recovery resolved?</p>
+                    </div>
+                    <div class="flex gap-2">
+                      <button type="button" onclick="setChecklistValue('recovery', true)" id="recovery-yes" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200">Yes</button>
+                      <button type="button" onclick="setChecklistValue('recovery', false)" id="recovery-no" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200">No</button>
+                    </div>
+                  </div>
+                  <div id="recovery-reason-container" class="hidden transition-all duration-200">
+                    <textarea id="recoveryReason" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs" placeholder="Describe recovery issue detail..."></textarea>
+                  </div>
+                </div>
+
+                <!-- Expected Tonnage -->
+                <div class="space-y-1">
+                  <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400" for="expectedTonnage">
+                    Expected Tonnage (MT)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    id="expectedTonnage"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700 font-bold"
+                    placeholder="e.g. 75.50"
+                  />
+                </div>
+
+                <!-- Vehicle Agreement Check -->
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-50/50">
+                    <div>
+                      <p class="font-bold text-slate-800 text-xs">Vehicle Agreement</p>
+                      <p class="text-[10px] text-slate-500 font-medium">Is the transportation vehicle agreement verified?</p>
+                    </div>
+                    <div class="flex gap-2">
+                      <button type="button" onclick="setChecklistValue('vehicleAgreement', true)" id="vehicleAgreement-yes" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200">Yes</button>
+                      <button type="button" onclick="setChecklistValue('vehicleAgreement', false)" id="vehicleAgreement-no" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200">No</button>
+                    </div>
+                  </div>
+                  <div id="vehicleAgreement-reason-container" class="hidden transition-all duration-200">
+                    <textarea id="vehicleReason" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs" placeholder="Reason/remarks regarding vehicle agreement..."></textarea>
+                  </div>
+                </div>
+
+                <!-- Is Working Vehicle Check -->
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-50/50">
+                    <div>
+                      <p class="font-bold text-slate-800 text-xs">Working Vehicle Verification</p>
+                      <p class="text-[10px] text-slate-500 font-medium">Is the vehicle in working/operational condition?</p>
+                    </div>
+                    <div class="flex gap-2">
+                      <button type="button" onclick="setChecklistValue('isWorkingVehicle', true)" id="isWorkingVehicle-yes" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200">Yes</button>
+                      <button type="button" onclick="setChecklistValue('isWorkingVehicle', false)" id="isWorkingVehicle-no" class="px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200">No</button>
+                    </div>
+                  </div>
+                  <div id="isWorkingVehicle-reason-container" class="hidden transition-all duration-200">
+                    <textarea id="vehicleWorkingReason" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs" placeholder="Reason if vehicle is not working/operational..."></textarea>
+                  </div>
+                </div>
+
+                <!-- Cane Development & Farmer Feedback -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400" for="caneDevelopment">
+                      Cane Development Notes
+                    </label>
+                    <input
+                      type="text"
+                      id="caneDevelopment"
+                      class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700 font-semibold"
+                      placeholder="Soil type, fertilizer, variety..."
+                    />
+                  </div>
+                  <div class="space-y-1">
+                    <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400" for="feedback">
+                      Farmer Feedback
+                    </label>
+                    <input
+                      type="text"
+                      id="feedback"
+                      class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700 font-semibold"
+                      placeholder="Farmer feedback/concern..."
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- ── Photo Upload and GPS Location ── -->
+              <div class="space-y-4">
+                <h4 class="text-slate-800 font-extrabold border-b pb-1 text-[11px] uppercase tracking-wider text-emerald-800 flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm">my_location</span> Location & Evidence Verification
+                </h4>
+
+                <!-- Photo Upload with Preview -->
+                <div class="space-y-2">
+                  <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    Upload Field Visit Photo
+                  </label>
+                  <div class="flex items-center gap-4">
+                    <input
+                      type="file"
+                      id="meetingPhoto"
+                      accept="image/*"
+                      onchange="previewPhoto(this)"
+                      class="hidden"
+                    />
+                    <button
+                      type="button"
+                      onclick="document.getElementById('meetingPhoto').click()"
+                      class="bg-slate-100 hover:bg-slate-200 border border-slate-200 px-4 py-2.5 rounded-xl font-bold flex items-center gap-1.5"
+                    >
+                      <span class="material-symbols-outlined text-base">photo_camera</span>
+                      <span>Select Image</span>
+                    </button>
+                    <div id="photoPreviewContainer" class="hidden flex items-center gap-2">
+                      <img id="photoPreview" class="w-12 h-12 rounded-lg object-cover border" src="#" alt="Preview" />
+                      <button type="button" onclick="clearPhoto()" class="text-red-500 hover:underline">Remove</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- GPS Coordinates Logging -->
+                <div class="bg-emerald-50/30 rounded-xl p-4 border border-emerald-500/20 space-y-3">
+                  <div class="flex justify-between items-center border-b border-emerald-500/10 pb-2">
+                    <span class="text-xs font-bold text-[#003527] flex items-center gap-1.5">
+                      <span class="material-symbols-outlined text-sm">my_location</span> GPS Coordinates Logging
+                    </span>
+                    <button
+                      type="button"
+                      class="text-emerald-700 hover:underline text-[9px] font-black uppercase tracking-wider"
+                      onclick="syncGPS()"
+                    >
+                      SYNC GPS
+                    </button>
+                  </div>
+                  <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                      <label class="text-[9px] font-bold uppercase text-slate-400">Latitude</label>
+                      <input
+                        type="text"
+                        id="gpsLat"
+                        readonly
+                        class="w-full bg-slate-100 border border-slate-200 rounded-lg py-2 px-3 text-xs text-slate-500 font-bold font-mono"
+                        placeholder="Press Sync..."
+                      />
+                    </div>
+                    <div class="space-y-1">
+                      <label class="text-[9px] font-bold uppercase text-slate-400">Longitude</label>
+                      <input
+                        type="text"
+                        id="gpsLong"
+                        readonly
+                        class="w-full bg-slate-100 border border-slate-200 rounded-lg py-2 px-3 text-xs text-slate-500 font-bold font-mono"
+                        placeholder="Press Sync..."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- General Visit Remark -->
+                <div class="space-y-1">
+                  <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400" for="generalRemark">
+                    General Visit Remark
+                  </label>
+                  <textarea
+                    id="generalRemark"
+                    rows="2"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700 placeholder-slate-400 font-medium"
+                    placeholder="Provide additional field notes regarding this meeting..."
+                  ></textarea>
+                </div>
+
+                <!-- Submit Button -->
                 <button
                   type="button"
-                  class="text-emerald-700 hover:underline text-[9px] font-black uppercase tracking-wider"
-                  onclick="syncGPS()"
+                  id="submitMeetingBtn"
+                  onclick="handleFormSubmit()"
+                  class="w-full bg-[#003527] hover:bg-[#002d21] text-emerald-300 py-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 shadow active:scale-[0.98] uppercase tracking-wider"
                 >
-                  SYNC GPS
+                  <span class="material-symbols-outlined text-sm">cloud_upload</span>
+                  <span>Submit Meeting Report</span>
                 </button>
               </div>
-              <div class="grid grid-cols-2 gap-4">
-                <div class="space-y-1">
-                  <label class="text-[9px] font-bold uppercase text-slate-400"
-                    >Latitude</label
-                  >
-                  <input
-                    type="text"
-                    id="gpsLat"
-                    readonly
-                    class="w-full bg-slate-100 border border-slate-200 rounded-lg py-2 px-3 text-xs text-slate-500 font-bold font-mono"
-                    placeholder="Press Sync..."
-                  />
-                </div>
-                <div class="space-y-1">
-                  <label class="text-[9px] font-bold uppercase text-slate-400"
-                    >Longitude</label
-                  >
-                  <input
-                    type="text"
-                    id="gpsLong"
-                    readonly
-                    class="w-full bg-slate-100 border border-slate-200 rounded-lg py-2 px-3 text-xs text-slate-500 font-bold font-mono"
-                    placeholder="Press Sync..."
-                  />
-                </div>
-              </div>
-            </div>
 
-            <!-- Work Description -->
-            <div class="space-y-1 text-xs">
-              <label
-                class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
-                for="workDesc"
-                >Visit Description</label
-              >
-              <textarea
-                id="workDesc"
-                rows="3"
-                class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs focus:bg-white text-slate-700 placeholder-slate-400 font-medium"
-                placeholder="Provide raw notes regarding land registry, crops, loans, or recovery telemetry..."
-              ></textarea>
-            </div>
-
-            <button
-              type="button"
-              onclick="handleFormSubmit()"
-              class="w-full bg-[#003527] hover:bg-[#002d21] text-emerald-300 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 shadow active:scale-[0.98] uppercase tracking-wider"
-            >
-              <span class="material-symbols-outlined text-sm"
-                >cloud_upload</span
-              >
-              <span>Submit Activity Log</span>
-            </button>
+            </form>
           </div>
+
         </div>
 
-        <!-- Submission History -->
-        <div
-          class="col-span-12 lg:col-span-5 premium-card overflow-hidden flex flex-col"
-        >
-          <div
-            class="px-6 py-4 border-b bg-slate-50 flex items-center justify-between"
-          >
+        <!-- Right Side: Submission History -->
+        <div class="col-span-12 lg:col-span-5 premium-card overflow-hidden flex flex-col">
+          <div class="px-6 py-4 border-b bg-slate-50 flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[#003527] text-lg"
-                >history</span
-              >
-              <h3
-                class="text-xs font-bold text-[#003527] uppercase tracking-widest"
-              >
-                My Submission Log
+              <span class="material-symbols-outlined text-[#003527] text-lg">history</span>
+              <h3 class="text-xs font-bold text-[#003527] uppercase tracking-widest">
+                My Meeting History
               </h3>
             </div>
             <span
               class="bg-[#006c49]/10 text-[#006c49] border border-[#006c49]/20 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase"
               id="logCount"
-              >0 Submissions</span
             >
+              0 Meetings
+            </span>
           </div>
-          <div
-            class="flex-grow overflow-y-auto p-4 space-y-3"
-            id="submissionList"
-          >
+          
+          <div class="flex-grow overflow-y-auto p-4 space-y-3" id="submissionList" style="max-height: 700px;">
             <div class="text-center py-12 text-slate-400">
-              <span
-                class="material-symbols-outlined text-4xl block mb-2 opacity-30 select-none"
-                >inbox</span
-              >
-              <p class="text-xs font-semibold">
-                No submissions recorded this session.
-              </p>
-              <p class="text-[9px] mt-1">
-                Submit a new activity log to record it in this workspace.
-              </p>
+              <span class="material-symbols-outlined text-4xl block mb-2 opacity-30 select-none">inbox</span>
+              <p class="text-xs font-semibold">No meetings loaded.</p>
             </div>
           </div>
         </div>
+
       </main>
     </div>
 
+    <!-- Script Block -->
     <script>
-      const API_BASE = "http://127.0.0.1:8002/api/v1";
-      const taskList = [];
-      let selectedRowId = null;
+      let activeTasksList = [];
+      let selectedTaskId = null;
+      let selectedFarmer = null;
+      let meetingsList = [];
 
-      function getAuthToken() {
-        const session = AgriAuth.getSession();
-        return session && session.token ? session.token : null;
+      let checklistData = {
+        kcc: null,
+        canaraHnt: null,
+        sangolaHnt: null,
+        caneRegistration: null,
+        recovery: null,
+        vehicleAgreement: null,
+        isWorkingVehicle: null,
+        photoPath: null
+      };
+
+      // Reset checklist buttons & states
+      function resetChecklistStates() {
+        checklistData = {
+          kcc: null,
+          canaraHnt: null,
+          sangolaHnt: null,
+          caneRegistration: null,
+          recovery: null,
+          vehicleAgreement: null,
+          isWorkingVehicle: null,
+          photoPath: null
+        };
+
+        const toggles = ["kcc", "canaraHnt", "sangolaHnt", "caneRegistration", "recovery", "vehicleAgreement", "isWorkingVehicle"];
+        toggles.forEach(field => {
+          const yesBtn = document.getElementById(`${field}-yes`);
+          const noBtn = document.getElementById(`${field}-no`);
+          if (yesBtn) yesBtn.className = "px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200";
+          if (noBtn) noBtn.className = "px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200";
+          
+          const container = document.getElementById(`${field}-reason-container`);
+          if (container) container.classList.add("hidden");
+        });
+
+        const inputs = ["kccReason", "canaraHntReason", "sangolaHntReason", "caneRegistrationRemark", "recoveryReason", "expectedTonnage", "vehicleReason", "vehicleWorkingReason", "caneDevelopment", "feedback", "generalRemark", "gpsLat", "gpsLong"];
+        inputs.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        });
+
+        clearPhoto();
       }
 
-      function getEmpCode() {
-        const stored = localStorage.getItem("agri_emp_code");
-        if (stored) return stored;
-        const session = AgriAuth.getSession();
-        if (session) return session.userId || session.username || null;
-        return null;
-      }
+      // Handle custom toggle buttons
+      function setChecklistValue(field, value) {
+        checklistData[field] = value;
+        const yesBtn = document.getElementById(`${field}-yes`);
+        const noBtn = document.getElementById(`${field}-no`);
+        const container = document.getElementById(`${field}-reason-container`);
 
-      async function apiFetch(method, path, body) {
-        const token = getAuthToken();
-        const headers = { "Content-Type": "application/json" };
-        if (token) headers["Authorization"] = "Bearer " + token;
-        const opts = { method: method, headers: headers };
-        if (body) opts.body = JSON.stringify(body);
-        const res = await fetch(API_BASE + path, opts);
-        if (res.status === 401) {
-          AgriAuth.clearSession();
-          window.location.href = "login.html";
-          return null;
+        if (value === true) {
+          yesBtn.className = "px-3 py-1.5 rounded-lg border text-xs font-bold transition-all toggle-btn-selected-yes";
+          noBtn.className = "px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200";
+          if (container) {
+            // For cane registration, YES displays the remark block, for others NO displays it
+            if (field === "caneRegistration") {
+              container.classList.remove("hidden");
+            } else {
+              container.classList.add("hidden");
+            }
+          }
+        } else {
+          yesBtn.className = "px-3 py-1.5 rounded-lg border text-xs font-bold transition-all bg-white text-slate-700 border-slate-200";
+          noBtn.className = "px-3 py-1.5 rounded-lg border text-xs font-bold transition-all toggle-btn-selected-no";
+          if (container) {
+            if (field === "caneRegistration") {
+              container.classList.add("hidden");
+            } else {
+              container.classList.remove("hidden");
+            }
+          }
         }
-        if (!res.ok) {
-          const err = await res.json().catch(function () { return { detail: "HTTP " + res.status }; });
-          throw new Error(err.detail || "Request failed: " + res.status);
-        }
-        if (res.status === 204) return null;
-        return res.json();
       }
 
-      function renderLogs() {
-        const list = document.getElementById("submissionList");
-        document.getElementById("logCount").textContent =
-          taskList.length + " Task" + (taskList.length !== 1 ? "s" : "");
-        if (!taskList.length) {
-          list.innerHTML = '<div class="text-center py-12 text-slate-400"><span class="material-symbols-outlined text-4xl block mb-2 opacity-30 select-none">inbox</span><p class="text-xs font-semibold">No tasks assigned yet.</p></div>';
-          return;
-        }
-        list.innerHTML = taskList
-          .map(function (task) {
-            var rowId = task.r_id ?? task.id ?? task.row_id;
-            var workCount = task.r_work_count ?? task.work_count ?? 0;
-            var status = task.r_status ?? task.status ?? 0;
-            var statusLabel = status === 1 ? "Completed" : status === 2 ? "In Progress" : "Pending";
-            var statusClass = status === 1 ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-              : status === 2 ? "bg-amber-50 text-amber-700 border-amber-200"
-              : "bg-slate-100 text-slate-600 border-slate-200";
-            var taskName = task.task_name || task.name || "—";
-            var farmerName = task.farmer_name || task.farmer || "—";
-            var village = task.village || task.location || "—";
-            var desc = task.description || task.notes || "";
-            return '<div class="p-4 border border-slate-200 hover:border-slate-300 rounded-xl space-y-2 hover:bg-slate-50/50 transition-all text-xs" data-row-id="' + rowId + '" data-work-count="' + workCount + '" data-status="' + status + '" onclick="selectTask(this)">' +
-              '<div class="flex justify-between items-start">' +
-              '<div>' +
-              '<p class="font-bold text-slate-800">' + farmerName + '</p>' +
-              '<p class="text-[10px] text-slate-500 font-medium mt-0.5">' + village + ' &bull; ' + taskName + '</p>' +
-              '</div>' +
-              '<span class="' + statusClass + ' border px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider">' + statusLabel + '</span>' +
-              '</div>' +
-              '<div class="flex items-center justify-between">' +
-              '<span class="text-[10px] text-slate-500 font-mono bg-slate-100 px-2.5 py-1 rounded border border-slate-200">Progress: ' + workCount + '</span>' +
-              (desc ? '<p class="text-[10px] text-slate-500 italic font-medium">&quot;' + desc + '&quot;</p>' : '') +
-              '</div>' +
-              '</div>';
-          })
-          .join("");
-      }
-
-      function selectTask(el) {
-        var items = document.querySelectorAll("#submissionList > div[data-row-id]");
-        items.forEach(function (item) { item.classList.remove("ring-2", "ring-emerald-400"); });
-        el.classList.add("ring-2", "ring-emerald-400");
-        selectedRowId = el.getAttribute("data-row-id");
-      }
-
+      // Geolocation
       function syncGPS() {
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             function (pos) {
-              document.getElementById("gpsLat").value = pos.coords.latitude.toFixed(6);
-              document.getElementById("gpsLong").value = pos.coords.longitude.toFixed(6);
+              document.getElementById("gpsLat").value = pos.coords.latitude.toFixed(7);
+              document.getElementById("gpsLong").value = pos.coords.longitude.toFixed(7);
             },
             function () {
-              document.getElementById("gpsLat").value = (17.8 + Math.random() * 0.15).toFixed(6);
-              document.getElementById("gpsLong").value = (75.1 + Math.random() * 0.15).toFixed(6);
+              alert("Unable to sync GPS coordinate. Please ensure location access is enabled.");
             }
           );
         } else {
-          document.getElementById("gpsLat").value = (17.8 + Math.random() * 0.15).toFixed(6);
-          document.getElementById("gpsLong").value = (75.1 + Math.random() * 0.15).toFixed(6);
+          alert("Geolocation is not supported by your browser.");
         }
       }
 
+      // Photo upload previews
+      function previewPhoto(input) {
+        const file = input.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            document.getElementById("photoPreview").src = e.target.result;
+            document.getElementById("photoPreviewContainer").classList.remove("hidden");
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      function clearPhoto() {
+        document.getElementById("meetingPhoto").value = "";
+        document.getElementById("photoPreview").src = "#";
+        document.getElementById("photoPreviewContainer").classList.add("hidden");
+      }
+
+      // Load tasks from API
       async function loadTasks() {
-        var empCode = getEmpCode();
-        if (!empCode) {
-          console.warn("No emp_code available — cannot load tasks.");
-          return;
-        }
         try {
-          var data = await apiFetch("GET", "/employee/tasks/" + encodeURIComponent(empCode));
-          taskList.length = 0;
-          if (Array.isArray(data)) {
-            taskList.push.apply(taskList, data);
+          const tasks = await AgriAPI.getOfficerTasks();
+          const taskSelect = document.getElementById("taskSelect");
+          taskSelect.innerHTML = '<option value="">Select a task...</option>';
+          if (Array.isArray(tasks)) {
+            activeTasksList = tasks;
+            tasks.forEach(task => {
+              const opt = document.createElement("option");
+              opt.value = task.task_id;
+              opt.textContent = `${task.task_name} (${task.work_type}) - ${task.status}`;
+              taskSelect.appendChild(opt);
+            });
           }
-          renderLogs();
         } catch (err) {
-          console.error("Failed to load tasks:", err.message);
+          console.error("Failed to load officer tasks:", err);
         }
       }
 
-      async function handleFormSubmit() {
-        var farmer = document.getElementById("farmerName").value.trim();
-        var mobile = document.getElementById("mobileNo").value.trim();
-        var purpose = document.getElementById("purposeWork").value;
-        var village = document.getElementById("villageName").value.trim();
-        var city = document.getElementById("cityName").value.trim();
-        var lat = document.getElementById("gpsLat").value;
-        var long = document.getElementById("gpsLong").value;
-        var desc = document.getElementById("workDesc").value.trim();
+      // Render completed meetings list
+      async function loadMeetings() {
+        try {
+          const meetings = await AgriAPI.getMyMeetings(0, 50);
+          const list = document.getElementById("submissionList");
+          document.getElementById("logCount").textContent =
+            (meetings ? meetings.length : 0) + " Meeting" + ((meetings && meetings.length !== 1) ? "s" : "");
+          
+          if (!meetings || !meetings.length) {
+            list.innerHTML = '<div class="text-center py-12 text-slate-400"><span class="material-symbols-outlined text-4xl block mb-2 opacity-30 select-none">inbox</span><p class="text-xs font-semibold">No completed meetings yet.</p></div>';
+            return;
+          }
+          meetingsList = meetings;
+          list.innerHTML = meetings.map(m => {
+            const meetingDate = m.created_date || m.created_at || "—";
+            const kccBadge = m.kcc ? '<span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-200">KCC</span>' : '<span class="px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 border border-rose-200">No KCC</span>';
+            const regBadge = m.cane_registration ? '<span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-200">Registered</span>' : '';
+            const tonnage = m.expected_tonnage ? `<span class="bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.5 rounded">${m.expected_tonnage} MT</span>` : '';
+            const photoEl = m.photo_path ? `<div class="mt-2"><img src="${AgriAuth.apiOrigin() + m.photo_path}" class="w-20 h-16 rounded object-cover border" alt="Meeting Evidence" /></div>` : '';
+            
+            return `
+              <div class="p-4 border border-slate-200 rounded-xl space-y-2 hover:bg-slate-50/50 transition-all text-xs bg-white">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <p class="font-bold text-slate-800">${m.farmer_name}</p>
+                    <p class="text-[10px] text-slate-500 font-semibold mt-0.5">${m.village} &bull; Code: ${m.farmer_code}</p>
+                  </div>
+                  <span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider">${meetingDate}</span>
+                </div>
+                <div class="flex flex-wrap gap-1 text-[9px] font-bold">
+                  ${kccBadge}
+                  ${regBadge}
+                  ${tonnage}
+                </div>
+                ${m.remark ? `<p class="text-[10px] text-slate-600 italic mt-1 font-medium bg-slate-50 p-2 rounded-lg border border-slate-100">"${m.remark}"</p>` : ''}
+                ${photoEl}
+              </div>
+            `;
+          }).join("");
+        } catch (err) {
+          console.error("Failed to load meetings history:", err);
+        }
+      }
 
-        if (!farmer) { alert("Please enter the farmer's name."); return; }
-        if (!mobile) { alert("Please enter the mobile number."); return; }
-        if (!lat || !long) { alert("Please sync GPS coordinates before submitting."); return; }
-
-        if (!selectedRowId) {
-          alert("Please select a task from the list before submitting.");
+      // Handler when task is chosen
+      async function onTaskSelect(taskId) {
+        selectedTaskId = taskId ? parseInt(taskId) : null;
+        selectedFarmer = null;
+        document.getElementById("checklistFormContainer").classList.add("hidden");
+        resetChecklistStates();
+        
+        if (!selectedTaskId) {
+          document.getElementById("farmerSelectionContainer").classList.add("hidden");
           return;
         }
 
-        var submitBtn = document.querySelector('button[onclick="handleFormSubmit()"]');
-        var origText = submitBtn.innerHTML;
+        try {
+          const detail = await AgriAPI.getMyTaskDetail(selectedTaskId);
+          const listContainer = document.getElementById("farmerCardsList");
+          listContainer.innerHTML = "";
+          
+          if (detail && detail.farmers && detail.farmers.length) {
+            document.getElementById("farmerSelectionContainer").classList.remove("hidden");
+            detail.farmers.forEach(f => {
+              const card = document.createElement("div");
+              const isCompleted = f.status === "COMPLETED";
+              const isInProgress = f.status === "IN_PROGRESS";
+              
+              let statusClass = "bg-slate-100 border-slate-200 text-slate-700";
+              if (isCompleted) statusClass = "bg-emerald-50 border-emerald-200 text-emerald-700";
+              else if (isInProgress) statusClass = "bg-amber-50 border-amber-200 text-amber-700";
+
+              card.className = `p-4 border rounded-xl flex flex-col justify-between hover:shadow-sm cursor-pointer transition-all ${isCompleted ? 'opacity-70' : 'hover:border-emerald-500'}`;
+              card.onclick = () => selectFarmer(f);
+
+              card.innerHTML = `
+                <div class="flex justify-between items-start gap-2">
+                  <div>
+                    <h4 class="font-bold text-slate-800">${f.name}</h4>
+                    <p class="text-[10px] text-slate-500 font-semibold mt-0.5">Code: ${f.farmer_id} &bull; ${f.village}</p>
+                  </div>
+                  <span class="px-2 py-0.5 rounded-full border text-[9px] font-black uppercase tracking-wider ${statusClass}">
+                    ${f.status || "PENDING"}
+                  </span>
+                </div>
+                <div class="flex justify-between items-center mt-3 pt-2 border-t border-slate-100">
+                  <span class="text-[9px] text-slate-400 font-bold">${f.mobile || "No Mobile"}</span>
+                  ${isCompleted ? '<span class="material-symbols-outlined text-emerald-500 text-base">check_circle</span>' : '<span class="text-[9px] text-emerald-700 font-black hover:underline uppercase tracking-wider">Start visit &rarr;</span>'}
+                </div>
+              `;
+              listContainer.appendChild(card);
+            });
+          } else {
+            document.getElementById("farmerSelectionContainer").classList.remove("hidden");
+            listContainer.innerHTML = '<p class="text-slate-400 text-xs py-4 text-center col-span-2">No farmers assigned to this task plan.</p>';
+          }
+        } catch (err) {
+          console.error("Failed to load task details:", err);
+        }
+      }
+
+      // Handler when officer selects a farmer to inspect
+      async function selectFarmer(farmer) {
+        if (farmer.status === "COMPLETED") {
+          alert("Meeting checklist for this farmer has already been submitted and completed.");
+          return;
+        }
+
+        selectedFarmer = farmer;
+        resetChecklistStates();
+        
+        document.getElementById("checklistFormTitle").textContent = `Checklist Form — ${farmer.name}`;
+        document.getElementById("infoFarmerName").textContent = farmer.name;
+        document.getElementById("infoFarmerMeta").textContent = `${farmer.village} (ID: ${farmer.farmer_id}) \u2022 ${farmer.mobile || "—"}`;
+        
+        document.getElementById("checklistFormContainer").classList.remove("hidden");
+        document.getElementById("checklistFormContainer").scrollIntoView({ behavior: "smooth" });
+
+        // Update progress of task mapping to IN_PROGRESS in the background if it is pending
+        if (farmer.status === "PENDING") {
+          try {
+            await AgriAPI.updateTaskFarmerProgress(farmer.mapping_id, {
+              description: "Started task compliance meeting with farmer"
+            });
+            // Silently update local status
+            farmer.status = "IN_PROGRESS";
+          } catch (err) {
+            console.error("Failed to update status to IN_PROGRESS:", err);
+          }
+        }
+      }
+
+      function deselectFarmer() {
+        selectedFarmer = null;
+        document.getElementById("checklistFormContainer").classList.add("hidden");
+        resetChecklistStates();
+      }
+
+      // Checklist Form Submit handler
+      async function handleFormSubmit() {
+        if (!selectedFarmer) {
+          alert("Please select a farmer checklist before submitting.");
+          return;
+        }
+
+        // Required toggles check
+        const fields = [
+          { key: "kcc", label: "KCC", reasonId: "kccReason" },
+          { key: "canaraHnt", label: "Canara HNT", reasonId: "canaraHntReason" },
+          { key: "sangolaHnt", label: "Sangola HNT", reasonId: "sangolaHntReason" },
+          { key: "caneRegistration", label: "Cane Registration", reasonId: "caneRegistrationRemark" },
+          { key: "recovery", label: "Recovery Compliance", reasonId: "recoveryReason" },
+          { key: "vehicleAgreement", label: "Vehicle Agreement", reasonId: "vehicleReason" },
+          { key: "isWorkingVehicle", label: "Working Vehicle", reasonId: "vehicleWorkingReason" }
+        ];
+
+        for (let f of fields) {
+          if (checklistData[f.key] === null) {
+            alert(`Please answer the checklist question for: ${f.label}`);
+            return;
+          }
+          // If NO (or YES for registration), make reason/remark mandatory
+          const isNegative = f.key === "caneRegistration" ? (checklistData[f.key] === true) : (checklistData[f.key] === false);
+          if (isNegative && !document.getElementById(f.reasonId).value.trim()) {
+            alert(`Please provide the required explanation / reason for: ${f.label}`);
+            return;
+          }
+        }
+
+        // GPS checks
+        const lat = document.getElementById("gpsLat").value;
+        const long = document.getElementById("gpsLong").value;
+        if (!lat || !long) {
+          alert("Please sync your GPS coordinates before submitting the checklist.");
+          return;
+        }
+
+        const submitBtn = document.getElementById("submitMeetingBtn");
+        const origText = submitBtn.innerHTML;
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span><span>Submitting…</span>';
+        submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span><span>Uploading & Submitting…</span>';
 
         try {
-          var matchedTask = taskList.find(function (t) {
-            var rid = t.r_id ?? t.id ?? t.row_id;
-            return String(rid) === String(selectedRowId);
-          });
-          var workCount = matchedTask ? (matchedTask.r_work_count ?? matchedTask.work_count ?? 0) : 0;
-          var status = matchedTask ? (matchedTask.r_status ?? matchedTask.status ?? 0) : 0;
+          const session = AgriAuth.getSession();
+          
+          // Photo upload first
+          const photoInput = document.getElementById("meetingPhoto");
+          if (photoInput.files && photoInput.files[0]) {
+            const uploadRes = await AgriAPI.uploadMeetingPhoto(photoInput.files[0]);
+            checklistData.photoPath = uploadRes.photo_path;
+          }
 
-          await apiFetch("POST", "/employee/update-progress", {
-            row_id: selectedRowId,
-            progress: Number(workCount),
-            status: Number(status)
-          });
+          // Submit meeting data (TbL_TRN_Farmer_Meeting)
+          const meetingPayload = {
+            work_plan_id: selectedTaskId,
+            farmer_code: selectedFarmer.farmer_id,
+            employee_id: session.userId,
+            kcc: checklistData.kcc,
+            kcc_reason: document.getElementById("kccReason").value.trim() || null,
+            canara_hnt: checklistData.canaraHnt,
+            canara_reason: document.getElementById("canaraHntReason").value.trim() || null,
+            sangola_hnt: checklistData.sangolaHnt,
+            sangola_reason: document.getElementById("sangolaHntReason").value.trim() || null,
+            cane_registration: checklistData.caneRegistration,
+            cane_registration_remark: document.getElementById("caneRegistrationRemark").value.trim() || null,
+            recovery: checklistData.recovery,
+            recovery_reason: document.getElementById("recoveryReason").value.trim() || null,
+            expected_tonnage: parseFloat(document.getElementById("expectedTonnage").value) || null,
+            vehicle_agreement: checklistData.vehicleAgreement,
+            vehicle_reason: document.getElementById("vehicleReason").value.trim() || null,
+            is_working_vehicle: checklistData.isWorkingVehicle,
+            vehicle_working_reason: document.getElementById("vehicleWorkingReason").value.trim() || null,
+            cane_development: document.getElementById("caneDevelopment").value.trim() || null,
+            feedback: document.getElementById("feedback").value.trim() || null,
+            photo_path: checklistData.photoPath || null,
+            remark: document.getElementById("generalRemark").value.trim() || null,
+            latitude: parseFloat(lat),
+            longitude: parseFloat(long),
+            location: selectedFarmer.village || null,
+            created_by: session.userId
+          };
 
-          ["farmerName", "mobileNo", "villageName", "cityName", "gpsLat", "gpsLong", "workDesc"].forEach(function (id) {
-            document.getElementById(id).value = "";
-          });
-          document.getElementById("purposeWork").selectedIndex = 0;
-          selectedRowId = null;
+          const meetingResult = await AgriAPI.submitFarmerMeeting(meetingPayload);
+          if (!meetingResult.ok) throw new Error(meetingResult.message || "Failed to save checklist meeting record.");
 
-          alert("Progress updated successfully.");
-          await loadTasks();
+          // Submit complete task progress (updates TASK_FARMER_MAPPING status to COMPLETED)
+          const completePayload = {
+            latitude: parseFloat(lat),
+            longitude: parseFloat(long),
+            description: document.getElementById("generalRemark").value.trim() || "Completed field visit checklist"
+          };
+          await AgriAPI.completeTaskFarmer(selectedFarmer.mapping_id, completePayload);
+
+          alert("Farmer checklist meeting submitted and task closed successfully.");
+          
+          // Refresh UI
+          deselectFarmer();
+          await onTaskSelect(selectedTaskId);
+          await loadMeetings();
+          await loadTasks(); // Reload main tasks dropdown to show status changes
         } catch (err) {
           console.error(err);
-          alert("Submission failed: " + (err.message || "Unknown error. Please try again."));
+          alert("Submission failed: " + err.message);
         } finally {
           submitBtn.disabled = false;
           submitBtn.innerHTML = origText;
         }
       }
 
+      // Initial loads
       document.addEventListener("DOMContentLoaded", async function () {
-        var session = AgriAuth.getSession();
+        const session = AgriAuth.getSession();
         if (!session) return;
 
         document.getElementById("headerUserName").textContent = session.name || session.username || "—";
@@ -629,14 +1003,15 @@
         document.getElementById("avatarCircle").textContent = (session.name || "?")[0].toUpperCase();
 
         await loadTasks();
+        await loadMeetings();
 
-        var logoutBtn = document.getElementById("navLogout");
+        const logoutBtn = document.getElementById("navLogout");
         if (logoutBtn) {
           logoutBtn.addEventListener("click", function (e) {
             e.preventDefault();
             if (confirm("Are you sure you want to sign out?")) {
               AgriAuth.clearSession();
-              window.location.replace("login.html");
+              window.location.replace("/login.html");
             }
           });
         }

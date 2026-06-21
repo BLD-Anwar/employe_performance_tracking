@@ -5,7 +5,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import RedirectResponse, FileResponse
 
 # Ensure backend directory is in sys.path so nested relative-like imports work
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -28,6 +28,7 @@ from routers.reports     import router as reports_router
 from routers.settings    import router as settings_router
 from routers.employee    import router as employee_router
 from routers.meeting     import router as meeting_router
+from routers.hr          import router as hr_router
 
 def _startup_log_db_config():
     try:
@@ -126,6 +127,7 @@ app.include_router(reports_router)
 app.include_router(settings_router)
 app.include_router(employee_router)
 app.include_router(meeting_router)
+app.include_router(hr_router)
 
 
 # ── Serve frontend static files ─────────────────────────────────────────────
@@ -151,6 +153,12 @@ if os.path.exists(FRONTEND_DIR):
     employee_dir = os.path.join(FRONTEND_DIR, "employee")
     if os.path.exists(employee_dir):
         app.mount("/employee", StaticFiles(directory=employee_dir, html=True), name="employee")
+
+    # Mount HR pages
+    hr_dir = os.path.join(FRONTEND_DIR, "hr")
+    if not os.path.exists(hr_dir):
+        os.makedirs(hr_dir, exist_ok=True)
+    app.mount("/hr", StaticFiles(directory=hr_dir, html=True), name="hr")
 
     # Root → Unified login page
     @app.get("/")

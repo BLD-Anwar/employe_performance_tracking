@@ -1196,7 +1196,7 @@
       const next = new Date(); next.setDate(next.getDate() + 7);
       document.getElementById("endDate").value = next.toISOString().split("T")[0];
 
-      document.getElementById("logoutBtn").addEventListener("click", e => { e.preventDefault(); if (confirm("Sign out?")) AgriAuth.clearSession(), window.location.replace("login.html"); });
+      document.getElementById("logoutBtn").addEventListener("click", e => { e.preventDefault(); if (confirm("Sign out?")) AgriAuth.clearSession(), window.location.replace("/login.html"); });
 
       // Initialize data fetches from database
       await loadInitialData();

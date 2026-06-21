@@ -1,10 +1,10 @@
-const MANAGER_PAGES = new Set([
-  "manager_dashboard.html", "manager_dashboard",
-  "manager_officers.html", "manager_officers",
-  "manager_tasks.html", "manager_tasks",
-  "manager_performance.html", "manager_performance",
-  "manager_reports.html", "manager_reports",
-  "manager_settings.html", "manager_settings",
+const HR_PAGES = new Set([
+  "hr_dashboard.html", "hr_dashboard",
+  "hr_managers.html", "hr_managers",
+  "hr_officers.html", "hr_officers",
+  "hr_tasks.html", "hr_tasks",
+  "hr_task_detail.html", "hr_task_detail",
+  "hr_settings.html", "hr_settings",
 ]);
 
 const AgriAuth = {
@@ -24,7 +24,14 @@ const AgriAuth = {
     return `${this.apiOrigin()}${p}`;
   },
 
-  async apiFetch(path, options) {
+  async apiFetch(path, options = {}) {
+    // If body is present and it is an object, convert to string
+    const headers = options.headers || {};
+    if (options.body && typeof options.body === "object" && !(options.body instanceof FormData)) {
+      options.body = JSON.stringify(options.body);
+      headers["Content-Type"] = "application/json";
+    }
+    options.headers = headers;
     const res = await fetch(this.apiUrl(path), options);
     return res;
   },
@@ -33,8 +40,10 @@ const AgriAuth = {
     try {
       const raw = localStorage.getItem("agri_session") || sessionStorage.getItem("agri_session");
       if (raw) {
-        const s = JSON.parse(raw);
-        if (s && s.role === "manager") return s;
+        const session = JSON.parse(raw);
+        if (session && session.role === "hr") {
+          return session;
+        }
       }
       return null;
     } catch {
@@ -66,15 +75,15 @@ const AgriAuth = {
     return true;
   },
 
-  /** Default manager session so portal pages work without login during development if dev_mode is set */
-  ensureManagerSession() {
+  /** Default HR session so portal pages work without login during development if dev_mode is set */
+  ensureHrSession() {
     if (this.getSession()) return;
     if (localStorage.getItem("dev_mode") === "true") {
       this.setSession({
         id: 1,
         username: "admin",
-        name: "Manager",
-        role: "manager",
+        name: "HR Administrator",
+        role: "hr",
       });
     }
   },
@@ -83,8 +92,8 @@ const AgriAuth = {
 const currentPage = window.location.pathname.split("/").pop() || "";
 const pageKey = currentPage.replace(".html", "");
 
-if (MANAGER_PAGES.has(currentPage) || MANAGER_PAGES.has(pageKey)) {
-  AgriAuth.ensureManagerSession();
+if (HR_PAGES.has(currentPage) || HR_PAGES.has(pageKey)) {
+  AgriAuth.ensureHrSession();
 }
 
 if (

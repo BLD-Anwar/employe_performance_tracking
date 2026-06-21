@@ -54,11 +54,9 @@
   .bar-track-officer{height:8px;background:#f3f4f6;border-radius:99px;overflow:hidden;}
   .bar-fill-officer{height:100%;background:#006c49;border-radius:99px;transition:width 0.8s ease;}
 </style>
-<script src="/assets/js/auth-store.js"></script>
+<script src="/assets/js/manager-auth-store.js"></script>
 <script>
-  if (!AgriAuth.requireManager()) {
-    document.documentElement.innerHTML = "";
-  }
+  AgriAuth.ensureManagerSession();
 </script>
 </head>
 <body>

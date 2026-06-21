@@ -11,8 +11,6 @@ from models import DashboardStats, WeekPoint, WorkTypePoint, TopOfficer, RecentA
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
-PERIOD_LABEL = "Jan – Dec 2026"
-
 
 @router.get("/stats", response_model=DashboardStats)
 def get_stats():

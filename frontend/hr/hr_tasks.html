@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriPulse — HR Task Audit</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Inter',sans-serif;background:#f4f6f8;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}
+  .sidebar{background:linear-gradient(180deg,#0f1f18 0%,#0a150f 100%);width:220px;min-height:100vh;position:fixed;left:0;top:0;z-index:50;display:flex;flex-direction:column;}
+  .nav-link{display:flex;align-items:center;gap:12px;padding:10px 16px;margin:2px 8px;border-radius:8px;color:rgba(209,250,229,0.65);font-size:13px;font-weight:600;text-decoration:none;transition:all 0.15s;}
+  .nav-link:hover{background:rgba(255,255,255,0.07);color:#fff;}
+  .nav-link.active{background:rgba(74,222,128,0.18);color:#86efac;}
+  .nav-link.active .material-symbols-outlined{color:#4ade80;}
+  .nav-link.logout{color:rgba(252,165,165,0.7);}
+  .nav-link.logout:hover{background:rgba(239,68,68,0.1);color:#fca5a5;}
+  .nav-link.settings-link{color:rgba(209,250,229,0.65);}
+  .card{background:#fff;border-radius:14px;border:1px solid #e5e7eb;}
+  .tbl-row:hover{background:#f0fdf4;cursor:pointer;}
+  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;}
+  body input, body select {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13px !important;
+  }
+  input,select{border:1.5px solid #d1d5db;border-radius:8px;padding:8px 12px;color:#111827;background:#fff;}
+  input:focus,select:focus{outline:none;border-color:#006c49;box-shadow:0 0 0 3px rgba(0,108,73,0.08);}
+  body select{
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E") !important;
+    background-position: right 10px center !important;
+    background-repeat: no-repeat !important;
+    background-size: 1.25rem !important;
+    padding-right: 32px !important;
+    cursor: pointer !important;
+  }
+  .btn{padding:8px 16px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all 0.15s;}
+  .btn-primary{background:#003527;color:#fff;}
+  .btn-primary:hover{background:#006c49;}
+</style>
+<script src="../assets/js/hr-auth-store.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+  <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
+    <div style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+      <span class="material-symbols-outlined" style="color:#4ade80;font-size:20px;">agriculture</span>
+    </div>
+    <div>
+      <div style="color:#f0fdf4;font-weight:800;font-size:14px;line-height:1.2;">Sri Sri Sugar</div>
+      <div style="color:rgba(209,250,229,0.5);font-size:10px;font-weight:600;letter-spacing:0.06em;">HR PORTAL</div>
+    </div>
+  </div>
+  <nav style="flex:1;padding:8px 0;">
+    <a class="nav-link" href="hr_dashboard.html" id="navOverview"><span class="material-symbols-outlined" style="font-size:20px;">dashboard</span>Overview</a>
+    <a class="nav-link" href="hr_managers.html" id="navManagers"><span class="material-symbols-outlined" style="font-size:20px;">supervisor_account</span>Managers</a>
+    <a class="nav-link" href="hr_officers.html" id="navOfficers"><span class="material-symbols-outlined" style="font-size:20px;">group</span>Officers</a>
+    <a class="nav-link active" href="hr_tasks.html" id="navTasks"><span class="material-symbols-outlined" style="font-size:20px;">checklist</span>Tasks</a>
+    <a class="nav-link" href="hr_reports.html" id="navReports"><span class="material-symbols-outlined" style="font-size:20px;">description</span>Reports</a>
+    <a class="nav-link" href="hr_analytics.html" id="navAnalytics"><span class="material-symbols-outlined" style="font-size:20px;">analytics</span>Analytics</a>
+  </nav>
+  <div style="border-top:1px solid rgba(255,255,255,0.07);padding:8px 0;">
+    <a class="nav-link settings-link" href="hr_settings.html" id="navSettings"><span class="material-symbols-outlined" style="font-size:20px;">settings</span>Settings</a>
+    <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined" style="font-size:20px;">logout</span>Logout</a>
+  </div>
+</aside>
+
+<div style="margin-left:220px;min-height:100vh;">
+  <header style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
+    <div>
+      <span style="font-size:18px;font-weight:800;color:#003527;">Global Tasks Directory</span>
+      <span style="font-size:12px;color:#6b7280;margin-left:10px;">Monitor all task assignments & checklist compliance</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="badge" style="background:#dbeafe;color:#1e40af;">HR Administrator</span>
+      <div style="width:36px;height:36px;border-radius:99px;background:#d1fae5;color:#003527;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;" id="avatarCircle">H</div>
+    </div>
+  </header>
+
+  <div style="padding:24px;display:flex;flex-direction:column;gap:20px;">
+    <!-- Search & Filters Panel -->
+    <div class="card" style="padding:16px 20px;background:#fff;display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
+      <div style="position:relative;">
+        <span class="material-symbols-outlined" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:18px;">search</span>
+        <input type="text" id="searchInput" placeholder="Search task name..." oninput="filterTasks()" style="width:240px;padding-left:36px;">
+      </div>
+
+      <select id="managerFilter" onchange="loadTasks()" style="width:180px;">
+        <option value="">All Managers</option>
+      </select>
+
+      <select id="officerFilter" onchange="loadTasks()" style="width:180px;">
+        <option value="">All Officers</option>
+      </select>
+
+      <select id="workTypeFilter" onchange="loadTasks()" style="width:160px;">
+        <option value="">All Work Types</option>
+      </select>
+
+      <select id="statusFilter" onchange="loadTasks()" style="width:150px;">
+        <option value="">All Statuses</option>
+        <option value="ASSIGNED">Assigned</option>
+        <option value="PENDING">Pending</option>
+        <option value="IN_PROGRESS">In Progress</option>
+        <option value="COMPLETED">Completed</option>
+        <option value="OVERDUE">Overdue</option>
+        <option value="CANCELLED">Cancelled</option>
+      </select>
+
+      <span style="font-size:12px;color:#6b7280;margin-left:auto;" id="taskCount">0 tasks</span>
+    </div>
+
+    <!-- Tasks List Table -->
+    <div class="card" style="overflow:hidden;">
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead style="background:#f9fafb;">
+            <tr>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;width:60px;">ID</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Task Name</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Work Type</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Officer Assigned</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Assigned By (Mgr)</th>
+              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Date Range</th>
+              <th style="padding:10px 16px;text-align:center;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Farmers</th>
+              <th style="padding:10px 16px;text-align:center;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Status</th>
+              <th style="padding:10px 16px;text-align:right;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;width:150px;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="tasksTbody">
+            <tr><td colspan="9" style="padding:20px;text-align:center;color:#9ca3af;font-size:12px;">Loading tasks directory…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── API helper ───────────────────────────────────────────────────────────────
+async function apiFetch(path, options = {}) {
+  const p = path.startsWith("/api") ? path : `/api${path.startsWith("/") ? path : "/" + path}`;
+  const res = await AgriAuth.apiFetch(p, options);
+  if (!res.ok) throw new Error(`API error ${res.status}: ${path}`);
+  return res.json();
+}
+
+let allTasksList = [];
+
+async function loadDropdownFilters() {
+  try {
+    const [managers, officers, workTypes] = await Promise.all([
+      apiFetch("/hr/managers"),
+      apiFetch("/tasks/officers"),
+      apiFetch("/tasks/work-types")
+    ]);
+
+    const mgrSelect = document.getElementById("managerFilter");
+    managers.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m.id;
+      opt.textContent = m.name;
+      mgrSelect.appendChild(opt);
+    });
+
+    const offSelect = document.getElementById("officerFilter");
+    officers.forEach(o => {
+      const opt = document.createElement("option");
+      opt.value = o.id;
+      opt.textContent = o.name;
+      offSelect.appendChild(opt);
+    });
+
+    const wtSelect = document.getElementById("workTypeFilter");
+    workTypes.forEach(wt => {
+      const opt = document.createElement("option");
+      opt.value = wt.name;
+      opt.textContent = wt.name;
+      wtSelect.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("Failed to load filter dropdowns:", err);
+  }
+}
+
+async function loadTasks() {
+  const mgr = document.getElementById("managerFilter").value;
+  const off = document.getElementById("officerFilter").value;
+  const wt = document.getElementById("workTypeFilter").value;
+  const status = document.getElementById("statusFilter").value;
+
+  const params = new URLSearchParams();
+  if (mgr) params.set("manager_id", mgr);
+  if (off) params.set("officer_id", off);
+  if (wt) params.set("work_type", wt);
+  if (status) params.set("status", status);
+
+  try {
+    const data = await apiFetch(`/hr/tasks?${params}`);
+    allTasksList = data;
+    filterTasks();
+  } catch (err) {
+    console.error("Failed to fetch tasks directory:", err);
+  }
+}
+
+function filterTasks() {
+  const q = document.getElementById("searchInput").value.toLowerCase();
+  const filtered = allTasksList.filter(t => {
+    return !q || t.task_name.toLowerCase().includes(q);
+  });
+
+  document.getElementById("taskCount").textContent = `${filtered.length} task${filtered.length !== 1 ? 's' : ''}`;
+  renderTasksTable(filtered);
+}
+
+function renderTasksTable(tasks) {
+  const tbody = document.getElementById("tasksTbody");
+  if (!tbody) return;
+
+  if (!tasks.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="padding:20px;text-align:center;color:#9ca3af;font-size:12px;">No tasks found matching criteria</td></tr>';
+    return;
+  }
+
+  const statusBadge = st => {
+    let style = "background:#f3f4f6;color:#374151;";
+    if (st === "COMPLETED") style = "background:#d1fae5;color:#003527;";
+    else if (st === "OVERDUE") style = "background:#fee2e2;color:#b91c1c;";
+    else if (st === "IN_PROGRESS") style = "background:#dbeafe;color:#1e40af;";
+    else if (st === "PENDING" || st === "ASSIGNED") style = "background:#fef3c7;color:#92400e;";
+    return `<span class="badge" style="${style}">${st}</span>`;
+  };
+
+  tbody.innerHTML = tasks.map(t => {
+    return `
+      <tr class="tbl-row" style="border-top:1px solid #f3f4f6;" onclick="window.location.href='hr_task_detail.html?id=${t.task_id}'">
+        <td style="padding:12px 16px;font-size:12px;color:#6b7280;font-weight:600;">#${t.task_id}</td>
+        <td style="padding:12px 16px;">
+          <div style="font-size:13px;font-weight:700;color:#111827;">${t.task_name}</div>
+          <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Priority: ${t.priority}</div>
+        </td>
+        <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#374151;">${t.work_type}</td>
+        <td style="padding:12px 16px;font-size:13px;color:#4b5563;font-weight:700;">${t.officer_name}</td>
+        <td style="padding:12px 16px;font-size:12px;color:#4b5563;">${t.manager_name}</td>
+        <td style="padding:12px 16px;font-size:12px;color:#6b7280;">
+          <span style="font-weight:600;">${t.start_date}</span> to <span style="font-weight:600;">${t.end_date}</span>
+        </td>
+        <td style="padding:12px 16px;text-align:center;font-size:13px;font-weight:800;color:#111827;">${t.farmer_count}</td>
+        <td style="padding:12px 16px;text-align:center;">${statusBadge(t.status)}</td>
+        <td style="padding:12px 16px;text-align:right;">
+          <a href="hr_task_detail.html?id=${t.task_id}" style="background:#003527;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
+            Checklist <span class="material-symbols-outlined" style="font-size:14px;">arrow_forward</span>
+          </a>
+        </td>
+      </tr>`;
+  }).join("");
+}
+
+// ── Main ─────────────────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", async () => {
+  const s = AgriAuth.getSession();
+  if (!s) return;
+  const name = s.name || s.username;
+  document.getElementById("avatarCircle").textContent = name.charAt(0).toUpperCase();
+
+  document.getElementById("logoutBtn").addEventListener("click", e => {
+    e.preventDefault();
+    if (confirm("Sign out from HR Portal?")) { AgriAuth.clearSession(); window.location.replace("/login.html"); }
+  });
+
+  await loadDropdownFilters();
+  await loadTasks();
+});
+</script>
+</body>
+</html>

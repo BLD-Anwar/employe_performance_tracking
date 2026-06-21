@@ -308,7 +308,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (confirm('Are you sure you want to sign out?')) {
         AgriAPI.logout();
         AgriAuth.clearSession();
-        window.location.replace('login.html');
+        window.location.replace("/login.html");
       }
     });
   }

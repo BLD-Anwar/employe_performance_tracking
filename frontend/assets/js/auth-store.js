@@ -7,54 +7,84 @@ const AgriAuth = {
   SESSION_KEY: "agriPulseSession",
   REMEMBER_KEY: "agriPulseRemember",
 
-  getSession() {
-    const rawSession = sessionStorage.getItem(this.SESSION_KEY);
-    const rawRemember = localStorage.getItem(this.REMEMBER_KEY);
+  /** Backend origin — relative when served from FastAPI, absolute for file:// or different port */
+  apiOrigin() {
+    if (location.protocol === "file:") return "http://127.0.0.1:8000";
+    const host = location.hostname;
+    const port = location.port;
+    if ((host === "localhost" || host === "127.0.0.1") && port && port !== "8000") {
+      return "http://127.0.0.1:8000";
+    }
+    return "";
+  },
 
-    if (rawSession) {
-      try { return JSON.parse(rawSession); }
-      catch { sessionStorage.removeItem(this.SESSION_KEY); }
+  apiUrl(path) {
+    const p = path.startsWith("/") ? path : `/${path}`;
+    return `${this.apiOrigin()}${p}`;
+  },
+
+  getSession() {
+    try {
+      const raw = localStorage.getItem("agri_session") || sessionStorage.getItem("agri_session");
+      if (raw) {
+        const s = JSON.parse(raw);
+        if (s && s.role === "officer") {
+          return {
+            userId: s.id,
+            username: s.username,
+            name: s.name,
+            role: s.role
+          };
+        }
+      }
+      return null;
+    } catch {
+      return null;
     }
-    if (rawRemember) {
-      try { return JSON.parse(rawRemember); }
-      catch { localStorage.removeItem(this.REMEMBER_KEY); }
-    }
-    return null;
   },
 
   /**
-   * Called after a successful API login.
-   * @param {object} profile  - ProfileResponse from GET /me
-   * @param {string} token    - JWT access_token from POST /auth/login
-   * @param {boolean} remember - persist to localStorage
+   * Called after a successful API login (backward compatibility fallback).
    */
   setSession(profile, token, remember) {
     const payload = {
-      userId:   profile.id,          // "SS-0042"
+      id: profile.id,
       username: profile.username,
-      email:    profile.email,
-      name:     profile.name,
-      isStaff:  profile.is_staff,
-      token:    token,               // JWT — used by api.js for every request
-      loginAt:  new Date().toISOString(),
+      name: profile.name,
+      role: "officer"
     };
-    sessionStorage.setItem(this.SESSION_KEY, JSON.stringify(payload));
+    const sessionStr = JSON.stringify(payload);
     if (remember) {
-      localStorage.setItem(this.REMEMBER_KEY, JSON.stringify(payload));
+      localStorage.setItem("agri_session", sessionStr);
     } else {
-      localStorage.removeItem(this.REMEMBER_KEY);
+      sessionStorage.setItem("agri_session", sessionStr);
     }
-    return payload;
+    return {
+      userId: payload.id,
+      username: payload.username,
+      name: payload.name,
+      role: payload.role
+    };
   },
 
   clearSession() {
-    sessionStorage.removeItem(this.SESSION_KEY);
-    localStorage.removeItem(this.REMEMBER_KEY);
+    try {
+      localStorage.removeItem("agri_session");
+      sessionStorage.removeItem("agri_session");
+    } catch {}
   },
 
   requireAuth(loginPath) {
     if (!this.getSession()) {
-      window.location.href = loginPath;
+      window.location.href = "/login.html";
+      return false;
+    }
+    return true;
+  },
+
+  requireOfficer() {
+    if (!this.getSession()) {
+      window.location.href = "/login.html";
       return false;
     }
     return true;

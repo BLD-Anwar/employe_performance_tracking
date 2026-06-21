@@ -1,4 +1,4 @@
-7777777777777777777<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -36,23 +36,29 @@
   .toast{position:fixed;top:70px;right:20px;background:#003527;color:#fff;border-radius:10px;padding:12px 20px;font-size:13px;font-weight:600;z-index:999;transform:translateX(140%);transition:transform 0.3s ease;}
   .toast.show{transform:translateX(0);}
 </style>
-<script src="../assets/js/manager-auth-store.js"></script>
+<script src="../assets/js/hr-auth-store.js"></script>
 </head>
 <body>
 <aside class="sidebar">
   <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
-    <div style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:#4ade80;font-size:20px;">agriculture</span></div>
-    <div><div style="color:#f0fdf4;font-weight:800;font-size:14px;">Sri Sri Sugar</div><div style="color:rgba(209,250,229,0.5);font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL</div></div>
+    <div style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+      <span class="material-symbols-outlined" style="color:#4ade80;font-size:20px;">agriculture</span>
+    </div>
+    <div>
+      <div style="color:#f0fdf4;font-weight:800;font-size:14px;line-height:1.2;">Sri Sri Sugar</div>
+      <div style="color:rgba(209,250,229,0.5);font-size:10px;font-weight:600;letter-spacing:0.06em;">HR PORTAL</div>
+    </div>
   </div>
   <nav style="flex:1;padding:8px 0;">
-    <a class="nav-link" href="manager_dashboard.html"><span class="material-symbols-outlined" style="font-size:20px;">dashboard</span>Overview</a>
-    <a class="nav-link" href="manager_officers.html"><span class="material-symbols-outlined" style="font-size:20px;">group</span>Officers</a>
-    <a class="nav-link" href="manager_tasks.html"><span class="material-symbols-outlined" style="font-size:20px;">checklist</span>Tasks</a>
-    <a class="nav-link" href="manager_performance.html"><span class="material-symbols-outlined" style="font-size:20px;">bar_chart</span>Performance</a>
-    <a class="nav-link" href="manager_reports.html"><span class="material-symbols-outlined" style="font-size:20px;">assessment</span>Reports</a>
+    <a class="nav-link" href="hr_dashboard.html" id="navOverview"><span class="material-symbols-outlined" style="font-size:20px;">dashboard</span>Overview</a>
+    <a class="nav-link" href="hr_managers.html" id="navManagers"><span class="material-symbols-outlined" style="font-size:20px;">supervisor_account</span>Managers</a>
+    <a class="nav-link" href="hr_officers.html" id="navOfficers"><span class="material-symbols-outlined" style="font-size:20px;">group</span>Officers</a>
+    <a class="nav-link" href="hr_tasks.html" id="navTasks"><span class="material-symbols-outlined" style="font-size:20px;">checklist</span>Tasks</a>
+    <a class="nav-link" href="hr_reports.html" id="navReports"><span class="material-symbols-outlined" style="font-size:20px;">description</span>Reports</a>
+    <a class="nav-link" href="hr_analytics.html" id="navAnalytics"><span class="material-symbols-outlined" style="font-size:20px;">analytics</span>Analytics</a>
   </nav>
   <div style="border-top:1px solid rgba(255,255,255,0.07);padding:8px 0;">
-    <a class="nav-link settings-link active" href="manager_settings.html"><span class="material-symbols-outlined" style="font-size:20px;">settings</span>Settings</a>
+    <a class="nav-link settings-link active" href="hr_settings.html" id="navSettings"><span class="material-symbols-outlined" style="font-size:20px;">settings</span>Settings</a>
     <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined" style="font-size:20px;">logout</span>Logout</a>
   </div>
 </aside>
@@ -63,14 +69,13 @@
   <header style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
     <span style="font-size:18px;font-weight:800;color:#003527;">Settings</span>
     <div style="display:flex;align-items:center;gap:10px;">
-      <span class="badge" style="background:#dbeafe;color:#1e40af;">Manager</span>
-      <div style="width:36px;height:36px;border-radius:99px;background:#d1fae5;color:#003527;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;" id="avatarCircle">M</div>
+      <span class="badge" style="background:#dbeafe;color:#1e40af;">HR Administrator</span>
+      <div style="width:36px;height:36px;border-radius:99px;background:#d1fae5;color:#003527;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;" id="avatarCircle">H</div>
       <span style="font-size:13px;font-weight:600;color:#374151;" id="headerName">—</span>
     </div>
   </header>
 
   <div style="padding:24px;max-width:860px;display:flex;flex-direction:column;gap:20px;">
-
     <!-- Profile Settings -->
     <div class="card" style="overflow:hidden;">
       <div class="section-head">
@@ -79,19 +84,19 @@
       </div>
       <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
         <div style="display:flex;align-items:center;gap:16px;padding:16px;background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0;">
-          <div style="width:60px;height:60px;border-radius:99px;background:#003527;color:#fff;font-weight:800;font-size:24px;display:flex;align-items:center;justify-content:center;" id="profileAvatar">M</div>
+          <div style="width:60px;height:60px;border-radius:99px;background:#003527;color:#fff;font-weight:800;font-size:24px;display:flex;align-items:center;justify-content:center;" id="profileAvatar">H</div>
           <div>
-            <div style="font-size:16px;font-weight:800;color:#111827;" id="profileName">Manager Admin</div>
-            <div style="font-size:12px;color:#6b7280;" id="profileRole">Manager · Sri Sri Sugar</div>
+            <div style="font-size:16px;font-weight:800;color:#111827;" id="profileName">HR Admin</div>
+            <div style="font-size:12px;color:#6b7280;" id="profileRole">HR Administrator · Sri Sri Sugar</div>
           </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <div class="form-field"><label class="flabel">Full Name</label><input type="text" id="settName" value="Manager Admin"></div>
-          <div class="form-field"><label class="flabel">Username</label><input type="text" id="settUser" value="manager" readonly style="background:#f3f4f6;color:#9ca3af;"></div>
+          <div class="form-field"><label class="flabel">Full Name</label><input type="text" id="settName" value="HR Administrator"></div>
+          <div class="form-field"><label class="flabel">Username</label><input type="text" id="settUser" value="admin" readonly style="background:#f3f4f6;color:#9ca3af;"></div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <div class="form-field"><label class="flabel">Email</label><input type="email" id="settEmail" value="manager@srisrisugar.com"></div>
-          <div class="form-field"><label class="flabel">Phone</label><input type="tel" id="settPhone" value="9800000001"></div>
+          <div class="form-field"><label class="flabel">Email</label><input type="email" id="settEmail" value="hr@srisrisugar.com"></div>
+          <div class="form-field"><label class="flabel">Phone</label><input type="tel" id="settPhone" value="9800000000"></div>
         </div>
         <button onclick="saveProfile()" style="align-self:flex-start;background:#003527;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px;">save</span>Save Profile</button>
       </div>
@@ -109,35 +114,6 @@
           <div class="form-field"><label class="flabel">Confirm Password</label><input type="password" id="confPwd" placeholder="Confirm new password"></div>
         </div>
         <button onclick="changePassword()" style="align-self:flex-start;background:#f0fdf4;color:#003527;border:1.5px solid #bbf7d0;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px;">key</span>Update Password</button>
-      </div>
-    </div>
-
-    <!-- Notifications -->
-    <div class="card" style="overflow:hidden;">
-      <div class="section-head">
-        <div style="font-size:14px;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px;"><span class="material-symbols-outlined" style="font-size:18px;color:#006c49;">notifications</span> Notification Preferences</div>
-      </div>
-      <div id="notifRows">
-        <div class="setting-row" onclick="toggleNotif(this)">
-          <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111827;">Task Assignment Alerts</div><div style="font-size:11px;color:#9ca3af;margin-top:2px;">Get notified when a task is assigned or updated</div></div>
-          <div class="toggle-switch" style="background:#003527;"><div class="toggle-knob" style="transform:translateX(20px);"></div></div>
-        </div>
-        <div class="setting-row" onclick="toggleNotif(this)">
-          <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111827;">Overdue Task Reminders</div><div style="font-size:11px;color:#9ca3af;margin-top:2px;">Remind when tasks are past their due date</div></div>
-          <div class="toggle-switch" style="background:#003527;"><div class="toggle-knob" style="transform:translateX(20px);"></div></div>
-        </div>
-        <div class="setting-row" onclick="toggleNotif(this)">
-          <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111827;">Daily Performance Summary</div><div style="font-size:11px;color:#9ca3af;margin-top:2px;">Receive a daily digest of field activities</div></div>
-          <div class="toggle-switch" style="background:#d1d5db;"><div class="toggle-knob"></div></div>
-        </div>
-        <div class="setting-row" onclick="toggleNotif(this)">
-          <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111827;">Report Generation Alerts</div><div style="font-size:11px;color:#9ca3af;margin-top:2px;">Notify when a report is ready to download</div></div>
-          <div class="toggle-switch" style="background:#003527;"><div class="toggle-knob" style="transform:translateX(20px);"></div></div>
-        </div>
-        <div class="setting-row" onclick="toggleNotif(this)">
-          <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111827;">Officer Login Alerts</div><div style="font-size:11px;color:#9ca3af;margin-top:2px;">Alert when a field officer logs in</div></div>
-          <div class="toggle-switch" style="background:#d1d5db;"><div class="toggle-knob"></div></div>
-        </div>
       </div>
     </div>
 
@@ -159,14 +135,6 @@
               <option>DD/MM/YYYY (21/05/2026)</option>
               <option>YYYY-MM-DD (2026-05-21)</option>
             </select>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <div class="form-field"><label class="flabel">Language</label>
-            <select><option>English</option><option>Marathi</option><option>Hindi</option></select>
-          </div>
-          <div class="form-field"><label class="flabel">Timezone</label>
-            <select><option>IST (UTC+5:30)</option></select>
           </div>
         </div>
         <button onclick="savePreferences()" style="align-self:flex-start;background:#003527;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px;">save</span>Save Preferences</button>
@@ -199,14 +167,6 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove("show"),3000);
 }
 
-function toggleNotif(row){
-  const sw=row.querySelector(".toggle-switch");
-  const knob=row.querySelector(".toggle-knob");
-  const isOn=sw.style.background==="#rgb(0, 53, 39)"||sw.style.background==="#003527";
-  sw.style.background=isOn?"#d1d5db":"#003527";
-  knob.style.transform=isOn?"translateX(0)":"translateX(20px)";
-}
-
 function saveProfile(){
   const name=document.getElementById("settName").value;
   const s=AgriAuth.getSession();if(s){s.name=name;AgriAuth.setSession(s);}
@@ -215,15 +175,34 @@ function saveProfile(){
   showToast("✓ Profile saved successfully");
 }
 
-function changePassword(){
+async function changePassword(){
   const curr=document.getElementById("currPwd").value;
   const nw=document.getElementById("newPwd").value;
   const conf=document.getElementById("confPwd").value;
   if(!curr){showToast("⚠ Enter current password");return;}
   if(nw.length<6){showToast("⚠ New password must be at least 6 characters");return;}
   if(nw!==conf){showToast("⚠ Passwords do not match");return;}
-  document.getElementById("currPwd").value="";document.getElementById("newPwd").value="";document.getElementById("confPwd").value="";
-  showToast("✓ Password updated successfully");
+
+  const s = AgriAuth.getSession();
+  if(!s) return;
+
+  try {
+    const res = await fetch(`/api/settings/change-password/${s.id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ current_password: curr, new_password: nw })
+    });
+    if(!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || "Failed to update password.");
+    }
+    document.getElementById("currPwd").value="";
+    document.getElementById("newPwd").value="";
+    document.getElementById("confPwd").value="";
+    showToast("✓ Password updated successfully");
+  } catch (err) {
+    showToast("⚠ " + err.message);
+  }
 }
 
 function savePreferences(){showToast("✓ Preferences saved");}
@@ -243,7 +222,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     document.getElementById("profileAvatar").textContent=name.charAt(0).toUpperCase();
     document.getElementById("profileName").textContent=name;
     document.getElementById("settName").value=name;
-    document.getElementById("settUser").value=s.username||"manager";
+    document.getElementById("settUser").value=s.username||"admin";
   }
   document.getElementById("logoutBtn").addEventListener("click",e=>{e.preventDefault();if(confirm("Sign out?"))AgriAuth.clearSession(),window.location.replace("/login.html");});
 });

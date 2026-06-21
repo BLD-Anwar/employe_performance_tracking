@@ -51,11 +51,9 @@
   .toast{position:fixed;top:70px;right:20px;background:#003527;color:#fff;border-radius:10px;padding:12px 20px;font-size:13px;font-weight:600;z-index:999;transform:translateX(140%);transition:transform 0.3s ease;}
   .toast.show{transform:translateX(0);}
 </style>
-<script src="/assets/js/auth-store.js"></script>
+<script src="/assets/js/manager-auth-store.js"></script>
 <script>
-  if (!AgriAuth.requireManager()) {
-    document.documentElement.innerHTML = "";
-  }
+  AgriAuth.ensureManagerSession();
 </script>
 </head>
 <body>

@@ -1,377 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to AgriPulse Portal Selection</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #0c0d14;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --card-hover-border: rgba(255, 255, 255, 0.2);
-            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            --text-primary: #f3f4f6;
-            --text-secondary: #9ca3af;
-            --accent-glow-primary: rgba(59, 130, 246, 0.15);
-            --accent-glow-secondary: rgba(16, 185, 129, 0.15);
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriPulse — Sign In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script id="tailwind-config">
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#003527",
+          "secondary": "#006c49",
+          "background": "#f8f9ff",
+          "surface": "#ffffff",
+          "outline": "#707974",
+          "outline-variant": "#bfc9c3",
+          "on-surface": "#0b1c30",
+          "on-surface-variant": "#404944",
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Abstract glowing backgrounds */
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0.5;
-            animation: pulse 12s infinite alternate ease-in-out;
-        }
-
-        .orb-1 {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, #3b82f6 0%, transparent 80%);
-            top: -100px;
-            left: -100px;
-        }
-
-        .orb-2 {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, #8b5cf6 0%, transparent 80%);
-            bottom: -150px;
-            right: -100px;
-            animation-delay: -6s;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1) translate(0, 0); opacity: 0.4; }
-            100% { transform: scale(1.15) translate(30px, 30px); opacity: 0.6; }
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1100px;
-            padding: 2rem;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 3rem;
-            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .header {
-            text-align: center;
-            max-width: 600px;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .logo-icon {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
-        }
-
-        .logo-icon svg {
-            width: 24px;
-            height: 24px;
-            fill: white;
-        }
-
-        .logo-text {
-            font-size: 2.2rem;
-            font-weight: 800;
-            letter-spacing: -0.05em;
-            background: linear-gradient(to right, #ffffff, #9ca3af);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .header h1 {
-            font-size: 2.8rem;
-            font-weight: 700;
-            line-height: 1.2;
-            letter-spacing: -0.03em;
-            margin-bottom: 1rem;
-            background: linear-gradient(to right, #ffffff, #e5e7eb, #9ca3af);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .header p {
-            color: var(--text-secondary);
-            font-size: 1.15rem;
-            font-weight: 400;
-        }
-
-        .portal-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-            width: 100%;
-            max-width: 900px;
-        }
-
-        @media (min-width: 768px) {
-            .portal-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .portal-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 3rem 2.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            text-decoration: none;
-            color: inherit;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-
-        .portal-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 24px;
-            padding: 1px;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), transparent);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-        }
-
-        /* Hover states */
-        .portal-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--card-hover-border);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .portal-card.manager-card:hover {
-            background: radial-gradient(circle at top, var(--accent-glow-primary) 0%, rgba(255, 255, 255, 0.02) 80%);
-            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1), 0 0 0 1px rgba(59, 130, 246, 0.3);
-        }
-
-        .portal-card.officer-card:hover {
-            background: radial-gradient(circle at top, var(--accent-glow-secondary) 0%, rgba(255, 255, 255, 0.02) 80%);
-            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.1), 0 0 0 1px rgba(16, 185, 129, 0.3);
-        }
-
-        /* Card elements */
-        .icon-wrapper {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 2rem;
-            position: relative;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .portal-card:hover .icon-wrapper {
-            transform: scale(1.1) rotate(3deg);
-        }
-
-        .manager-card .icon-wrapper {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            color: #60a5fa;
-        }
-
-        .officer-card .icon-wrapper {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            color: #34d399;
-        }
-
-        .icon-wrapper svg {
-            width: 38px;
-            height: 38px;
-            fill: currentColor;
-        }
-
-        .card-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            letter-spacing: -0.02em;
-        }
-
-        .card-description {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 2.5rem;
-            flex-grow: 1;
-        }
-
-        .action-btn {
-            width: 100%;
-            padding: 1rem;
-            border-radius: 14px;
-            font-weight: 600;
-            font-size: 1rem;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .manager-card .action-btn {
-            background: var(--primary-gradient);
-            color: white;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
-        }
-
-        .officer-card .action-btn {
-            background: var(--secondary-gradient);
-            color: white;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
-        }
-
-        .portal-card:hover .action-btn {
-            transform: translateY(-2px);
-        }
-
-        .manager-card:hover .action-btn {
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
-        }
-
-        .officer-card:hover .action-btn {
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
-        }
-
-        .footer {
-            margin-top: 4rem;
-            font-size: 0.9rem;
-            color: #4b5563;
-            z-index: 1;
-        }
-    </style>
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  .login-gradient {
+    background: linear-gradient(135deg, rgba(0, 53, 39, 0.95) 0%, rgba(0, 33, 23, 0.85) 100%);
+  }
+  input:focus {
+    outline: none;
+    border-color: #006c49;
+    box-shadow: 0 0 0 3px rgba(0, 108, 73, 0.12);
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  .shake { animation: shake 0.3s ease-in-out; }
+</style>
 </head>
-<body>
+<body class="min-h-screen bg-background text-on-surface flex items-center justify-center overflow-hidden">
 
-    <!-- Ambient background glows -->
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-
-    <div class="container">
-        <!-- Logo & Header -->
-        <div class="header">
-            <div class="logo-container">
-                <div class="logo-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 3L2 12h3v8h14v-8h3L12 3zm0 5.5c1.38 0 2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5 1.12-2.5 2.5-2.5zM7.5 18c0-1.5 3-2.3 4.5-2.3s4.5.8 4.5 2.3v1h-9v-1z"/>
-                    </svg>
-                </div>
-                <span class="logo-text">AgriPulse</span>
-            </div>
-            <h1>Unified Workspace Portal</h1>
-            <p>Select your dashboard workspace to log in and manage performance tracking.</p>
+<main class="flex h-screen w-full">
+  <!-- Left Side: Visual Narrative (Older UI/UX Design) -->
+  <section class="hidden lg:flex flex-1 relative overflow-hidden bg-primary">
+    <img alt="Aerial view of farm fields" class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out"
+         src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80"
+         style="transform: scale(1.05);">
+    <div class="absolute inset-0 login-gradient flex flex-col justify-end p-12">
+      <div class="max-w-md text-white mb-8">
+        <h1 class="text-4xl font-bold mb-4 leading-tight">
+          Precision Growth.<br>Data-Driven Results.
+        </h1>
+        <p class="text-sm opacity-80 mb-6">
+          Empowering agricultural leaders with real-time telemetry and advanced performance analytics to optimize yield and sustainability.
+        </p>
+        <div class="flex items-center gap-3">
+          <div class="h-1.5 w-12 bg-emerald-400 rounded-full"></div>
+          <span class="text-xs uppercase font-bold tracking-widest text-emerald-300">Sri Sri Sugar Co.</span>
         </div>
-
-        <!-- Portal Cards Grid -->
-        <div class="portal-grid">
-            
-            <!-- Manager Portal -->
-            <a href="/manager/login.html" class="portal-card manager-card">
-                <div class="icon-wrapper">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
-                    </svg>
-                </div>
-                <h2 class="card-title">Manager Workspace</h2>
-                <p class="card-description">Administer systems, configure tasks, view officer performance, track field activities, and generate department reports.</p>
-                <button class="action-btn">
-                    <span>Enter Manager Portal</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
-                </button>
-            </a>
-
-            <!-- Employee Portal -->
-            <a href="/employee/login.html" class="portal-card officer-card">
-                <div class="icon-wrapper">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-                    </svg>
-                </div>
-                <h2 class="card-title">Officer Workspace</h2>
-                <p class="card-description">Track assigned field visits, update task completion status, register farmer meeting notes, and view personal metrics.</p>
-                <button class="action-btn">
-                    <span>Enter Officer Portal</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
-                </button>
-            </a>
-
-        </div>
-
-        <div class="footer">
-            &copy; 2026 AgriPulse Performance Tracking System. All rights reserved.
-        </div>
+      </div>
     </div>
+  </section>
 
+  <!-- Right Side: Authentication Canvas -->
+  <section class="flex-1 flex flex-col justify-center items-center p-8 bg-surface">
+    <div class="w-full max-w-[400px] space-y-8">
+      <!-- Brand Anchor -->
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-[#003527] text-white flex items-center justify-center rounded-xl shadow-lg shadow-emerald-950/20">
+          <span class="material-symbols-outlined text-3xl">agriculture</span>
+        </div>
+        <div>
+          <h2 class="text-2xl font-bold text-[#003527] tracking-tight">Sri Sri Sugar</h2>
+          <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-700/80">Management System</p>
+        </div>
+      </div>
+
+      <!-- Header -->
+      <div>
+        <h3 class="text-xl font-bold text-on-surface mb-1">Welcome back!</h3>
+        <p class="text-sm text-on-surface-variant">
+          Please enter your credentials to access the performance dashboard.
+        </p>
+      </div>
+
+      <!-- Error banner -->
+      <div id="loginError" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-semibold flex items-center gap-2" role="alert">
+        <span class="material-symbols-outlined text-base">error</span>
+        <span id="errorMessage">Authentication failed</span>
+      </div>
+
+      <!-- Form -->
+      <form class="space-y-4" id="loginForm" novalidate autocomplete="on">
+        <div class="space-y-1">
+          <label class="block text-[11px] font-bold uppercase tracking-wide text-on-surface-variant" for="username">Username / Employee ID</label>
+          <div class="relative group">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-[#006c49] transition-colors text-[20px]">person</span>
+            <input class="w-full bg-slate-50 border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-sm text-on-surface focus:bg-white transition-all"
+                   id="username" name="username" placeholder="Enter your ID or username" required type="text" autocomplete="username">
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="block text-[11px] font-bold uppercase tracking-wide text-on-surface-variant" for="password">Password</label>
+          <div class="relative group">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-[#006c49] transition-colors text-[20px]">lock</span>
+            <input class="w-full bg-slate-50 border border-outline-variant rounded-lg py-2.5 pl-10 pr-10 text-sm text-on-surface focus:bg-white transition-all"
+                   id="password" name="password" placeholder="••••••••" required type="password" autocomplete="current-password">
+            <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" onclick="togglePassword()">
+              <span class="material-symbols-outlined text-[20px]" id="eyeIcon">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between py-1 text-xs">
+          <label class="flex items-center gap-2 cursor-pointer group">
+            <input class="peer h-4.5 w-4.5 rounded border-outline-variant text-[#006c49] focus:ring-[#006c49] transition-all cursor-pointer" type="checkbox" id="rememberMe" name="rememberMe">
+            <span class="text-on-surface-variant group-hover:text-on-surface transition-colors font-medium">Remember Me</span>
+          </label>
+          <a class="text-[#006c49] font-bold hover:underline transition-all" href="#" onclick="alert('Password resets are handled by IT.\nContact: software@srisrisugar.com')">Forgot Password?</a>
+        </div>
+
+        <button type="submit" id="submitBtn" class="w-full bg-[#003527] hover:bg-[#004d39] text-white font-bold py-2.5 rounded-lg hover:shadow-lg transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 group">
+          <span>Sign In</span>
+          <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </button>
+      </form>
+
+      <!-- Support Footer -->
+      <footer class="pt-6 border-t border-outline-variant/30 flex justify-between items-center text-xs text-on-surface-variant">
+        <p>
+          Having trouble? <a class="text-[#006c49] font-bold hover:underline" href="mailto:software@srisrisugar.com">Contact Support</a>
+        </p>
+        <div class="flex gap-3 text-outline">
+          <button type="button" class="material-symbols-outlined text-[20px] cursor-pointer hover:text-on-surface transition-colors bg-transparent border-0" title="Help" onclick="alert('Enter your employee ID and password as registered in Sri Sri Sugar Directory.')">help</button>
+        </div>
+      </footer>
+    </div>
+  </section>
+</main>
+
+<script>
+  function togglePassword() {
+    const p = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    if (p.type === 'password') {
+      p.type = 'text';
+      icon.textContent = 'visibility_off';
+    } else {
+      p.type = 'password';
+      icon.textContent = 'visibility';
+    }
+  }
+
+  function apiOrigin() {
+    if (location.protocol === "file:") return "http://127.0.0.1:8000";
+    const host = location.hostname;
+    const port = location.port;
+    if ((host === "localhost" || host === "127.0.0.1") && port && port !== "8000") {
+      return "http://127.0.0.1:8000";
+    }
+    return "";
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    // Clear sessions first
+    localStorage.removeItem("agri_session");
+    sessionStorage.removeItem("agri_session");
+
+    const form = document.getElementById("loginForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const errorBanner = document.getElementById("loginError");
+    const errorMsg = document.getElementById("errorMessage");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorBanner.classList.add("hidden");
+
+      const usernameVal = document.getElementById("username").value.trim();
+      const passwordVal = document.getElementById("password").value;
+      const remember = document.getElementById("rememberMe").checked;
+
+      if (!usernameVal || !passwordVal) return;
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span>Verifying...</span> <svg class="animate-spin h-5 w-5 text-white inline-block ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
+      try {
+        const url = `${apiOrigin()}/api/auth/login`;
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: usernameVal, password: passwordVal })
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.detail || "Invalid username or password.");
+        }
+
+        const session = await res.json();
+        
+        // Save session using unified key
+        const sessionStr = JSON.stringify(session);
+        if (remember) {
+          localStorage.setItem("agri_session", sessionStr);
+        } else {
+          sessionStorage.setItem("agri_session", sessionStr);
+        }
+
+        submitBtn.className = "w-full bg-emerald-500 text-white font-bold py-2.5 rounded-lg flex items-center justify-center gap-2";
+        submitBtn.innerHTML = `<span>Access Granted</span> <span class="material-symbols-outlined text-lg">check_circle</span>`;
+
+        // Redirect based on role
+        setTimeout(() => {
+          if (session.role === "hr") {
+            window.location.replace("/hr/hr_dashboard.html");
+          } else if (session.role === "manager") {
+            window.location.replace("/manager/manager_officers.html");
+          } else {
+            window.location.replace("/employee/dashboard.html");
+          }
+        }, 600);
+
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.className = "w-full bg-[#003527] hover:bg-[#004d39] text-white font-bold py-2.5 rounded-lg hover:shadow-lg transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 group";
+        submitBtn.innerHTML = `<span>Sign In</span> <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>`;
+        
+        errorMsg.textContent = err.message;
+        errorBanner.classList.remove("hidden");
+        errorBanner.classList.add("shake");
+        setTimeout(() => errorBanner.classList.remove("shake"), 400);
+      }
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      const img = document.querySelector("section img");
+      if (!img) return;
+      const moveX = (e.clientX - window.innerWidth / 2) * 0.005;
+      const moveY = (e.clientY - window.innerHeight / 2) * 0.005;
+      img.style.transform = `scale(1.05) translate(${moveX}px, ${moveY}px)`;
+    });
+  });
+</script>
 </body>
 </html>

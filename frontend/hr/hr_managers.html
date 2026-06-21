@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriPulse — HR Manager Directory</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
+<style>
+  body{font-family:'Inter',sans-serif;background:#f4f6f8;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}
+  .sidebar{background:linear-gradient(180deg,#0f1f18 0%,#0a150f 100%);width:220px;min-height:100vh;position:fixed;left:0;top:0;z-index:50;display:flex;flex-direction:column;}
+  .nav-link{display:flex;align-items:center;gap:12px;padding:10px 16px;margin:2px 8px;border-radius:8px;color:rgba(209,250,229,0.65);font-size:13px;font-weight:600;text-decoration:none;transition:all 0.15s;}
+  .nav-link:hover{background:rgba(255,255,255,0.07);color:#fff;}
+  .nav-link.active{background:rgba(74,222,128,0.18);color:#86efac;}
+  .nav-link.active .material-symbols-outlined{color:#4ade80;}
+  .nav-link.logout{color:rgba(252,165,165,0.7);}
+  .nav-link.logout:hover{background:rgba(239,68,68,0.1);color:#fca5a5;}
+  .nav-link.settings-link{color:rgba(209,250,229,0.65);}
+  .nav-link.settings-link:hover{background:rgba(255,255,255,0.07);color:#fff;}
+  .card{background:#fff;border-radius:14px;border:1px solid #e5e7eb;}
+  .tbl-row:hover{background:#f9fafb;}
+  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;}
+  .btn{padding:8px 16px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all 0.15s;}
+  .btn-primary{background:#003527;color:#fff;}
+  .btn-primary:hover{background:#006c49;}
+  .btn-danger{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;}
+  .btn-danger:hover{background:#fecaca;}
+  .btn-secondary{background:#f3f4f6;color:#374151;border:1px solid #d1d5db;}
+  .btn-secondary:hover{background:#e5e7eb;}
+</style>
+<script src="../assets/js/hr-auth-store.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+  <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
+    <div style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+      <span class="material-symbols-outlined" style="color:#4ade80;font-size:20px;">agriculture</span>
+    </div>
+    <div>
+      <div style="color:#f0fdf4;font-weight:800;font-size:14px;line-height:1.2;">Sri Sri Sugar</div>
+      <div style="color:rgba(209,250,229,0.5);font-size:10px;font-weight:600;letter-spacing:0.06em;">HR PORTAL</div>
+    </div>
+  </div>
+  <nav style="flex:1;padding:8px 0;">
+    <a class="nav-link" href="hr_dashboard.html" id="navOverview"><span class="material-symbols-outlined" style="font-size:20px;">dashboard</span>Overview</a>
+    <a class="nav-link active" href="hr_managers.html" id="navManagers"><span class="material-symbols-outlined" style="font-size:20px;">supervisor_account</span>Managers</a>
+    <a class="nav-link" href="hr_officers.html" id="navOfficers"><span class="material-symbols-outlined" style="font-size:20px;">group</span>Officers</a>
+    <a class="nav-link" href="hr_tasks.html" id="navTasks"><span class="material-symbols-outlined" style="font-size:20px;">checklist</span>Tasks</a>
+    <a class="nav-link" href="hr_reports.html" id="navReports"><span class="material-symbols-outlined" style="font-size:20px;">description</span>Reports</a>
+    <a class="nav-link" href="hr_analytics.html" id="navAnalytics"><span class="material-symbols-outlined" style="font-size:20px;">analytics</span>Analytics</a>
+  </nav>
+  <div style="border-top:1px solid rgba(255,255,255,0.07);padding:8px 0;">
+    <a class="nav-link settings-link" href="hr_settings.html" id="navSettings"><span class="material-symbols-outlined" style="font-size:20px;">settings</span>Settings</a>
+    <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined" style="font-size:20px;">logout</span>Logout</a>
+  </div>
+</aside>
+
+<div style="margin-left:220px;min-height:100vh;">
+  <header style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
+    <div>
+      <span style="font-size:18px;font-weight:800;color:#003527;">Managers</span>
+      <span style="font-size:12px;color:#6b7280;margin-left:10px;">Monitor supervisor operations</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="badge" style="background:#dbeafe;color:#1e40af;">HR Administrator</span>
+      <div style="width:36px;height:36px;border-radius:99px;background:#d1fae5;color:#003527;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;" id="avatarCircle">H</div>
+    </div>
+  </header>
+
+  <div style="padding:24px;display:flex;flex-direction:column;gap:20px;">
+    <!-- Managers directory card -->
+    <div class="card" style="overflow:hidden;">
+      <div style="padding:16px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-size:15px;font-weight:700;color:#111827;">Manager Accounts</div>
+        <div style="font-size:12px;color:#6b7280;" id="managerCount">Loading...</div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead style="background:#f9fafb;"><tr>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Name & Username</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Email</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Last Login</th>
+            <th style="padding:10px 16px;text-align:center;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Tasks Assigned</th>
+            <th style="padding:10px 16px;text-align:center;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Reports Created</th>
+            <th style="padding:10px 16px;text-align:center;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Status</th>
+            <th style="padding:10px 16px;text-align:center;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;width:240px;">Actions</th>
+          </tr></thead>
+          <tbody id="managersTbody">
+            <tr><td colspan="7" style="padding:20px;text-align:center;color:#9ca3af;font-size:12px;">Loading managers directory…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div id="resetModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;">
+  <div class="card" style="width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.2);display:flex;flex-direction:column;overflow:hidden;">
+    <div style="padding:16px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:15px;font-weight:700;color:#111827;">Reset Manager Credentials</span>
+      <button onclick="closeResetModal()" style="background:none;border:none;cursor:pointer;color:#6b7280;"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <form id="resetForm" style="padding:20px;display:flex;flex-direction:column;gap:16px;">
+      <input type="hidden" id="resetUserId">
+      <div>
+        <label style="display:block;font-size:11px;font-weight:700;color:#4b5563;text-transform:uppercase;margin-bottom:6px;">Manager</label>
+        <div id="resetUserName" style="font-weight:700;color:#111827;font-size:14px;">—</div>
+      </div>
+      <div>
+        <label for="newPassword" style="display:block;font-size:11px;font-weight:700;color:#4b5563;text-transform:uppercase;margin-bottom:6px;">New Password</label>
+        <input class="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-emerald-500 focus:bg-white font-medium" type="password" id="newPassword" placeholder="••••••••" required>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:8px;">
+        <button type="button" class="btn btn-secondary" onclick="closeResetModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Update Credentials</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// ── API helper ───────────────────────────────────────────────────────────────
+async function apiFetch(path, options = {}) {
+  const p = path.startsWith("/api") ? path : `/api${path.startsWith("/") ? path : "/" + path}`;
+  const res = await AgriAuth.apiFetch(p, options);
+  if (!res.ok) throw new Error(`API error ${res.status}: ${path}`);
+  return res.json();
+}
+
+let managersList = [];
+
+// ── Render managers table ───────────────────────────────────────────────────
+function renderManagers(managers) {
+  const tbody = document.getElementById("managersTbody");
+  if (!tbody) return;
+  document.getElementById("managerCount").textContent = `${managers.length} accounts total`;
+
+  if (!managers.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:#9ca3af;font-size:12px;">No managers found</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = managers.map(m => {
+    const statusBadge = m.is_blocked
+      ? `<span class="badge" style="background:#fee2e2;color:#b91c1c;">Blocked</span>`
+      : `<span class="badge" style="background:#d1fae5;color:#003527;">Active</span>`;
+
+    const blockBtn = m.is_blocked
+      ? `<button class="btn btn-secondary" style="padding:6px 12px;" onclick="toggleBlock(${m.id}, false)">Unblock</button>`
+      : `<button class="btn btn-danger" style="padding:6px 12px;" onclick="toggleBlock(${m.id}, true)">Block</button>`;
+
+    return `
+      <tr class="tbl-row" style="border-top:1px solid #f3f4f6;">
+        <td style="padding:12px 16px;">
+          <div style="font-size:13px;font-weight:700;color:#111827;">${m.name}</div>
+          <div style="font-size:11px;color:#6b7280;">@${m.username}</div>
+        </td>
+        <td style="padding:12px 16px;font-size:12px;color:#4b5563;">${m.email}</td>
+        <td style="padding:12px 16px;font-size:12px;color:#6b7280;">
+          <div>${m.last_login}</div>
+          <div style="font-size:10px;color:#9ca3af;">Joined ${m.joined}</div>
+        </td>
+        <td style="padding:12px 16px;text-align:center;font-size:13px;font-weight:700;color:#374151;">${m.tasks_assigned}</td>
+        <td style="padding:12px 16px;text-align:center;font-size:13px;font-weight:700;color:#374151;">${m.reports_generated}</td>
+        <td style="padding:12px 16px;text-align:center;">${statusBadge}</td>
+        <td style="padding:12px 16px;text-align:center;">
+          <div style="display:flex;justify-content:center;gap:8px;">
+            <button class="btn btn-secondary" style="padding:6px 12px;gap:4px;" onclick="openResetModal(${m.id}, '${m.name}')">
+              <span class="material-symbols-outlined" style="font-size:16px;">lock_reset</span> Reset PIN
+            </button>
+            ${blockBtn}
+          </div>
+        </td>
+      </tr>`;
+  }).join("");
+}
+
+// ── Modals and Actions ───────────────────────────────────────────────────────
+function openResetModal(userId, name) {
+  document.getElementById("resetUserId").value = userId;
+  document.getElementById("resetUserName").textContent = name;
+  document.getElementById("newPassword").value = "";
+  document.getElementById("resetModal").style.display = "flex";
+}
+
+function closeResetModal() {
+  document.getElementById("resetModal").style.display = "none";
+}
+
+async function toggleBlock(userId, isBlocked) {
+  const action = isBlocked ? "block" : "unblock";
+  if (!confirm(`Are you sure you want to ${action} this manager account?`)) return;
+  try {
+    await apiFetch(`/hr/users/${userId}/block`, {
+      method: "POST",
+      body: { is_blocked: isBlocked }
+    });
+    alert(`Manager has been ${isBlocked ? 'blocked' : 'unblocked'} successfully.`);
+    loadData();
+  } catch (err) {
+    alert("Failed to update status: " + err.message);
+  }
+}
+
+async function loadData() {
+  try {
+    managersList = await apiFetch("/hr/managers");
+    renderManagers(managersList);
+  } catch (err) {
+    console.error("Failed to load managers directory:", err);
+  }
+}
+
+// ── Main ─────────────────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+  const s = AgriAuth.getSession();
+  if (!s) return;
+  const name = s.name || s.username;
+  document.getElementById("avatarCircle").textContent = name.charAt(0).toUpperCase();
+
+  document.getElementById("logoutBtn").addEventListener("click", e => {
+    e.preventDefault();
+    if (confirm("Sign out from HR Portal?")) { AgriAuth.clearSession(); window.location.replace("/login.html"); }
+  });
+
+  document.getElementById("resetForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const userId = document.getElementById("resetUserId").value;
+    const newPassword = document.getElementById("newPassword").value;
+    try {
+      await apiFetch(`/hr/users/${userId}/reset-password`, {
+        method: "POST",
+        body: { new_password: newPassword }
+      });
+      alert("Password updated successfully.");
+      closeResetModal();
+    } catch (err) {
+      alert("Failed to reset password: " + err.message);
+    }
+  });
+
+  loadData();
+});
+</script>
+</body>
+</html>

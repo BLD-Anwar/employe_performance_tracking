@@ -356,7 +356,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("logoutBtn").addEventListener("click", e => {
     e.preventDefault();
-    if (confirm("Sign out?")) { AgriAuth.clearSession(); window.location.replace("login.html"); }
+    if (confirm("Sign out?")) { AgriAuth.clearSession(); window.location.replace("/login.html"); }
   });
 
   // Fetch all dashboard data in parallel

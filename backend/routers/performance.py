@@ -130,7 +130,7 @@ def get_weekly_trend():
                 'Wk' + CAST(DATEPART(WEEK, created_at) AS VARCHAR) AS wk,
                 COUNT(meeting_id) AS cnt
             FROM TbL_TRN_Farmer_Meeting
-            WHERE created_at >= '2026-01-01'
+            WHERE created_at >= DATEFROMPARTS(YEAR(GETDATE()), 1, 1)
             GROUP BY DATEPART(WEEK, created_at)
             ORDER BY DATEPART(WEEK, created_at)
         """)
