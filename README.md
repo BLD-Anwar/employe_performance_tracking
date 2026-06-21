@@ -94,3 +94,70 @@ The proposed system solves these issues by providing a unified dashboard and det
 ## Developed By
 **Anwarali Mulla**  
 Vijaybhoomi University
+
+---
+
+## Setup & How to Run
+
+Follow these instructions to set up the project locally and run it.
+
+### Prerequisites
+1. **Python**: Version 3.10 or higher.
+2. **Database**: Microsoft SQL Server (e.g., SQL Server Express or LocalDB).
+3. **ODBC Driver**: Microsoft ODBC Driver for SQL Server (required for database connectivity via `pyodbc`).
+
+### 1. Database Configuration
+1. Ensure your SQL Server instance is running.
+2. Create a database named `FarmerManagement` (or your preferred name).
+3. Ensure the tables match the schema documented in [database_schema_summary.pdf](file:///docs/database_schema_summary.pdf).
+4. Run the update script to apply any custom schemas:
+   ```bash
+   python db_update.py
+   ```
+
+### 2. Environment Setup
+1. Create a `.env` file in the project root directory.
+2. Add the following environment variables (adjust server and database names as per your SQL Server configuration):
+   ```ini
+   PHASE1_DB_SERVER=YOUR_SQL_SERVER_NAME_OR_IP
+   PHASE1_DB_NAME=FarmerManagement
+   PHASE1_DB_TRUSTED=yes
+
+   DB_SERVER=YOUR_SQL_SERVER_NAME_OR_IP
+   DB_NAME=FarmerManagement
+
+   JWT_SECRET_KEY=agripulse_secret_key_2026
+   JWT_ALGORITHM=HS256
+   JWT_EXPIRE_MINUTES=60
+   ```
+
+### 3. Installation
+1. Create and activate a Python virtual environment:
+   ```bash
+   # Create environment
+   python -m venv .venv
+
+   # Activate on Windows
+   .venv\Scripts\activate
+
+   # Activate on macOS/Linux
+   source .venv/bin/activate
+   ```
+2. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### 4. Running the Application
+Run the FastAPI application using Uvicorn:
+```bash
+uvicorn backend.main:app --reload --port 8000
+```
+
+Once the server is running, open your web browser and navigate to:
+- **Application Portal**: `http://127.0.0.1:8000/` (Redirects automatically to login page)
+- **Direct Login**: `http://127.0.0.1:8000/login.html`
+- **Portals**:
+  - Employee Portal: `/employee/dashboard.html`
+  - HR Portal: `/hr/hr_dashboard.html`
+  - Manager Portal: `/manager/manager_dashboard.html`
