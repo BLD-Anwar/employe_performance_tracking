@@ -1140,38 +1140,25 @@
       const hint = document.getElementById("dateAutoHint");
       const hintText = document.getElementById("dateAutoHintText");
 
+      if (!startInput.value) return;
+      const selected = new Date(startInput.value);
+
       if (schedType === "DAILY") {
         endInput.value = startInput.value;
-        if (startInput.value) {
-          const d = new Date(startInput.value);
-          hint.style.display = "flex";
-          hintText.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;color:#006c49;">today</span> ${formatDateDisplay(d)} — single day task.`;
-        }
+        hint.style.display = "flex";
+        hintText.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;color:#006c49;">today</span> ${formatDateDisplay(selected)} — single day task.`;
       } else if (schedType === "WEEKLY") {
-        if (!startInput.value) return;
-        const selected = new Date(startInput.value);
-        const dayOfWeek = selected.getDay();
-        const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-        const monday = new Date(selected);
-        monday.setDate(selected.getDate() + mondayOffset);
-        startInput.value = toISO(monday);
-        const sunday = new Date(monday);
-        sunday.setDate(monday.getDate() + 6);
+        const sunday = new Date(selected);
+        sunday.setDate(selected.getDate() + 6);
         endInput.value = toISO(sunday);
         hint.style.display = "flex";
-        hintText.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;color:#006c49;">date_range</span> ${formatDateDisplay(monday)} → ${formatDateDisplay(sunday)} (7 days)`;
+        hintText.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;color:#006c49;">date_range</span> ${formatDateDisplay(selected)} → ${formatDateDisplay(sunday)} (7 days)`;
       } else if (schedType === "MONTHLY") {
-        if (!startInput.value) return;
-        const selected = new Date(startInput.value);
-        const year = selected.getFullYear();
-        const month = selected.getMonth();
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        startInput.value = toISO(firstDay);
+        const lastDay = new Date(selected.getFullYear(), selected.getMonth() + 1, 0);
         endInput.value = toISO(lastDay);
         hint.style.display = "flex";
-        const monthName = firstDay.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
-        hintText.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;color:#006c49;">calendar_month</span> ${monthName}: ${formatDateDisplay(firstDay)} → ${formatDateDisplay(lastDay)}`;
+        const monthName = selected.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+        hintText.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;color:#006c49;">calendar_month</span> ${monthName}: ${formatDateDisplay(selected)} → ${formatDateDisplay(lastDay)}`;
       }
       updateSummary();
     }
