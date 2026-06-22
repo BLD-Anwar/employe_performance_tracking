@@ -411,6 +411,25 @@
                   <option value="">Select work type...</option>
                 </select>
               </div>
+              <div class="form-field">
+                <label class="flabel">Schedule Type <span style="color:#dc2626;">*</span></label>
+                <select id="scheduleType" onchange="onScheduleTypeChange()">
+                  <option value="DAILY">Daily</option>
+                  <option value="WEEKLY" selected>Weekly</option>
+                  <option value="MONTHLY">Monthly</option>
+                </select>
+              </div>
+            </div>
+            
+            <div style="display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:14px;align-items:end;">
+              <div class="form-field">
+                <label id="startDateLabel" class="flabel">Week Start Date (Monday) <span style="color:#dc2626;">*</span></label>
+                <input type="date" id="startDate" onchange="onDateChange()">
+              </div>
+              <div class="form-field" id="endDateWrapper">
+                <label class="flabel">End Date <span style="color:#dc2626;">*</span></label>
+                <input type="date" id="endDate" onchange="onDateChange()" readonly>
+              </div>
               <div>
                 <label class="flabel">Priority <span style="color:#dc2626;">*</span></label>
                 <div style="display:flex;gap:8px;margin-top:2px;">
@@ -421,23 +440,11 @@
                 </div>
               </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
-              <div class="form-field">
-                <label class="flabel">Start Date <span style="color:#dc2626;">*</span></label>
-                <input type="date" id="startDate" onchange="updateSummary()">
-              </div>
-              <div class="form-field">
-                <label class="flabel">End Date <span style="color:#dc2626;">*</span></label>
-                <input type="date" id="endDate" onchange="updateSummary()">
-              </div>
-              <div class="form-field">
-                <label class="flabel">Schedule Type <span style="color:#dc2626;">*</span></label>
-                <select id="scheduleType" onchange="updateSummary()">
-                  <option value="DAILY">Daily</option>
-                  <option value="WEEKLY" selected>Weekly</option>
-                  <option value="MONTHLY">Monthly</option>
-                </select>
-              </div>
+
+            <!-- Date auto hint -->
+            <div id="dateAutoHint" style="display:flex;align-items:center;gap:6px;background:#f0fdf4;border-radius:8px;padding:8px 12px;font-size:11px;color:#003527;font-weight:600;margin-top:2px;">
+              <span class="material-symbols-outlined" style="font-size:14px;color:#006c49;">date_range</span> 
+              <span id="dateAutoHintText">Loading dates...</span>
             </div>
             <div class="form-field">
               <label class="flabel">Remarks / Notes</label>
@@ -1032,14 +1039,20 @@
       const workTypeDropdown = document.getElementById("workType");
       const workTypeName = workTypeDropdown.options[workTypeDropdown.selectedIndex].textContent;
 
+      const schedType = document.getElementById("scheduleType").value;
+      let startDateVal = document.getElementById("startDate").value;
+      if (schedType === "MONTHLY" && document.getElementById("startDate").type === "month") {
+        if (startDateVal) startDateVal = startDateVal + "-01";
+      }
+
       const payload = {
         task_name: document.getElementById("taskName").value.trim(),
         officer_id: selectedOfficer,
         work_type_name: workTypeName,
         priority: selectedPriority,
-        from_date: document.getElementById("startDate").value,
+        from_date: startDateVal,
         to_date: document.getElementById("endDate").value,
-        schedule_type: document.getElementById("scheduleType").value,
+        schedule_type: schedType,
         remarks: document.getElementById("remarks").value.trim(),
         district: document.getElementById("districtSel").value,
         village: document.getElementById("villageSel").value,
@@ -1076,6 +1089,95 @@
       } catch (err) {
         console.error("Reload officers error:", err);
       }
+    }
+
+    function toISO(d) {
+      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    }
+
+    function formatDateDisplay(d) {
+      return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    function onScheduleTypeChange() {
+      const schedType = document.getElementById("scheduleType").value;
+      const startInput = document.getElementById("startDate");
+      const endInput = document.getElementById("endDate");
+      const endWrapper = document.getElementById("endDateWrapper");
+      const startLabel = document.getElementById("startDateLabel");
+      const hint = document.getElementById("dateAutoHint");
+      const hintText = document.getElementById("dateAutoHintText");
+
+      // Reset
+      startInput.type = "date";
+      endInput.readOnly = false;
+      hint.style.display = "none";
+      hintText.textContent = "";
+
+      if (schedType === "DAILY") {
+        startLabel.innerHTML = 'Task Date <span style="color:#dc2626;">*</span>';
+        endWrapper.style.display = "none";
+        endInput.value = startInput.value;
+        hint.style.display = "flex";
+        hintText.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;color:#006c49;">info</span> Single day — start and end date are the same.';
+      } else if (schedType === "WEEKLY") {
+        startLabel.innerHTML = 'Week Start Date (Monday) <span style="color:#dc2626;">*</span>';
+        endWrapper.style.display = "block";
+        endInput.readOnly = true;
+        hint.style.display = "flex";
+        onDateChange();
+      } else if (schedType === "MONTHLY") {
+        startLabel.innerHTML = 'Month <span style="color:#dc2626;">*</span>';
+        endWrapper.style.display = "block";
+        endInput.readOnly = true;
+        startInput.type = "month";
+        if (startInput.value && startInput.value.length > 7) {
+          startInput.value = startInput.value.substring(0, 7);
+        }
+        onDateChange();
+      }
+      updateSummary();
+    }
+
+    function onDateChange() {
+      const schedType = document.getElementById("scheduleType").value;
+      const startInput = document.getElementById("startDate");
+      const endInput = document.getElementById("endDate");
+      const hint = document.getElementById("dateAutoHint");
+      const hintText = document.getElementById("dateAutoHintText");
+
+      if (schedType === "DAILY") {
+        endInput.value = startInput.value;
+        if (startInput.value) {
+          const d = new Date(startInput.value);
+          hint.style.display = "flex";
+          hintText.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;color:#006c49;">today</span> ${formatDateDisplay(d)} — single day task.`;
+        }
+      } else if (schedType === "WEEKLY") {
+        if (!startInput.value) return;
+        const selected = new Date(startInput.value);
+        const dayOfWeek = selected.getDay();
+        const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        const monday = new Date(selected);
+        monday.setDate(selected.getDate() + mondayOffset);
+        startInput.value = toISO(monday);
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        endInput.value = toISO(sunday);
+        hint.style.display = "flex";
+        hintText.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;color:#006c49;">date_range</span> ${formatDateDisplay(monday)} → ${formatDateDisplay(sunday)} (7 days)`;
+      } else if (schedType === "MONTHLY") {
+        const monthStr = startInput.value;
+        if (!monthStr) return;
+        const [year, month] = monthStr.split("-").map(Number);
+        const firstDay = new Date(year, month - 1, 1);
+        const lastDay = new Date(year, month, 0);
+        endInput.value = toISO(lastDay);
+        hint.style.display = "flex";
+        const monthName = firstDay.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+        hintText.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;color:#006c49;">calendar_month</span> ${monthName}: ${formatDateDisplay(firstDay)} → ${formatDateDisplay(lastDay)}`;
+      }
+      updateSummary();
     }
 
 
@@ -1177,11 +1279,10 @@
       document.getElementById("taskName").value = "";
       document.getElementById("workType").selectedIndex = 0;
       document.getElementById("remarks").value = "";
-      const today = new Date().toISOString().split("T")[0];
-      const next = new Date(); next.setDate(next.getDate() + 7);
-      document.getElementById("startDate").value = today;
-      document.getElementById("endDate").value = next.toISOString().split("T")[0];
       document.getElementById("scheduleType").value = "WEEKLY";
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("startDate").value = today;
+      onScheduleTypeChange();
       document.getElementById("districtSel").selectedIndex = 0;
       document.getElementById("villageSel").innerHTML = '<option value="">Select village...</option>';
       document.getElementById("villageSel").disabled = true;
@@ -1204,8 +1305,7 @@
       if (s) { const name = (s.name && s.name !== "None") ? s.name : s.username; document.getElementById("avatarCircle").textContent = name.charAt(0).toUpperCase(); document.getElementById("headerName").textContent = name; }
       const today = new Date().toISOString().split("T")[0];
       document.getElementById("startDate").value = today;
-      const next = new Date(); next.setDate(next.getDate() + 7);
-      document.getElementById("endDate").value = next.toISOString().split("T")[0];
+      onScheduleTypeChange();
 
       document.getElementById("logoutBtn").addEventListener("click", e => { e.preventDefault(); if (confirm("Sign out?")) AgriAuth.clearSession(), window.location.replace("/login.html"); });
 
