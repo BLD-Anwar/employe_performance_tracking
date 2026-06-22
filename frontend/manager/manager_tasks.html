@@ -421,7 +421,7 @@
                 </div>
               </div>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
               <div class="form-field">
                 <label class="flabel">Start Date <span style="color:#dc2626;">*</span></label>
                 <input type="date" id="startDate" onchange="updateSummary()">
@@ -429,6 +429,14 @@
               <div class="form-field">
                 <label class="flabel">End Date <span style="color:#dc2626;">*</span></label>
                 <input type="date" id="endDate" onchange="updateSummary()">
+              </div>
+              <div class="form-field">
+                <label class="flabel">Schedule Type <span style="color:#dc2626;">*</span></label>
+                <select id="scheduleType" onchange="updateSummary()">
+                  <option value="DAILY">Daily</option>
+                  <option value="WEEKLY" selected>Weekly</option>
+                  <option value="MONTHLY">Monthly</option>
+                </select>
               </div>
             </div>
             <div class="form-field">
@@ -957,6 +965,7 @@
       const workType = document.getElementById("workType").value;
       const startDate = document.getElementById("startDate").value;
       const endDate = document.getElementById("endDate").value;
+      const scheduleType = document.getElementById("scheduleType").value;
       const district = document.getElementById("districtSel").value;
       const village = document.getElementById("villageSel").value;
       const subVillage = document.getElementById("subVillageSel").value;
@@ -974,6 +983,7 @@
     <div style="display:flex;flex-direction:column;gap:0;">
       ${summRow("Task Name", taskName || "—", "assignment")}
       ${summRow("Work Type", workType || "—", "work")}
+      ${summRow("Schedule Type", scheduleType, "calendar_month")}
       ${summRow("Priority", selectedPriority, "flag")}
       ${summRow("District/Taluka", district || "—", "location_city")}
       ${summRow("Village", village || "—", "holiday_village")}
@@ -1029,7 +1039,7 @@
         priority: selectedPriority,
         from_date: document.getElementById("startDate").value,
         to_date: document.getElementById("endDate").value,
-        schedule_type: "WEEKLY",
+        schedule_type: document.getElementById("scheduleType").value,
         remarks: document.getElementById("remarks").value.trim(),
         district: document.getElementById("districtSel").value,
         village: document.getElementById("villageSel").value,
@@ -1097,7 +1107,7 @@
       </div>
       <div style="font-size:11px;color:#4b5563;margin-top:4px;line-height:1.4;">
         <strong>Officer:</strong> ${escapeHtml(t.officer_name)}<br>
-        <strong>Work type:</strong> ${escapeHtml(t.work_type || "—")}<br>
+        <strong>Work type:</strong> ${escapeHtml(t.work_type || "—")} (${escapeHtml(t.schedule_type || "WEEKLY")})<br>
         <strong>Period:</strong> ${escapeHtml(t.from_date)} to ${escapeHtml(t.to_date)}
       </div>
       ${preview}
@@ -1122,7 +1132,7 @@
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
         <div><strong>Assigned Officer:</strong> ${escapeHtml(plan.officer_name || "—")}</div>
         <div><strong>Work Type:</strong> ${escapeHtml(plan.work_type || "—")}</div>
-        <div><strong>Schedule:</strong> ${escapeHtml(plan.from_date || "—")} to ${escapeHtml(plan.to_date || "—")}</div>
+        <div><strong>Schedule:</strong> ${escapeHtml(plan.from_date || "—")} to ${escapeHtml(plan.to_date || "—")} (${escapeHtml(plan.schedule_type || "WEEKLY")})</div>
         <div><strong>Farmers in plan:</strong> ${plan.farmers ?? "—"}</div>
         <div><strong>Month / Week:</strong> ${plan.month ?? "—"} / ${plan.week ?? "—"}</div>
       </div>
@@ -1171,6 +1181,7 @@
       const next = new Date(); next.setDate(next.getDate() + 7);
       document.getElementById("startDate").value = today;
       document.getElementById("endDate").value = next.toISOString().split("T")[0];
+      document.getElementById("scheduleType").value = "WEEKLY";
       document.getElementById("districtSel").selectedIndex = 0;
       document.getElementById("villageSel").innerHTML = '<option value="">Select village...</option>';
       document.getElementById("villageSel").disabled = true;
