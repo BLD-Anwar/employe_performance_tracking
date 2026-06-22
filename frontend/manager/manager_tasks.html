@@ -1040,10 +1040,7 @@
       const workTypeName = workTypeDropdown.options[workTypeDropdown.selectedIndex].textContent;
 
       const schedType = document.getElementById("scheduleType").value;
-      let startDateVal = document.getElementById("startDate").value;
-      if (schedType === "MONTHLY" && document.getElementById("startDate").type === "month") {
-        if (startDateVal) startDateVal = startDateVal + "-01";
-      }
+      const startDateVal = document.getElementById("startDate").value;
 
       const payload = {
         task_name: document.getElementById("taskName").value.trim(),
@@ -1127,13 +1124,10 @@
         hint.style.display = "flex";
         onDateChange();
       } else if (schedType === "MONTHLY") {
-        startLabel.innerHTML = 'Month <span style="color:#dc2626;">*</span>';
+        startLabel.innerHTML = 'Month Start Date <span style="color:#dc2626;">*</span>';
         endWrapper.style.display = "block";
         endInput.readOnly = true;
-        startInput.type = "month";
-        if (startInput.value && startInput.value.length > 7) {
-          startInput.value = startInput.value.substring(0, 7);
-        }
+        hint.style.display = "flex";
         onDateChange();
       }
       updateSummary();
@@ -1167,11 +1161,13 @@
         hint.style.display = "flex";
         hintText.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;color:#006c49;">date_range</span> ${formatDateDisplay(monday)} → ${formatDateDisplay(sunday)} (7 days)`;
       } else if (schedType === "MONTHLY") {
-        const monthStr = startInput.value;
-        if (!monthStr) return;
-        const [year, month] = monthStr.split("-").map(Number);
-        const firstDay = new Date(year, month - 1, 1);
-        const lastDay = new Date(year, month, 0);
+        if (!startInput.value) return;
+        const selected = new Date(startInput.value);
+        const year = selected.getFullYear();
+        const month = selected.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        startInput.value = toISO(firstDay);
         endInput.value = toISO(lastDay);
         hint.style.display = "flex";
         const monthName = firstDay.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
