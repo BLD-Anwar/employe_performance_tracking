@@ -106,32 +106,7 @@ Follow these instructions to set up the project locally and run it.
 2. **Database**: Microsoft SQL Server (e.g., SQL Server Express or LocalDB).
 3. **ODBC Driver**: Microsoft ODBC Driver for SQL Server (required for database connectivity via `pyodbc`).
 
-### 1. Database Configuration
-1. Ensure your SQL Server instance is running.
-2. Create a database named `FarmerManagement` (or your preferred name).
-3. Ensure the tables match the schema documented in [database_schema_summary.pdf](file:///docs/database_schema_summary.pdf).
-4. Run the update script to apply any custom schemas:
-   ```bash
-   python db_update.py
-   ```
-
-### 2. Environment Setup
-1. Create a `.env` file in the project root directory.
-2. Add the following environment variables (adjust server and database names as per your SQL Server configuration):
-   ```ini
-   PHASE1_DB_SERVER=YOUR_SQL_SERVER_NAME_OR_IP
-   PHASE1_DB_NAME=FarmerManagement
-   PHASE1_DB_TRUSTED=yes
-
-   DB_SERVER=YOUR_SQL_SERVER_NAME_OR_IP
-   DB_NAME=FarmerManagement
-
-   JWT_SECRET_KEY=agripulse_secret_key_2026
-   JWT_ALGORITHM=HS256
-   JWT_EXPIRE_MINUTES=60
-   ```
-
-### 3. Installation
+### 1. Installation
 1. Create and activate a Python virtual environment:
    ```bash
    # Create environment
@@ -148,13 +123,27 @@ Follow these instructions to set up the project locally and run it.
    pip install -r requirements.txt
    ```
 
-### 4. Running the Application
+### 2. Environment Setup
+1. Create a `.env` file in the project root directory.
+2. Configure the database server and token credentials (adjust server and database names as per your SQL Server configuration):
+   ```ini
+   PHASE1_DB_SERVER=YOUR_SQL_SERVER_NAME_OR_IP
+   PHASE1_DB_NAME=FarmerManagement
+   PHASE1_DB_TRUSTED=yes
+
+   DB_SERVER=YOUR_SQL_SERVER_NAME_OR_IP
+   DB_NAME=FarmerManagement
+
+   JWT_SECRET_KEY=generate_a_secure_random_key_here
+   JWT_ALGORITHM=HS256
+   JWT_EXPIRE_MINUTES=60
+   ```
+
+### 3. Running the Application
 Run the FastAPI application using Uvicorn:
 ```bash
 uvicorn backend.main:app --host 0.0.0.0 --port 8000
 ```
-
-> **Note:** Do not use `--reload` in production. Use `--reload` only during local development (e.g. `uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000`).
 
 Once the server is running, open your web browser and navigate to:
 - **Application Portal**: `http://127.0.0.1:8000/` (Redirects automatically to login page)
@@ -163,29 +152,5 @@ Once the server is running, open your web browser and navigate to:
   - Employee Portal: `/employee/dashboard.html`
   - Manager Portal: `/manager/manager_dashboard.html`
 
-## Handover Steps
-To transition the system to production:
-
-1. **Database Schema Preparation**:
-   Run the table creation script `create_tables.sql` on the production database to initialize the required tables. (It is safe to execute multiple times as it uses conditional guards).
-
-2. **Configure Database Credentials**:
-   Update `trial/.env` with your real production database credentials:
-   ```ini
-   PHASE1_DB_SERVER=<real server>
-   PHASE1_DB_NAME=<real database>
-   PHASE1_DB_TRUSTED=yes
-   ```
-   *(Or add `PHASE1_DB_USER` and `PHASE1_DB_PASSWORD` if not using Windows/trusted authentication).*
-
-3. **Start the server**:
-   From inside the `trial/` folder, run:
-   ```bash
-   uvicorn backend.main:app --host 0.0.0.0 --port 8000
-   ```
-
-4. **Access the Application**:
-   Navigate to the app from any device connected to the LAN:
-   `http://<server-ip>:8000`
 
 
