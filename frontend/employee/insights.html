@@ -5,6 +5,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AgriPulse — Insights & Analytics</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style>
+    /* Tailwind CDN offline fallback — basic readable layout */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f8f9ff;
+      color: #0b1c30;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+    img { max-width: 100%; }
+    a { color: #ea580c; }
+    a:hover { text-decoration: underline; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    input[type="text"], input[type="password"], input[type="email"],
+    input[type="number"], select, textarea {
+      width: 100%;
+      border: 1px solid #bfc9c3;
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: #0b1c30;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      background-color: #7c2d12;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    button:hover { background-color: #9a3412; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid #e5e7eb; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: 700; }
+  </style>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 <script id="tailwind-config">
   tailwind.config = {
@@ -12,17 +53,17 @@
     theme: {
       extend: {
         colors: {
-          "primary": "#003527",         // Deep Emerald
-          "primary-light": "#004d39",
-          "secondary": "#006c49",       // Forest Green
-          "secondary-light": "#00855a",
+          "primary": "#7c2d12",         // Deep Orange
+          "primary-light": "#9a3412",
+          "secondary": "#ea580c",       // Forest Orange
+          "secondary-light": "#f97316",
           "background": "#f4f6f8",       // Cool light slate
           "surface": "#ffffff",
           "surface-muted": "#f8fafc",
           "border-color": "#e2e8f0",
           "text-main": "#0f172a",       // Deep dark gray
           "text-muted": "#64748b",      // Slate gray
-          "accent-success": "#10b981",  // Mint green
+          "accent-success": "#f97316",  // Mint orange
           "accent-warning": "#f59e0b",  // Warm amber
           "accent-error": "#ef4444"     // Soft red
         },
@@ -38,25 +79,29 @@
   
   /* Sidebar design with sleek gradient */
   .agri-sidebar {
-    background: linear-gradient(180deg, #002b1f 0%, #001f16 100%);
-    box-shadow: inset -1px 0 0 rgba(255,255,255,0.03), 4px 0 24px rgba(0,0,0,0.15);
-  }
+        background: #0f172a;
+        box-shadow:
+          inset -1px 0 0 rgba(255, 255, 255, 0.03),
+          4px 0 24px rgba(0, 0, 0, 0.15);
+      }
   .nav-link {
-    color: rgba(255,255,255,0.7);
-    transition: all 0.2s ease;
-  }
+        color: #94a3b8;
+        transition: all 0.2s ease;
+      }
   .nav-link:hover {
-    background: rgba(255,255,255,0.06);
-    color: #ffffff;
-    transform: translateX(2px);
-  }
+        background: #1e293b;
+        color: #ffffff;
+        transform: translateX(2px);
+      }
   .nav-link.active {
-    background: linear-gradient(90deg, rgba(16,185,129,0.15), rgba(16,185,129,0.02));
-    color: #34d399;
-    border-left: 3px solid #10b981;
-    box-shadow: inset 0 0 12px rgba(16,185,129,0.04);
-  }
-  .nav-link.active .material-symbols-outlined { color: #10b981; }
+        background: #ea580c;
+        color: #ffffff;
+        border-left: 3px solid #ea580c;
+        box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.04);
+      }
+  .nav-link.active .material-symbols-outlined {
+        color: #ffffff;
+      }
 
   /* Premium Cards */
   .premium-card {
@@ -84,12 +129,16 @@
 <!-- Side Navigation -->
 <aside class="agri-sidebar w-[240px] flex flex-col py-6 shrink-0 fixed h-screen z-50 text-white">
   <div class="px-6 mb-8 flex items-center gap-3">
-    <div class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center rounded-xl shadow-lg shrink-0">
-      <span class="material-symbols-outlined text-2xl text-emerald-400">agriculture</span>
-    </div>
+    <div
+          class="w-10 h-10 bg-[#ea580c] flex items-center justify-center rounded-xl shadow-lg shrink-0"
+        >
+          <span class="material-symbols-outlined text-2xl text-white"
+            >agriculture</span
+          >
+        </div>
     <div>
       <h1 class="text-sm font-black tracking-wider leading-none uppercase text-white">Sri Sri Sugar</h1>
-      <p class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-1">Operations Portal</p>
+      <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Operations Portal</p>
     </div>
   </div>
   <nav class="flex-grow space-y-1">
@@ -139,9 +188,9 @@
     <div class="flex items-center gap-3 pl-2">
       <div class="text-right">
         <p class="text-xs font-black text-slate-800 leading-none" id="headerUserName">Loading Officer</p>
-        <p class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider mt-1" id="headerUserRole">Field Officer</p>
+        <p class="text-[9px] text-orange-600 font-bold uppercase tracking-wider mt-1" id="headerUserRole">Field Officer</p>
       </div>
-      <div class="w-9 h-9 rounded-xl bg-[#003527] text-emerald-300 font-bold text-xs flex items-center justify-center shadow" id="avatarCircle">
+      <div class="w-9 h-9 rounded-xl bg-[#7c2d12] text-orange-300 font-bold text-xs flex items-center justify-center shadow" id="avatarCircle">
         A
       </div>
     </div>
@@ -159,22 +208,22 @@
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
       <div class="premium-card p-5">
         <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">My Villages Count</p>
-        <h3 class="text-2xl font-black text-[#003527]" id="statVillages">0</h3>
+        <h3 class="text-2xl font-black text-[#7c2d12]" id="statVillages">0</h3>
         <p class="text-[10px] text-slate-500 mt-1">Assigned operations base</p>
       </div>
       <div class="premium-card p-5">
         <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">My Farmers Base</p>
-        <h3 class="text-2xl font-black text-[#003527]" id="statFarmers">0</h3>
+        <h3 class="text-2xl font-black text-[#7c2d12]" id="statFarmers">0</h3>
         <p class="text-[10px] text-slate-500 mt-1">Active relationship telemetry</p>
       </div>
       <div class="premium-card p-5">
         <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Calculated Score</p>
-        <h3 class="text-2xl font-black text-emerald-700" id="statScore">0%</h3>
-        <p class="text-[10px] text-emerald-600 mt-1 font-bold">Weighted Operational Rating</p>
+        <h3 class="text-2xl font-black text-orange-700" id="statScore">0%</h3>
+        <p class="text-[10px] text-orange-600 mt-1 font-bold">Weighted Operational Rating</p>
       </div>
       <div class="premium-card p-5">
         <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Cane Registration</p>
-        <h3 class="text-2xl font-black text-[#006c49]" id="statCaneReg">0%</h3>
+        <h3 class="text-2xl font-black text-[#ea580c]" id="statCaneReg">0%</h3>
         <p class="text-[10px] text-slate-500 mt-1">Cane season compliance</p>
       </div>
     </div>
@@ -185,7 +234,7 @@
       <!-- Left: Target Parameter Breakdown -->
       <div class="col-span-12 lg:col-span-7 premium-card overflow-hidden">
         <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
-          <span class="material-symbols-outlined text-base text-[#006c49]">bar_chart</span>
+          <span class="material-symbols-outlined text-base text-[#ea580c]">bar_chart</span>
           <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">My Operations Target Parameter Breakdown</h3>
         </div>
         <div class="p-6 space-y-4" id="targetBreakdown">
@@ -196,7 +245,7 @@
       <!-- Right: Village Breakdown -->
       <div class="col-span-12 lg:col-span-5 premium-card overflow-hidden">
         <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
-          <span class="material-symbols-outlined text-base text-[#006c49]">location_on</span>
+          <span class="material-symbols-outlined text-base text-[#ea580c]">location_on</span>
           <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">My Top Operational Villages</h3>
         </div>
         <div class="p-6 space-y-3" id="villageBreakdown">
@@ -213,9 +262,9 @@
 function renderTargetParameters(metrics) {
   const m = metrics;
   const list = [
-    { name: "Sugarcane Crushing Target Achievement", val: m.crushing_target,  color: "bg-[#003527]", weight: "40% Weightage" },
-    { name: "Sugar Recovery Completion Rate",         val: m.recovery_target,  color: "bg-[#006c49]", weight: "20% Weightage" },
-    { name: "Farmer Engagement Meetings Held",        val: m.farmer_meetings,  color: "bg-emerald-500", weight: "20% Weightage" },
+    { name: "Sugarcane Crushing Target Achievement", val: m.crushing_target,  color: "bg-[#7c2d12]", weight: "40% Weightage" },
+    { name: "Sugar Recovery Completion Rate",         val: m.recovery_target,  color: "bg-[#ea580c]", weight: "20% Weightage" },
+    { name: "Farmer Engagement Meetings Held",        val: m.farmer_meetings,  color: "bg-orange-500", weight: "20% Weightage" },
     { name: "KCC Loan Target Completions",            val: m.kcc_target,       color: "bg-teal-600",   weight: "20% Weightage" },
     { name: "Cane Registration Compliance",           val: m.cane_reg_target,  color: "bg-slate-500",  weight: "Standard Compliance" },
   ];
@@ -225,7 +274,7 @@ function renderTargetParameters(metrics) {
     <div>
       <div class="flex justify-between items-center mb-1 text-xs">
         <span class="font-bold text-slate-700">${t.name}</span>
-        <span class="font-black text-[#003527] tabular-nums">${t.val}% <span class="text-slate-400 font-normal">(${t.weight})</span></span>
+        <span class="font-black text-[#7c2d12] tabular-nums">${t.val}% <span class="text-slate-400 font-normal">(${t.weight})</span></span>
       </div>
       <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
         <div class="bar-fill h-2 rounded-full ${t.color}" style="width:0%" data-target="${t.val}%"></div>
@@ -255,10 +304,10 @@ function renderVillages(villages) {
       <div class="flex-grow">
         <div class="flex justify-between items-center mb-1">
           <span class="font-bold text-slate-700">${v.village}</span>
-          <span class="font-black text-[#006c49] tabular-nums">${v.visits} visit${v.visits !== 1 ? 's' : ''}</span>
+          <span class="font-black text-[#ea580c] tabular-nums">${v.visits} visit${v.visits !== 1 ? 's' : ''}</span>
         </div>
         <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-          <div class="bar-fill h-1.5 rounded-full bg-[#006c49]" style="width:0%" data-target="${Math.round(v.visits / max * 100)}%"></div>
+          <div class="bar-fill h-1.5 rounded-full bg-[#ea580c]" style="width:0%" data-target="${Math.round(v.visits / max * 100)}%"></div>
         </div>
       </div>
     </div>
@@ -276,7 +325,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     [profile, metrics, villages] = await Promise.all([
       AgriAPI.getProfile(),
       AgriAPI.getMetrics(),
-      AgriAPI.getVillages(),
+      AgriAPI.getMyVillages(),
     ]);
   } catch (err) {
     console.error("Failed to load insights data:", err.message);

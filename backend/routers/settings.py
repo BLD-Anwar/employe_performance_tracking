@@ -3,12 +3,12 @@ routers/settings.py  –  Account settings
 Tables: dbo.auth_user, dbo.user_details
 """
 import hashlib
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from database import db_cursor
 from models import ProfileUpdate, PasswordChange
-from auth import password_ok, md5_hash
+from auth import password_ok, md5_hash, require_role
 
-router = APIRouter(prefix="/api/settings", tags=["settings"])
+router = APIRouter(prefix="/api/settings", tags=["settings"], dependencies=[Depends(require_role("manager"))])
 
 
 @router.get("/profile/{user_id}")

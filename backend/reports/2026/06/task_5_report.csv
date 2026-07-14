@@ -1,0 +1,25 @@
+=== SRI SRI SUGAR — TASK PERFORMANCE REPORT ===
+
+Task ID,5
+Task Name,meet farmers
+Work Type,Biproduct Sale
+Schedule,WEEKLY
+Priority,Medium
+Assigned Officer,Amit Chavan (amit91)
+Start Date,2026-06-13
+End Date,2026-06-20
+Task Status,OVERDUE
+
+=== FARMER MEETING DETAILS ===
+Farmer Code,Farmer Name,Village,KCC,KCC Reason,Canara HNT,Canara Reason,Sangola HNT,Sangola Reason,Cane Registration,Cane Reg Remark,Recovery,Recovery Reason,Vehicle Agreement,Vehicle Reason,Expected Tonnage,Cane Development,Feedback,Remark,Meeting Date,Vehicle Working,Vehicle Working Reason
+821,Aanya Vipin Thorat,Chandapuri,—,,—,,—,,—,,—,,—,,0,,,,,—,
+1826,Aditi Rakesh Dudhgaonkar,Chandapuri,—,,—,,—,,—,,—,,—,,0,,,,,—,
+3074,Aditi Ramchandra Nimbalkar,Chandapuri,—,,—,,—,,—,,—,,—,,0,,,,,—,
+3090,Aba Sakharam Dange,Chandapuri,—,,—,,—,,—,,—,,—,,0,,,,,—,
+4133,Aba Gulabrao Sadafule,Chandapuri,—,,—,,—,,—,,—,,—,,0,,,,,—,
+
+=== TASK ACTIVITY TIMELINE / HISTORY ===
+Timestamp,Action,Remarks,Officer / Manager
+2026-06-13 10:03:07,TASK_FARMER_ADDED,Added farmer IDs: 3074,System Admin
+2026-06-13 10:02:21,ASSIGNED,Task assigned by manager,Abhishek Desai
+

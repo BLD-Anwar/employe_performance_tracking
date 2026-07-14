@@ -151,13 +151,41 @@ Follow these instructions to set up the project locally and run it.
 ### 4. Running the Application
 Run the FastAPI application using Uvicorn:
 ```bash
-uvicorn backend.main:app --reload --port 8000
+uvicorn backend.main:app --host 0.0.0.0 --port 8000
 ```
+
+> **Note:** Do not use `--reload` in production. Use `--reload` only during local development (e.g. `uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000`).
 
 Once the server is running, open your web browser and navigate to:
 - **Application Portal**: `http://127.0.0.1:8000/` (Redirects automatically to login page)
 - **Direct Login**: `http://127.0.0.1:8000/login.html`
 - **Portals**:
   - Employee Portal: `/employee/dashboard.html`
-  - HR Portal: `/hr/hr_dashboard.html`
   - Manager Portal: `/manager/manager_dashboard.html`
+
+## Handover Steps
+To transition the system to production:
+
+1. **Database Schema Preparation**:
+   Run the table creation script `create_tables.sql` on the production database to initialize the required tables. (It is safe to execute multiple times as it uses conditional guards).
+
+2. **Configure Database Credentials**:
+   Update `trial/.env` with your real production database credentials:
+   ```ini
+   PHASE1_DB_SERVER=<real server>
+   PHASE1_DB_NAME=<real database>
+   PHASE1_DB_TRUSTED=yes
+   ```
+   *(Or add `PHASE1_DB_USER` and `PHASE1_DB_PASSWORD` if not using Windows/trusted authentication).*
+
+3. **Start the server**:
+   From inside the `trial/` folder, run:
+   ```bash
+   uvicorn backend.main:app --host 0.0.0.0 --port 8000
+   ```
+
+4. **Access the Application**:
+   Navigate to the app from any device connected to the LAN:
+   `http://<server-ip>:8000`
+
+

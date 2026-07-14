@@ -5,6 +5,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AgriPulse — Support & Assistance</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style>
+    /* Tailwind CDN offline fallback — basic readable layout */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f8f9ff;
+      color: #0b1c30;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+    img { max-width: 100%; }
+    a { color: #ea580c; }
+    a:hover { text-decoration: underline; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    input[type="text"], input[type="password"], input[type="email"],
+    input[type="number"], select, textarea {
+      width: 100%;
+      border: 1px solid #bfc9c3;
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: #0b1c30;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      background-color: #7c2d12;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    button:hover { background-color: #9a3412; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid #e5e7eb; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: 700; }
+  </style>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 <script id="tailwind-config">
   tailwind.config = {
@@ -12,8 +53,8 @@
     theme: {
       extend: {
         colors: {
-          "primary": "#003527",
-          "secondary": "#006c49",
+          "primary": "#7c2d12",
+          "secondary": "#ea580c",
           "background": "#f4f6f8",
           "surface": "#ffffff",
         },
@@ -26,17 +67,35 @@
 <style>
   body { font-family: 'Inter', sans-serif; background-color: #f4f6f8; color: #0f172a; }
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-  input:focus, select:focus, textarea:focus { outline: none; box-shadow: 0 0 0 2px rgba(16,185,129,0.2); border-color: #10b981; }
+  input:focus, select:focus, textarea:focus { outline: none; box-shadow: 0 0 0 2px rgba(16,185,129,0.2); border-color: #f97316; }
 
-  .agri-sidebar { background: linear-gradient(180deg, #002b1f 0%, #001f16 100%); box-shadow: inset -1px 0 0 rgba(255,255,255,0.03), 4px 0 24px rgba(0,0,0,0.15); }
-  .nav-link { color: rgba(255,255,255,0.7); transition: all 0.2s ease; }
-  .nav-link:hover { background: rgba(255,255,255,0.06); color: #ffffff; transform: translateX(2px); }
-  .nav-link.active { background: linear-gradient(90deg, rgba(16,185,129,0.15), rgba(16,185,129,0.02)); color: #34d399; border-left: 3px solid #10b981; }
-  .nav-link.active .material-symbols-outlined { color: #10b981; }
+  .agri-sidebar {
+        background: #0f172a;
+        box-shadow:
+          inset -1px 0 0 rgba(255, 255, 255, 0.03),
+          4px 0 24px rgba(0, 0, 0, 0.15);
+      }
+  .nav-link {
+        color: #94a3b8;
+        transition: all 0.2s ease;
+      }
+  .nav-link:hover {
+        background: #1e293b;
+        color: #ffffff;
+        transform: translateX(2px);
+      }
+  .nav-link.active {
+        background: #ea580c;
+        color: #ffffff;
+        border-left: 3px solid #ea580c;
+      }
+  .nav-link.active .material-symbols-outlined {
+        color: #ffffff;
+      }
 
   .premium-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); border-radius: 1rem; }
 
-  .ticket-success { display:none; border-radius:1rem; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #a7f3d0; padding: 2rem; text-align:center; }
+  .ticket-success { display:none; border-radius:1rem; background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border: 1px solid #fed7aa; padding: 2rem; text-align:center; }
 
   .faq-item details summary { cursor: pointer; list-style: none; }
   .faq-item details summary::-webkit-details-marker { display: none; }
@@ -53,12 +112,16 @@
 <!-- Side Navigation -->
 <aside class="agri-sidebar w-[240px] flex flex-col py-6 shrink-0 fixed h-screen z-50 text-white">
   <div class="px-6 mb-8 flex items-center gap-3">
-    <div class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center rounded-xl shadow-lg shrink-0">
-      <span class="material-symbols-outlined text-2xl text-emerald-400">agriculture</span>
-    </div>
+    <div
+          class="w-10 h-10 bg-[#ea580c] flex items-center justify-center rounded-xl shadow-lg shrink-0"
+        >
+          <span class="material-symbols-outlined text-2xl text-white"
+            >agriculture</span
+          >
+        </div>
     <div>
       <h1 class="text-sm font-black tracking-wider leading-none uppercase text-white">Sri Sri Sugar</h1>
-      <p class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-1">Operations Portal</p>
+      <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Operations Portal</p>
     </div>
   </div>
   <nav class="flex-grow space-y-1">
@@ -84,9 +147,9 @@
     <div class="flex items-center gap-3">
       <div class="text-right">
         <p class="text-xs font-black text-slate-800 leading-none" id="headerUserName">Loading...</p>
-        <p class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider mt-1">Field Operations</p>
+        <p class="text-[9px] text-orange-600 font-bold uppercase tracking-wider mt-1">Field Operations</p>
       </div>
-      <div class="w-9 h-9 rounded-xl bg-[#003527] text-emerald-300 font-bold text-xs flex items-center justify-center shadow" id="avatarCircle">A</div>
+      <div class="w-9 h-9 rounded-xl bg-[#7c2d12] text-orange-300 font-bold text-xs flex items-center justify-center shadow" id="avatarCircle">A</div>
     </div>
   </header>
 
@@ -102,7 +165,7 @@
       <div class="col-span-12 lg:col-span-7 space-y-6">
         <div class="premium-card overflow-hidden">
           <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
-            <span class="material-symbols-outlined text-[#003527] text-lg">contact_support</span>
+            <span class="material-symbols-outlined text-[#7c2d12] text-lg">contact_support</span>
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Open a Support Ticket</h3>
           </div>
           <div class="p-6">
@@ -137,7 +200,7 @@
                 <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Issue Description</label>
                 <textarea id="tDesc" rows="4" required class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-medium resize-none" placeholder="Please describe the issue in detail — what happened, when it occurred, and what page it was on..."></textarea>
               </div>
-              <button type="submit" class="w-full bg-[#003527] hover:bg-[#002d21] text-emerald-300 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow uppercase tracking-wider transition-all active:scale-[0.98]">
+              <button type="submit" class="w-full bg-[#7c2d12] hover:bg-[#4a1505] text-orange-300 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow uppercase tracking-wider transition-all active:scale-[0.98]">
                 <span class="material-symbols-outlined text-sm">send</span>
                 Submit Support Ticket
               </button>
@@ -145,13 +208,13 @@
 
             <!-- Success State -->
             <div class="ticket-success" id="ticketSuccess">
-              <div class="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span class="material-symbols-outlined text-emerald-600 text-3xl">check_circle</span>
+              <div class="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-orange-600 text-3xl">check_circle</span>
               </div>
               <h3 class="text-lg font-black text-slate-900 mb-1">Ticket Submitted!</h3>
               <p class="text-sm text-slate-600 mb-2">Our IT team will respond within 24 hours.</p>
-              <p class="text-xs font-black text-[#006c49] mb-4" id="ticketId">TICKET #TK-000000</p>
-              <button class="text-xs font-bold text-[#006c49] hover:underline" onclick="resetForm()">Submit Another Ticket</button>
+              <p class="text-xs font-black text-[#ea580c] mb-4" id="ticketId">TICKET #TK-000000</p>
+              <button class="text-xs font-bold text-[#ea580c] hover:underline" onclick="resetForm()">Submit Another Ticket</button>
             </div>
           </div>
         </div>
@@ -159,7 +222,7 @@
         <!-- FAQ Accordion -->
         <div class="premium-card overflow-hidden">
           <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
-            <span class="material-symbols-outlined text-[#003527] text-lg">quiz</span>
+            <span class="material-symbols-outlined text-[#7c2d12] text-lg">quiz</span>
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Frequently Asked Questions</h3>
           </div>
           <div class="p-6 space-y-3 text-xs faq-item">
@@ -182,7 +245,7 @@
                 How do I download my performance reports?
                 <span class="material-symbols-outlined text-slate-400 faq-arrow text-base">expand_more</span>
               </summary>
-              <div class="px-4 py-3 text-slate-600 leading-relaxed bg-white">Go to <a href="reports.html" class="text-[#006c49] font-bold hover:underline">My Reports</a> and click the Download button (PDF, CSV, or Excel). Reports are generated instantly with your personal data.</div>
+              <div class="px-4 py-3 text-slate-600 leading-relaxed bg-white">Go to <a href="reports.html" class="text-[#ea580c] font-bold hover:underline">My Reports</a> and click the Download button (PDF, CSV, or Excel). Reports are generated instantly with your personal data.</div>
             </details>
             <details class="border border-slate-100 rounded-xl overflow-hidden">
               <summary class="flex items-center justify-between px-4 py-3 bg-slate-50 font-bold text-slate-800 hover:bg-slate-100 transition-colors">
@@ -201,23 +264,23 @@
         <!-- IT Contact Card -->
         <div class="premium-card p-6 space-y-4">
           <div class="flex items-center gap-2 mb-2">
-            <span class="material-symbols-outlined text-[#003527] text-lg">support_agent</span>
+            <span class="material-symbols-outlined text-[#7c2d12] text-lg">support_agent</span>
             <h4 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Direct IT Helpdesk</h4>
           </div>
           <p class="text-xs text-slate-500 leading-relaxed">Sri Sri Sugar IT Engineering Team — supporting field operations across Sangli & Kolhapur zones.</p>
           <div class="space-y-3 text-xs">
-            <a href="mailto:software@srisrisugar.com" class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-emerald-50 hover:border-emerald-100 transition-all group">
-              <div class="w-8 h-8 bg-[#003527]/10 rounded-lg flex items-center justify-center">
-                <span class="material-symbols-outlined text-[#006c49] text-base">mail</span>
+            <a href="mailto:software@srisrisugar.com" class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-orange-50 hover:border-orange-100 transition-all group">
+              <div class="w-8 h-8 bg-[#7c2d12]/10 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-[#ea580c] text-base">mail</span>
               </div>
               <div>
                 <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Email Support</p>
-                <p class="font-bold text-[#006c49] group-hover:underline">software@srisrisugar.com</p>
+                <p class="font-bold text-[#ea580c] group-hover:underline">software@srisrisugar.com</p>
               </div>
             </a>
             <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
-              <div class="w-8 h-8 bg-[#003527]/10 rounded-lg flex items-center justify-center">
-                <span class="material-symbols-outlined text-[#006c49] text-base">call</span>
+              <div class="w-8 h-8 bg-[#7c2d12]/10 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-[#ea580c] text-base">call</span>
               </div>
               <div>
                 <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Phone Helpdesk</p>
@@ -225,8 +288,8 @@
               </div>
             </div>
             <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
-              <div class="w-8 h-8 bg-[#003527]/10 rounded-lg flex items-center justify-center">
-                <span class="material-symbols-outlined text-[#006c49] text-base">schedule</span>
+              <div class="w-8 h-8 bg-[#7c2d12]/10 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-[#ea580c] text-base">schedule</span>
               </div>
               <div>
                 <p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Office Hours</p>
@@ -239,21 +302,21 @@
         <!-- System Status -->
         <div class="premium-card p-6 space-y-3">
           <div class="flex items-center gap-2 mb-2">
-            <span class="material-symbols-outlined text-[#003527] text-lg">monitor_heart</span>
+            <span class="material-symbols-outlined text-[#7c2d12] text-lg">monitor_heart</span>
             <h4 class="text-xs font-bold text-slate-800 uppercase tracking-widest">System Status</h4>
           </div>
           <div class="space-y-2 text-xs" id="systemStatus">
             <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50">
               <span class="font-medium text-slate-700">AgriPulse Portal</span>
-              <span class="flex items-center gap-1 text-emerald-600 font-black text-[10px]"><span class="w-2 h-2 bg-emerald-500 rounded-full inline-block animate-pulse"></span> OPERATIONAL</span>
+              <span class="flex items-center gap-1 text-orange-600 font-black text-[10px]"><span class="w-2 h-2 bg-orange-500 rounded-full inline-block animate-pulse"></span> OPERATIONAL</span>
             </div>
             <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50">
               <span class="font-medium text-slate-700">GPS Sync Server</span>
-              <span class="flex items-center gap-1 text-emerald-600 font-black text-[10px]"><span class="w-2 h-2 bg-emerald-500 rounded-full inline-block animate-pulse"></span> OPERATIONAL</span>
+              <span class="flex items-center gap-1 text-orange-600 font-black text-[10px]"><span class="w-2 h-2 bg-orange-500 rounded-full inline-block animate-pulse"></span> OPERATIONAL</span>
             </div>
             <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50">
               <span class="font-medium text-slate-700">Report Generator</span>
-              <span class="flex items-center gap-1 text-emerald-600 font-black text-[10px]"><span class="w-2 h-2 bg-emerald-500 rounded-full inline-block animate-pulse"></span> OPERATIONAL</span>
+              <span class="flex items-center gap-1 text-orange-600 font-black text-[10px]"><span class="w-2 h-2 bg-orange-500 rounded-full inline-block animate-pulse"></span> OPERATIONAL</span>
             </div>
             <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50">
               <span class="font-medium text-slate-700">Data Telemetry</span>
@@ -266,7 +329,7 @@
         <!-- My Tickets History -->
         <div class="premium-card p-6 space-y-3">
           <div class="flex items-center gap-2 mb-2">
-            <span class="material-symbols-outlined text-[#003527] text-lg">inbox</span>
+            <span class="material-symbols-outlined text-[#7c2d12] text-lg">inbox</span>
             <h4 class="text-xs font-bold text-slate-800 uppercase tracking-widest">My Tickets</h4>
           </div>
           <div id="myTickets" class="space-y-2 text-xs"></div>
@@ -324,7 +387,7 @@ function renderTickets() {
     <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50">
       <div class="flex justify-between items-center">
         <span class="font-black text-slate-800 text-[10px]">#${t.id}</span>
-        <span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold ${t.status === 'Open' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}">${t.status}</span>
+        <span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold ${t.status === 'Open' ? 'bg-amber-100 text-amber-700' : 'bg-orange-100 text-orange-700'}">${t.status}</span>
       </div>
       <p class="text-[10px] text-slate-600 mt-1 truncate">${t.category}</p>
       <p class="text-[9px] text-slate-400 mt-0.5">${t.date} · ${t.priority} Priority</p>

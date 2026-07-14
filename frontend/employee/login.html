@@ -6,6 +6,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AgriPulse — Sign In</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style>
+    /* Tailwind CDN offline fallback — basic readable layout */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f8f9ff;
+      color: #0b1c30;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+    img { max-width: 100%; }
+    a { color: #ea580c; }
+    a:hover { text-decoration: underline; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    input[type="text"], input[type="password"], input[type="email"],
+    input[type="number"], select, textarea {
+      width: 100%;
+      border: 1px solid #bfc9c3;
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: #0b1c30;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      background-color: #7c2d12;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    button:hover { background-color: #9a3412; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid #e5e7eb; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: 700; }
+  </style>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 <script id="tailwind-config">
   tailwind.config = {
@@ -13,14 +54,14 @@
     theme: {
       extend: {
         colors: {
-          "primary": "#003527", // deep dark emerald
+          "primary": "#7c2d12", // deep dark orange
           "on-primary": "#ffffff",
-          "primary-container": "#064e3b",
-          "on-primary-container": "#80bea6",
-          "secondary": "#006c49", // emerald green
+          "primary-container": "#7c2d12",
+          "on-primary-container": "#ffedd5",
+          "secondary": "#ea580c", // orange orange
           "on-secondary": "#ffffff",
-          "secondary-container": "#6cf8bb",
-          "on-secondary-container": "#00714d",
+          "secondary-container": "#fed7aa",
+          "on-secondary-container": "#7c2d12",
           "background": "#f8f9ff",
           "surface": "#ffffff",
           "outline": "#707974",
@@ -55,7 +96,7 @@
   }
   .shake { animation: shake 0.3s ease-in-out; }
   .login-gradient {
-    background: linear-gradient(135deg, rgba(0, 53, 39, 0.95) 0%, rgba(0, 33, 23, 0.85) 100%);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 100%);
   }
   input:focus {
     outline: none;
@@ -93,7 +134,7 @@ function setLoading(btn, on) {
 function setSuccess(btn) {
   btn.innerHTML = '<span class="material-symbols-outlined text-lg">check_circle</span><span>Success!</span>';
   btn.classList.remove("bg-primary");
-  btn.classList.add("bg-emerald-500");
+  btn.classList.add("bg-orange-500");
 }
 
 function togglePassword() {
@@ -116,20 +157,29 @@ async function handleLogin(e) {
 
   setLoading(btn, true);
   try {
-    // Step 1: Authenticate and get JWT token
-    const tokenData = await AgriAPI.login(identity, password);
+    // Step 1: Authenticate and get session data
+    const data = await AgriAPI.login(identity, password);
 
-    // Step 2: Fetch the user's own profile using the token
-    // Temporarily store the token so _request() can use it
-    sessionStorage.setItem(AgriAuth.SESSION_KEY, JSON.stringify({ token: tokenData.access_token }));
-    const profile = await AgriAPI.getProfile();
+    const session = {
+      id: data.id,
+      username: data.username,
+      name: data.name,
+      role: data.role,
+      token: data.access_token
+    };
 
-    // Step 3: Save the full session (profile + token)
-    AgriAuth.setSession(profile, tokenData.access_token, remember);
+    // Save session using unified key
+    const sessionStr = JSON.stringify(session);
+    if (remember) {
+      localStorage.setItem("agri_session", sessionStr);
+    } else {
+      sessionStorage.setItem("agri_session", sessionStr);
+    }
 
     setSuccess(btn);
     setTimeout(() => { window.location.href = "dashboard.html"; }, 500);
-  } catch (err) {
+  }
+ catch (err) {
     console.error(err);
     showError(err.message || "Login failed. Please check your credentials.");
     setLoading(btn, false);
@@ -161,11 +211,11 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 </head>
-<body class="min-h-screen bg-background text-on-surface flex items-center justify-center overflow-hidden">
+<body class="min-h-screen w-full bg-background text-on-surface m-0 p-0 overflow-hidden">
 
-<main class="flex h-screen w-full">
+<main class="flex min-h-screen w-full max-w-none m-0">
   <!-- Left Side: Visual Narrative -->
-  <section class="hidden lg:flex flex-1 relative overflow-hidden bg-primary">
+  <section class="hidden lg:flex lg:w-[55%] shrink-0 relative overflow-hidden bg-primary">
     <img alt="Aerial view of farm fields" class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out" 
          src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80" 
          style="transform: scale(1.05);">
@@ -186,7 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
   </section>
 
   <!-- Right Side: Authentication Canvas -->
-  <section class="flex-1 flex flex-col justify-center items-center p-8 bg-surface">
+  <section class="w-full lg:w-[45%] shrink-0 flex flex-col justify-center items-center p-8 bg-surface">
     <div class="w-full max-w-[400px] space-y-8">
       <!-- Brand Anchor -->
       <div class="flex items-center gap-3">

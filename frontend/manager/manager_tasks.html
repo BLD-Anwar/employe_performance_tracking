@@ -6,6 +6,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AgriPulse — Task Assignment</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style>
+    /* Tailwind CDN offline fallback — basic readable layout */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f8f9ff;
+      color: #0b1c30;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+    img { max-width: 100%; }
+    a { color: #ea580c; }
+    a:hover { text-decoration: underline; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    input[type="text"], input[type="password"], input[type="email"],
+    input[type="number"], select, textarea {
+      width: 100%;
+      border: 1px solid #bfc9c3;
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: #0b1c30;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      background-color: #7c2d12;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    button:hover { background-color: #9a3412; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid #e5e7eb; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: 700; }
+  </style>
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap"
     rel="stylesheet">
@@ -21,8 +62,10 @@
     }
 
     .sidebar {
-      background: linear-gradient(180deg, #0f1f18 0%, #0a150f 100%);
+      background: #0f172a;
       width: 220px;
+      min-width: 220px;
+      flex-shrink: 0;
       min-height: 100vh;
       position: fixed;
       left: 0;
@@ -39,7 +82,7 @@
       padding: 10px 16px;
       margin: 2px 8px;
       border-radius: 8px;
-      color: rgba(209, 250, 229, 0.65);
+      color: #94a3b8;
       font-size: 13px;
       font-weight: 600;
       text-decoration: none;
@@ -47,17 +90,17 @@
     }
 
     .nav-link:hover {
-      background: rgba(255, 255, 255, 0.07);
-      color: #fff;
+      background: #1e293b;
+      color: #ffffff;
     }
 
     .nav-link.active {
-      background: rgba(74, 222, 128, 0.18);
-      color: #86efac;
+      background: #ea580c;
+      color: #ffffff;
     }
 
     .nav-link.active .material-symbols-outlined {
-      color: #4ade80;
+      color: #ffffff;
     }
 
     .nav-link.logout {
@@ -65,12 +108,12 @@
     }
 
     .nav-link.logout:hover {
-      background: rgba(239, 68, 68, 0.1);
+      background: rgba(239, 68, 68, 0.15);
       color: #fca5a5;
     }
 
     .nav-link.settings-link {
-      color: rgba(209, 250, 229, 0.65);
+      color: rgba(255, 255, 255, 0.82);
     }
 
     .card {
@@ -90,7 +133,7 @@
     }
 
     .tbl-row:hover {
-      background: #f0fdf4;
+      background: #fff7ed;
     }
 
     .form-field input,
@@ -112,7 +155,7 @@
     .form-field select:focus,
     .form-field textarea:focus {
       outline: none;
-      border-color: #006c49;
+      border-color: #ea580c;
       background: #fff;
       box-shadow: 0 0 0 3px rgba(0, 108, 73, 0.08);
     }
@@ -154,7 +197,7 @@
       width: 26px;
       height: 26px;
       border-radius: 99px;
-      background: #003527;
+      background: #7c2d12;
       color: #fff;
       font-weight: 800;
       font-size: 12px;
@@ -180,9 +223,9 @@
     }
 
     .priority-btn.selected-low {
-      border-color: #059669;
-      background: #d1fae5;
-      color: #003527;
+      border-color: #ea580c;
+      background: #ffedd5;
+      color: #7c2d12;
     }
 
     .priority-btn.selected-medium {
@@ -206,26 +249,26 @@
     }
 
     .officer-card:hover {
-      border-color: #006c49;
-      background: #f0fdf4;
+      border-color: #ea580c;
+      background: #fff7ed;
     }
 
     .officer-card.selected {
-      border-color: #003527;
-      background: #f0fdf4;
+      border-color: #7c2d12;
+      background: #fff7ed;
       box-shadow: 0 0 0 3px rgba(0, 53, 39, 0.08);
     }
 
     .farmer-row:hover {
-      background: #f0fdf4;
+      background: #fff7ed;
     }
 
     .farmer-row.selected-row {
-      background: #f0fdf4;
+      background: #fff7ed;
     }
 
     .farmer-row input[type="checkbox"] {
-      accent-color: #003527;
+      accent-color: #7c2d12;
       width: 18px;
       height: 18px;
       cursor: pointer;
@@ -262,7 +305,7 @@
       position: fixed;
       top: 70px;
       right: 20px;
-      background: #003527;
+      background: #7c2d12;
       color: #fff;
       border-radius: 10px;
       padding: 12px 20px;
@@ -298,18 +341,19 @@
     }
   </style>
   <script src="../assets/js/manager-auth-store.js"></script>
+  <script src="../assets/js/task-edit.js"></script>
 </head>
 
 <body>
   <aside class="sidebar">
     <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
       <div
-        style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;">
-        <span class="material-symbols-outlined" style="color:#4ade80;font-size:20px;">agriculture</span>
+        style="width:36px;height:36px;background:#ea580c;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="color:#ffffff;font-size:20px;">agriculture</span>
       </div>
       <div>
-        <div style="color:#f0fdf4;font-weight:800;font-size:14px;">Sri Sri Sugar</div>
-        <div style="color:rgba(209,250,229,0.5);font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL
+        <div style="color:#ffffff;font-weight:800;font-size:14px;line-height:1.2;">Sri Sri Sugar</div>
+        <div style="color:#94a3b8;font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL
         </div>
       </div>
     </div>
@@ -320,12 +364,16 @@
           style="font-size:20px;">group</span>Officers</a>
       <a class="nav-link active" href="manager_tasks.html"><span class="material-symbols-outlined"
           style="font-size:20px;">checklist</span>Tasks</a>
+      <a class="nav-link" href="manager_farmers.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">person_search</span>Farmers Registry</a>
       <a class="nav-link" href="manager_performance.html"><span class="material-symbols-outlined"
           style="font-size:20px;">bar_chart</span>Performance</a>
       <a class="nav-link" href="manager_reports.html"><span class="material-symbols-outlined"
-          style="font-size:20px;">assessment</span>Reports</a>
+          style="font-size:20px;">assessment</span>Reports Dashboard</a>
+      <a class="nav-link" href="manager_campaign_reports.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">query_stats</span>Campaign Reports</a>
     </nav>
-    <div style="border-top:1px solid rgba(255,255,255,0.07);padding:8px 0;">
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding:8px 0;">
       <a class="nav-link settings-link" href="manager_settings.html"><span class="material-symbols-outlined"
           style="font-size:20px;">settings</span>Settings</a>
       <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined"
@@ -341,7 +389,7 @@
       style="background:#fff;border-radius:16px;width:100%;max-width:550px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
       <div
         style="padding:16px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:15px;font-weight:700;color:#003527;" id="detailModalTitle">Task Details</span>
+        <span style="font-size:15px;font-weight:700;color:#7c2d12;" id="detailModalTitle">Task Details</span>
         <button onclick="hideDetailModal()" style="background:none;border:none;cursor:pointer;color:#6b7280;"><span
             class="material-symbols-outlined">close</span></button>
       </div>
@@ -366,7 +414,7 @@
           </table>
         </div>
         <button onclick="hideDetailModal()"
-          style="background:#003527;color:#fff;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;width:100%;">Close</button>
+          style="background:#7c2d12;color:#fff;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;width:100%;">Close</button>
       </div>
     </div>
   </div>
@@ -375,12 +423,12 @@
     <header
       style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
       <div>
-        <span style="font-size:18px;font-weight:800;color:#003527;">Task Assignment</span>
+        <span style="font-size:18px;font-weight:800;color:#7c2d12;">Task Assignment</span>
         <span style="font-size:12px;color:#6b7280;margin-left:10px;">Assign field work to officers</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <div
-          style="width:36px;height:36px;border-radius:99px;background:#d1fae5;color:#003527;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;"
+          style="width:36px;height:36px;border-radius:99px;background:#ffedd5;color:#7c2d12;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;"
           id="avatarCircle">M</div>
         <span style="font-size:13px;font-weight:600;color:#374151;" id="headerName">—</span>
       </div>
@@ -414,7 +462,7 @@
               <div class="form-field">
                 <label class="flabel">Schedule Type <span style="color:#dc2626;">*</span></label>
                 <select id="scheduleType" onchange="onScheduleTypeChange()">
-                  <option value="DAILY">Daily</option>
+<option value="DAILY">Daily</option>
                   <option value="WEEKLY" selected>Weekly</option>
                   <option value="MONTHLY">Monthly</option>
                 </select>
@@ -441,10 +489,13 @@
               </div>
             </div>
 
-            <!-- Date auto hint -->
-            <div id="dateAutoHint" style="display:flex;align-items:center;gap:6px;background:#f0fdf4;border-radius:8px;padding:8px 12px;font-size:11px;color:#003527;font-weight:600;margin-top:2px;">
-              <span class="material-symbols-outlined" style="font-size:14px;color:#006c49;">date_range</span> 
+            <!-- Date auto hint in corporate orange -->
+            <div id="dateAutoHint" style="display:flex;align-items:center;gap:6px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px 12px;font-size:11px;color:#ea580c;font-weight:600;margin-top:2px;">
+              <span class="material-symbols-outlined" style="font-size:14px;color:#ea580c;">date_range</span> 
               <span id="dateAutoHintText">Loading dates...</span>
+            </div>
+            <div id="dateAutoHint"
+              style="font-size:11px;color:#ea580c;background:#fff7ed;border:1px solid #fed7aa;padding:6px 10px;border-radius:8px;display:none;align-items:center;gap:6px;font-weight:600;">
             </div>
             <div class="form-field">
               <label class="flabel">Remarks / Notes</label>
@@ -466,21 +517,21 @@
           <div class="section-body">
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
               <div class="form-field">
-                <label class="flabel"><span class="step-badge" style="background:#003527;color:#fff;">1</span>
+                <label class="flabel"><span class="step-badge" style="background:#7c2d12;color:#fff;">1</span>
                   Taluka/District <span style="color:#dc2626;">*</span></label>
                 <select id="districtSel" onchange="onDistrictChange()">
                   <option value="">Select taluka...</option>
                 </select>
               </div>
               <div class="form-field">
-                <label class="flabel"><span class="step-badge" style="background:#006c49;color:#fff;">2</span> Village
+                <label class="flabel"><span class="step-badge" style="background:#ea580c;color:#fff;">2</span> Village
                   <span style="color:#dc2626;">*</span></label>
                 <select id="villageSel" onchange="onVillageChange()" disabled>
                   <option value="">Select village...</option>
                 </select>
               </div>
               <div class="form-field">
-                <label class="flabel"><span class="step-badge" style="background:#059669;color:#fff;">3</span> Sub
+                <label class="flabel"><span class="step-badge" style="background:#ea580c;color:#fff;">3</span> Sub
                   Village <span style="color:#dc2626;">*</span></label>
                 <select id="subVillageSel" onchange="onSubVillageChange()" disabled>
                   <option value="">Select sub village...</option>
@@ -504,7 +555,7 @@
               <div style="font-size:11px;color:#9ca3af;">Select taluka → village to load farmers from database</div>
             </div>
             <div
-              style="background:#003527;color:#fff;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;"
+              style="background:#7c2d12;color:#fff;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;"
               id="selectedCount">0 Selected</div>
           </div>
           <div id="farmerSectionBody">
@@ -566,7 +617,7 @@
         <div class="section-card" style="padding:16px;display:flex;flex-direction:column;gap:10px;">
           <div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:4px;">Actions</div>
           <button onclick="assignTask()"
-            style="width:100%;background:#003527;color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+            style="width:100%;background:#7c2d12;color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
             <span class="material-symbols-outlined" style="font-size:18px;">add_task</span> Assign Task
           </button>
           <button onclick="cancelForm()"
@@ -581,7 +632,7 @@
         <div class="section-card" style="padding:16px;" id="assignedTasksCard">
           <div
             style="font-size:13px;font-weight:700;color:#111827;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-            <span class="material-symbols-outlined" style="font-size:18px;color:#003527;">history</span>
+            <span class="material-symbols-outlined" style="font-size:18px;color:#7c2d12;">history</span>
             <span>Task History</span>
           </div>
           <div id="assignedTasksList"
@@ -608,6 +659,11 @@
     let officers = [];
     let workTypes = [];
 
+    async function apiFetch(path, options = {}) {
+      const p = path.startsWith("/api") ? path : `/api${path.startsWith("/") ? path : "/" + path}`;
+      return await AgriAuth.apiFetch(p, options);
+    }
+
     /** Normalize farmer id so Set lookups match (API returns numbers; onclick passes strings). */
     function farmerKey(code) {
       return String(code);
@@ -615,8 +671,8 @@
 
     async function loadInitialData() {
       try {
-        // 1. Fetch work types (NO /api prefix)
-        const resWt = await AgriAuth.apiFetch("/tasks/work-types");
+        // 1. Fetch work types
+        const resWt = await apiFetch("/tasks/work-types");
         if (resWt.ok) {
           const data = await resWt.json();
           workTypes = data.work_types || data;
@@ -632,7 +688,7 @@
         }
 
         // 2. Fetch talukas for district dropdown
-        const resTaluka = await fetch("/api/tasks/talukas");
+        const resTaluka = await apiFetch("/tasks/talukas");
         if (resTaluka.ok) {
           const talukas = await resTaluka.json();
           const dSel = document.getElementById("districtSel");
@@ -646,7 +702,7 @@
         }
 
         // 3. Fetch assignable officers
-        const resOff = await fetch("/api/tasks/officers");
+        const resOff = await apiFetch("/tasks/officers");
         if (resOff.ok) {
           officers = await resOff.json();
           renderOfficers();
@@ -661,7 +717,7 @@
 
     async function loadTaskHistory() {
       try {
-        const res = await fetch("/api/tasks");
+        const res = await apiFetch("/tasks");
         if (res.ok) {
           const data = await res.json();
           assignedTasks = data.tasks || data;
@@ -673,13 +729,99 @@
     }
 
 
-    function setPriority(p) {
-      selectedPriority = p;
-      ["Low", "Medium", "High"].forEach(x => {
-        const btn = document.getElementById("p" + x);
-        btn.className = "priority-btn";
-        if (x === p) btn.classList.add("selected-" + p.toLowerCase());
-      });
+
+    function toISO(d) {
+      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    }
+
+    function getLocalTodayString() {
+      const now = new Date();
+      const offset = now.getTimezoneOffset();
+      const local = new Date(now.getTime() - (offset * 60 * 1000));
+      return local.toISOString().split("T")[0];
+    }
+
+    function formatDateDisplay(d) {
+      return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    function onScheduleTypeChange() {
+      const schedType = document.getElementById("scheduleType").value;
+      const startInput = document.getElementById("startDate");
+      const endInput = document.getElementById("endDate");
+      const endWrapper = document.getElementById("endDateWrapper");
+      const startLabel = document.getElementById("startDateLabel");
+      const hint = document.getElementById("dateAutoHint");
+
+      // Reset
+      startInput.type = "date";
+      endInput.readOnly = false;
+      hint.style.display = "none";
+      hint.textContent = "";
+
+      // Ensure start date has a value
+      if (!startInput.value) {
+        startInput.value = getLocalTodayString();
+      }
+
+      if (schedType === "DAILY") {
+        startLabel.innerHTML = 'Task Date <span style="color:#dc2626;">*</span>';
+        endWrapper.style.display = "block";
+        hint.style.display = "flex";
+        onDateChange(true);
+      } else if (schedType === "WEEKLY") {
+        startLabel.innerHTML = 'Start Date <span style="color:#dc2626;">*</span>';
+        endWrapper.style.display = "block";
+        hint.style.display = "flex";
+        onDateChange(true);
+      } else if (schedType === "MONTHLY") {
+        startLabel.innerHTML = 'Start Date <span style="color:#dc2626;">*</span>';
+        endWrapper.style.display = "block";
+        hint.style.display = "flex";
+        onDateChange(true);
+      }
+      updateSummary();
+    }
+
+    function onDateChange(isStartChange = false) {
+      const schedType = document.getElementById("scheduleType").value;
+      const startInput = document.getElementById("startDate");
+      const endInput = document.getElementById("endDate");
+      const hint = document.getElementById("dateAutoHint");
+
+      if (!startInput.value) return;
+
+      if (schedType === "DAILY") {
+        if (isStartChange) {
+          endInput.value = startInput.value;
+        } else if (endInput.value) {
+          startInput.value = endInput.value;
+        }
+        const d = new Date(startInput.value);
+        hint.style.display = "flex";
+        hint.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;">today</span> ${formatDateDisplay(d)} — single day task.`;
+      } else if (schedType === "WEEKLY") {
+        const start = new Date(startInput.value);
+        if (isStartChange || !endInput.value) {
+          const end = new Date(start);
+          end.setDate(start.getDate() + 7);
+          endInput.value = toISO(end);
+        }
+        const end = new Date(endInput.value);
+        const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+        hint.style.display = "flex";
+        hint.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;">date_range</span> ${formatDateDisplay(start)} → ${formatDateDisplay(end)} (${diffDays} days)`;
+      } else if (schedType === "MONTHLY") {
+        const start = new Date(startInput.value);
+        if (isStartChange || !endInput.value) {
+          const end = new Date(start);
+          end.setMonth(start.getMonth() + 1);
+          endInput.value = toISO(end);
+        }
+        const end = new Date(endInput.value);
+        hint.style.display = "flex";
+        hint.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;">calendar_month</span> ${formatDateDisplay(start)} → ${formatDateDisplay(end)}`;
+      }
       updateSummary();
     }
 
@@ -701,7 +843,7 @@
       }
 
       try {
-        const res = await fetch(`/api/tasks/villages?taluka=${encodeURIComponent(taluka)}`);
+        const res = await apiFetch(`/tasks/villages?taluka=${encodeURIComponent(taluka)}`);
         if (res.ok) {
           const data = await res.json();
           vSel.disabled = false;
@@ -712,7 +854,7 @@
             vSel.appendChild(opt);
           });
           document.getElementById("locationHint").innerHTML = `<span class="material-symbols-outlined" style="font-size:16px;">check_circle</span> District selected. Now choose a village.`;
-          document.getElementById("locationHint").style.color = "#059669";
+          document.getElementById("locationHint").style.color = "#ea580c";
         }
       } catch (err) {
         console.error("Fetch villages error:", err);
@@ -734,7 +876,7 @@
       }
 
       try {
-        const res = await fetch(`/api/tasks/sub-villages?village=${encodeURIComponent(village)}`);
+        const res = await apiFetch(`/tasks/sub-villages?village=${encodeURIComponent(village)}`);
         if (res.ok) {
           const data = await res.json();
           svSel.disabled = false;
@@ -779,7 +921,7 @@
       const body = document.getElementById("farmerSectionBody");
       body.innerHTML = `<div style="padding:48px;text-align:center;color:#9ca3af;"><span class="material-symbols-outlined" style="font-size:40px;display:block;margin-bottom:10px;opacity:0.4;">hourglass_empty</span><div style="font-size:14px;font-weight:600;color:#374151;">Loading farmers…</div></div>`;
       try {
-        const res = await fetch(`/api/tasks/farmers?${params}`);
+        const res = await apiFetch(`/tasks/farmers?${params}`);
         if (!res.ok) {
           const err = await res.json().catch(() => ({}));
           throw new Error(err.detail || "Failed to load farmers");
@@ -789,7 +931,7 @@
         renderFarmerTable();
         if (currentFarmers.length) {
           document.getElementById("locationHint").innerHTML = `<span class="material-symbols-outlined" style="font-size:16px;">check_circle</span> ${currentFarmers.length} farmer(s) loaded. Select below.`;
-          document.getElementById("locationHint").style.color = "#059669";
+          document.getElementById("locationHint").style.color = "#ea580c";
         }
       } catch (err) {
         console.error("Load farmers error:", err);
@@ -811,7 +953,7 @@
         return;
       }
       document.getElementById("locationHint").innerHTML = `<span class="material-symbols-outlined" style="font-size:16px;">check_circle</span> Sub village selected. Farmers loaded from database.`;
-      document.getElementById("locationHint").style.color = "#059669";
+      document.getElementById("locationHint").style.color = "#ea580c";
       await loadFarmersForLocation();
       updateSummary();
     }
@@ -822,7 +964,16 @@
         return;
       }
       try {
-        const res = await fetch(`/api/tasks/farmers?search=${encodeURIComponent(q)}`);
+        const village = document.getElementById("villageSel").value;
+        const taluka = document.getElementById("districtSel").value;
+        const subVillage = document.getElementById("subVillageSel").value;
+
+        const params = new URLSearchParams({ search: q });
+        if (village) params.set("village", village);
+        if (taluka) params.set("taluka", taluka);
+        if (subVillage) params.set("sub_village", subVillage);
+
+        const res = await apiFetch(`/tasks/farmers?${params}`);
         if (res.ok) {
           const data = await res.json();
           currentFarmers = data.map(mapFarmerFromApi);
@@ -832,6 +983,7 @@
         console.error("Farmer search error:", err);
       }
     }
+
 
     function renderFarmerTable() {
       const body = document.getElementById("farmerSectionBody");
@@ -866,7 +1018,7 @@
         <span class="material-symbols-outlined" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:16px;">search</span>
         <input type="text" placeholder="Search farmer by name or code..." value="${farmerSearch}" oninput="farmerSearch=this.value;farmerPage=1;searchFarmersDirectly(this.value)" style="width:100%;padding:7px 10px 7px 32px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;box-sizing:border-box;font-family:inherit;">
       </div>
-      <button onclick="toggleSelectAll(${JSON.stringify(paginated.map(f => farmerKey(f.code)))})" style="background:${allOnPageSelected ? '#003527' : '#f0fdf4'};color:${allOnPageSelected ? '#fff' : '#003527'};border:1.5px solid ${allOnPageSelected ? '#003527' : '#bbf7d0'};border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">
+      <button onclick="toggleSelectAll(${JSON.stringify(paginated.map(f => farmerKey(f.code)))})" style="background:${allOnPageSelected ? '#7c2d12' : '#fff7ed'};color:${allOnPageSelected ? '#fff' : '#7c2d12'};border:1.5px solid ${allOnPageSelected ? '#7c2d12' : '#fed7aa'};border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">
         ${allOnPageSelected ? "Deselect All" : "Select All"}
       </button>
       <span style="font-size:12px;color:#6b7280;white-space:nowrap;">Total: ${filtered.length} farmers</span>
@@ -887,8 +1039,8 @@
     ${totalPages > 1 ? `<div style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f3f4f6;">
       <span style="font-size:12px;color:#6b7280;">Page ${farmerPage} of ${totalPages}</span>
       <div style="display:flex;gap:6px;">
-        ${farmerPage > 1 ? `<button onclick="farmerPage--;renderFarmerTable()" style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700;color:#003527;cursor:pointer;">← Prev</button>` : ''}
-        ${farmerPage < totalPages ? `<button onclick="farmerPage++;renderFarmerTable()" style="background:#003527;border:none;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;">Next →</button>` : ''}
+        ${farmerPage > 1 ? `<button onclick="farmerPage--;renderFarmerTable()" style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700;color:#7c2d12;cursor:pointer;">← Prev</button>` : ''}
+        ${farmerPage < totalPages ? `<button onclick="farmerPage++;renderFarmerTable()" style="background:#7c2d12;border:none;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;">Next →</button>` : ''}
       </div>
     </div>`: ''}
   `;
@@ -931,16 +1083,16 @@
 
       container.innerHTML = filtered.map(o => {
         const workload = o.pending;
-        const wColor = workload > 6 ? "#dc2626" : workload > 3 ? "#d97706" : "#059669";
+        const wColor = workload > 6 ? "#dc2626" : workload > 3 ? "#d97706" : "#ea580c";
         const selected = selectedOfficer === o.id;
         return `<div class="officer-card ${selected ? 'selected' : ''}" onclick="selectOfficer(${o.id})">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <div style="width:32px;height:32px;border-radius:99px;background:${selected ? '#003527' : '#d1fae5'};color:${selected ? '#fff' : '#003527'};font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;">${o.name.charAt(0)}</div>
+        <div style="width:32px;height:32px;border-radius:99px;background:${selected ? '#7c2d12' : '#ffedd5'};color:${selected ? '#fff' : '#7c2d12'};font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;">${o.name.charAt(0)}</div>
         <div style="flex:1;">
           <div style="font-size:12px;font-weight:700;color:#111827;line-height:1.2;">${o.name}</div>
           <div style="font-size:10px;color:#9ca3af;">ID: ${o.code}</div>
         </div>
-        ${selected ? '<span class="material-symbols-outlined" style="font-size:18px;color:#003527;">check_circle</span>' : ''}
+        ${selected ? '<span class="material-symbols-outlined" style="font-size:18px;color:#7c2d12;">check_circle</span>' : ''}
       </div>
       <div style="display:flex;gap:6px;">
         <div style="flex:1;background:#f9fafb;border-radius:6px;padding:5px;text-align:center;">
@@ -952,7 +1104,7 @@
           <div style="font-size:9px;color:#9ca3af;font-weight:600;">Active</div>
         </div>
         <div style="flex:1;background:#f9fafb;border-radius:6px;padding:5px;text-align:center;">
-          <div style="font-size:13px;font-weight:800;color:#059669;">${o.done}</div>
+          <div style="font-size:13px;font-weight:800;color:#ea580c;">${o.done}</div>
           <div style="font-size:9px;color:#9ca3af;font-weight:600;">Done</div>
         </div>
       </div>
@@ -970,6 +1122,7 @@
     function updateSummary() {
       const taskName = document.getElementById("taskName").value;
       const workType = document.getElementById("workType").value;
+      const scheduleType = document.getElementById("scheduleType").value;
       const startDate = document.getElementById("startDate").value;
       const endDate = document.getElementById("endDate").value;
       const scheduleType = document.getElementById("scheduleType").value;
@@ -984,14 +1137,18 @@
         return;
       }
 
-      const dur = startDate && endDate ? Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24) + 1) + " days" : "—";
+      let calcStart = startDate;
+      if (scheduleType === "MONTHLY" && startDate && startDate.length === 7) {
+        calcStart = startDate + "-01";
+      }
+      const dur = calcStart && endDate ? Math.ceil((new Date(endDate) - new Date(calcStart)) / (1000 * 60 * 60 * 24) + 1) + " days" : "—";
 
       document.getElementById("summaryBody").innerHTML = `
     <div style="display:flex;flex-direction:column;gap:0;">
       ${summRow("Task Name", taskName || "—", "assignment")}
       ${summRow("Work Type", workType || "—", "work")}
       ${summRow("Schedule Type", scheduleType, "calendar_month")}
-      ${summRow("Priority", selectedPriority, "flag")}
+${summRow("Priority", selectedPriority, "flag")}
       ${summRow("District/Taluka", district || "—", "location_city")}
       ${summRow("Village", village || "—", "holiday_village")}
       ${summRow("Sub Village", subVillage || "—", "signpost")}
@@ -999,7 +1156,7 @@
       ${summRow("Assigned Officer", officer ? officer.name : "—", "person")}
       ${summRow("Duration", dur, "schedule")}
     </div>
-    ${selectedFarmers.size > 0 ? `<div style="margin-top:12px;background:#f0fdf4;border-radius:8px;padding:10px;font-size:12px;color:#003527;font-weight:600;text-align:center;">${selectedFarmers.size} farmers ready to assign</div>` : ''}
+    ${selectedFarmers.size > 0 ? `<div style="margin-top:12px;background:#fff7ed;border-radius:8px;padding:10px;font-size:12px;color:#7c2d12;font-weight:600;text-align:center;">${selectedFarmers.size} farmers ready to assign</div>` : ''}
   `;
     }
 
@@ -1040,13 +1197,13 @@
       const workTypeName = workTypeDropdown.options[workTypeDropdown.selectedIndex].textContent;
 
       const schedType = document.getElementById("scheduleType").value;
-      const startDateVal = document.getElementById("startDate").value;
+const startDateVal = document.getElementById("startDate").value;
 
       const payload = {
         task_name: document.getElementById("taskName").value.trim(),
         officer_id: selectedOfficer,
         work_type_name: workTypeName,
-        priority: selectedPriority,
+priority: selectedPriority,
         from_date: startDateVal,
         to_date: document.getElementById("endDate").value,
         schedule_type: schedType,
@@ -1059,7 +1216,7 @@
       };
 
       try {
-        const res = await fetch("/api/tasks/assign", {
+        const res = await apiFetch("/tasks/assign", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -1069,6 +1226,7 @@
         showToast(`Task assigned successfully! ID: ${data.plan_id}, ${data.farmer_count} farmers assigned.`);
         resetForm();
         await loadTaskHistory();
+        await reloadOfficers();
       } catch (err) {
         console.error("Assign task error:", err);
         showToast(err.message || "Failed to assign task", "error");
@@ -1078,7 +1236,7 @@
 
     async function reloadOfficers() {
       try {
-        const res = await fetch("/api/tasks/officers");
+        const res = await apiFetch("/tasks/officers");
         if (res.ok) {
           officers = await res.json();
           renderOfficers();
@@ -1182,17 +1340,20 @@
       card.style.display = "block";
       list.innerHTML = assignedTasks.slice(0, 20).map(t => {
         const preview = t.farmer_preview
-          ? `<div style="font-size:10px;color:#059669;margin-top:6px;line-height:1.3;"><strong>Farmers:</strong> ${escapeHtml(t.farmer_preview)}${t.farmers > 5 ? "…" : ""}</div>`
+          ? `<div style="font-size:10px;color:#ea580c;margin-top:6px;line-height:1.3;"><strong>Farmers:</strong> ${escapeHtml(t.farmer_preview)}${t.farmers > 5 ? "…" : ""}</div>`
           : "";
         return `
-    <div onclick="viewTaskDetail(${t.id})" style="background:#f0fdf4;border-radius:8px;padding:10px;border:1px solid #bbf7d0;cursor:pointer;transition:all 0.15s;text-align:left;" onmouseover="this.style.background='#d1fae5'" onmouseout="this.style.background='#f0fdf4'">
+    <div onclick="viewTaskDetail(${t.id})" style="background:#fff7ed;border-radius:8px;padding:10px;border:1px solid #fed7aa;cursor:pointer;transition:all 0.15s;text-align:left;" onmouseover="this.style.background='#ffedd5'" onmouseout="this.style.background='#fff7ed'">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-        <span style="font-size:12px;font-weight:700;color:#003527;">${t.task_name}</span>
-        <span class="badge" style="background:#dbeafe;color:#1e40af;font-size:10px;flex-shrink:0;">${t.farmers} farmer(s)</span>
+        <span style="font-size:12px;font-weight:700;color:#7c2d12;">${t.task_name}</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <button onclick="event.stopPropagation(); TaskEdit.editTask(${t.id})" style="background:#7c2d12;color:#fff;border:none;border-radius:4px;padding:2px 8px;font-size:10px;font-weight:700;cursor:pointer;">Edit</button>
+          <span class="badge" style="background:#dbeafe;color:#1e40af;font-size:10px;flex-shrink:0;">${t.farmers} farmer(s)</span>
+        </div>
       </div>
       <div style="font-size:11px;color:#4b5563;margin-top:4px;line-height:1.4;">
         <strong>Officer:</strong> ${escapeHtml(t.officer_name)}<br>
-        <strong>Work type:</strong> ${escapeHtml(t.work_type || "—")} (${escapeHtml(t.schedule_type || "WEEKLY")})<br>
+<strong>Work type:</strong> ${escapeHtml(t.work_type || "—")} (${escapeHtml(t.schedule_type || "WEEKLY")})<br>
         <strong>Period:</strong> ${escapeHtml(t.from_date)} to ${escapeHtml(t.to_date)}
       </div>
       ${preview}
@@ -1201,53 +1362,7 @@
     }
 
     async function viewTaskDetail(planId) {
-      const modal = document.getElementById("detailModal");
-      const title = document.getElementById("detailModalTitle");
-      const info = document.getElementById("detailModalInfo");
-      const body = document.getElementById("detailModalBody");
-
-      title.textContent = `Plan Details — Plan #${planId}`;
-      info.innerHTML = "Loading plan details...";
-      body.innerHTML = '<tr><td colspan="5" style="padding:24px;text-align:center;color:#9ca3af;font-size:13px;">Loading data from database...</td></tr>';
-      modal.classList.add("show");
-
-      try {
-        const plan = assignedTasks.find(t => Number(t.id) === Number(planId)) || {};
-        info.innerHTML = `
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-        <div><strong>Assigned Officer:</strong> ${escapeHtml(plan.officer_name || "—")}</div>
-        <div><strong>Work Type:</strong> ${escapeHtml(plan.work_type || "—")}</div>
-        <div><strong>Schedule:</strong> ${escapeHtml(plan.from_date || "—")} to ${escapeHtml(plan.to_date || "—")} (${escapeHtml(plan.schedule_type || "WEEKLY")})</div>
-        <div><strong>Farmers in plan:</strong> ${plan.farmers ?? "—"}</div>
-        <div><strong>Month / Week:</strong> ${plan.month ?? "—"} / ${plan.week ?? "—"}</div>
-      </div>
-    `;
-
-        const res = await fetch(`/api/tasks/${planId}/rows`);
-        if (!res.ok) throw new Error("Failed to load plan rows");
-        const rows = await res.json();
-
-        if (!rows.length) {
-          body.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:#9ca3af;">No farmer rows in TBL_ROW_DAILY_WORKPLAN for this plan.</td></tr>';
-          return;
-        }
-
-        body.innerHTML = rows.map(r => {
-          const statusLabel = r.status != null && r.status !== "" ? String(r.status) : "—";
-          return `
-      <tr style="border-top:1px solid #f3f4f6;" class="tbl-row">
-        <td style="padding:10px 12px;font-family:monospace;font-size:11px;color:#6b7280;">${escapeHtml(r.farmer_id)}</td>
-        <td style="padding:10px 12px;font-weight:600;color:#111827;">${escapeHtml(r.farmer_name)}</td>
-        <td style="padding:10px 12px;color:#4b5563;">${escapeHtml(r.village || "—")}</td>
-        <td style="padding:10px 12px;color:#4b5563;">${escapeHtml(r.work_type || "—")}</td>
-        <td style="padding:10px 12px;"><span class="badge" style="background:#f3f4f6;color:#374151;">${escapeHtml(statusLabel)}</span></td>
-      </tr>`;
-        }).join("");
-      } catch (err) {
-        console.error(err);
-        info.innerHTML = "Error loading plan details.";
-        body.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:#dc2626;">Failed to load.</td></tr>';
-      }
+window.location.href = `manager_task_detail.html?id=${planId}`;
     }
 
     function hideDetailModal() {
@@ -1262,10 +1377,7 @@
       document.getElementById("taskName").value = "";
       document.getElementById("workType").selectedIndex = 0;
       document.getElementById("remarks").value = "";
-      document.getElementById("scheduleType").value = "WEEKLY";
-      const today = new Date().toISOString().split("T")[0];
-      document.getElementById("startDate").value = today;
-      onScheduleTypeChange();
+
       document.getElementById("districtSel").selectedIndex = 0;
       document.getElementById("villageSel").innerHTML = '<option value="">Select village...</option>';
       document.getElementById("villageSel").disabled = true;
@@ -1276,8 +1388,10 @@
       selectedFarmers.clear();
       selectedOfficer = null;
       currentFarmers = [];
-      selectedPriority = "Medium";
-      setPriority("Medium");
+      document.getElementById("scheduleType").value = "WEEKLY";
+      const today = getLocalTodayString();
+      document.getElementById("startDate").value = today;
+      onScheduleTypeChange();
       renderFarmerTable();
       renderOfficers();
       updateSummary();
@@ -1286,18 +1400,27 @@
     document.addEventListener("DOMContentLoaded", async () => {
       const s = AgriAuth.getSession();
       if (s) { const name = (s.name && s.name !== "None") ? s.name : s.username; document.getElementById("avatarCircle").textContent = name.charAt(0).toUpperCase(); document.getElementById("headerName").textContent = name; }
-      const today = new Date().toISOString().split("T")[0];
-      document.getElementById("startDate").value = today;
-      onScheduleTypeChange();
+
 
       document.getElementById("logoutBtn").addEventListener("click", e => { e.preventDefault(); if (confirm("Sign out?")) AgriAuth.clearSession(), window.location.replace("/login.html"); });
 
       // Initialize data fetches from database
       await loadInitialData();
       await loadTaskHistory();
+
+      // Trigger initial WEEKLY date setup
+      document.getElementById("scheduleType").value = "WEEKLY";
+      const today = getLocalTodayString();
+      document.getElementById("startDate").value = today;
+      onScheduleTypeChange();
       updateSummary();
+
+      TaskEdit.init(async (tid) => {
+        await loadTaskHistory();
+      });
     });
   </script>
 </body>
 
 </html>
+<!-- cache-bust: 2026-06-23-2 -->

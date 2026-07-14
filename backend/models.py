@@ -15,6 +15,7 @@ class SessionUser(BaseModel):
     username: str
     name: str
     role: str   # "manager" | "officer"
+    access_token: Optional[str] = None
 
 
 # ── Officers ────────────────────────────────────────────────────────────────

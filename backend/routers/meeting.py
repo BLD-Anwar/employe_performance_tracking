@@ -9,11 +9,12 @@ Pipeline:
   3. Data is saved to TbL_TRN_Farmer_Meeting.
   4. Manager can fetch all meetings or meetings for a specific task/officer.
 """
-from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Form, Depends
 from database import db_cursor, rows_to_list
 from pydantic import BaseModel
 from typing import Optional
 import os, uuid
+from auth import require_role
 
 router = APIRouter(prefix="/api/meetings", tags=["meetings"])
 
@@ -80,7 +81,7 @@ class FarmerMeetingSubmission(BaseModel):
 
 
 # ── POST: Submit a new farmer meeting ──────────────────────────────────────
-@router.post("")
+@router.post("", dependencies=[Depends(require_role("manager"))])
 def create_farmer_meeting(body: FarmerMeetingSubmission):
     """Officer submits a farmer meeting record."""
     with db_cursor() as cur:
@@ -151,16 +152,23 @@ def create_farmer_meeting(body: FarmerMeetingSubmission):
 # ── POST: Upload a meeting photo ──────────────────────────────────────────
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "frontend", "uploads", "meetings")
 
-@router.post("/upload-photo")
+@router.post("/upload-photo", dependencies=[Depends(require_role("manager"))])
 async def upload_meeting_photo(file: UploadFile = File(...), user_id: int = Query(...)):
     """Upload a photo for a farmer meeting. Returns the saved file path."""
     os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+    ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp"}
     ext = os.path.splitext(file.filename)[1] or ".jpg"
+    if ext.lower() not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Only image files allowed")
+
+    content = await file.read()
+    if len(content) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="File too large. Maximum size is 5MB")
+
     filename = f"{user_id}_{uuid.uuid4().hex[:8]}{ext}"
     filepath = os.path.join(UPLOAD_DIR, filename)
 
-    content = await file.read()
     with open(filepath, "wb") as f:
         f.write(content)
 
@@ -170,11 +178,18 @@ async def upload_meeting_photo(file: UploadFile = File(...), user_id: int = Quer
 
 # ── GET: Meetings for the logged-in officer ────────────────────────────────
 @router.get("/my/{employee_id}")
-def get_my_meetings(employee_id: int, skip: int = Query(default=0), limit: int = Query(default=50)):
+def get_my_meetings(
+    employee_id: int,
+    skip: int = Query(default=0),
+    limit: int = Query(default=50),
+    payload: dict = Depends(require_role("officer", "manager")),
+):
+    if payload.get("role") != "manager" and payload.get("user_id") != employee_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     """Fetch all meetings submitted by this officer."""
     with db_cursor() as cur:
         cur.execute("""
-            SELECT TOP (?)
+            SELECT
                 m.meeting_id,
                 m.farmer_code,
                 ISNULL(f.NameE, '') AS farmer_name,
@@ -194,8 +209,8 @@ def get_my_meetings(employee_id: int, skip: int = Query(default=0), limit: int =
             LEFT JOIN dbo.TBl_mst_village v ON v.Village_Code = f.Village_code
             WHERE m.employee_id = ?
             ORDER BY m.created_at DESC
-            OFFSET ? ROWS
-        """, limit, employee_id, skip)
+            OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+        """, employee_id, skip, limit)
         rows = cur.fetchall()
         cols = [col[0] for col in cur.description]
 
@@ -203,7 +218,7 @@ def get_my_meetings(employee_id: int, skip: int = Query(default=0), limit: int =
 
 
 # ── GET: Single meeting detail ─────────────────────────────────────────────
-@router.get("/{meeting_id}")
+@router.get("/{meeting_id}", dependencies=[Depends(require_role("manager"))])
 def get_meeting_detail(meeting_id: int):
     """Get full detail of a single meeting record."""
     with db_cursor() as cur:
@@ -227,7 +242,7 @@ def get_meeting_detail(meeting_id: int):
 
 
 # ── GET: All meetings (for manager view) ───────────────────────────────────
-@router.get("")
+@router.get("", dependencies=[Depends(require_role("manager"))])
 def get_all_meetings(
     employee_id: Optional[int] = Query(default=None),
     farmer_code: Optional[int] = Query(default=None),
@@ -281,7 +296,13 @@ def get_all_meetings(
 
 # ── GET: Check if meeting already exists for a farmer+employee combo ───────
 @router.get("/check/{employee_id}/{farmer_code}")
-def check_existing_meeting(employee_id: int, farmer_code: int):
+def check_existing_meeting(
+    employee_id: int,
+    farmer_code: int,
+    payload: dict = Depends(require_role("officer", "manager")),
+):
+    if payload.get("role") != "manager" and payload.get("user_id") != employee_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     """Check if a meeting record already exists for this farmer by this officer."""
     with db_cursor() as cur:
         cur.execute("""

@@ -1,280 +1,475 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgriPulse — Manager Overview</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
-<style>
-  body{font-family:'Inter',sans-serif;background:#f4f6f8;}
-  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}
-  .sidebar{background:linear-gradient(180deg,#0f1f18 0%,#0a150f 100%);width:220px;min-height:100vh;position:fixed;left:0;top:0;z-index:50;display:flex;flex-direction:column;}
-  .nav-link{display:flex;align-items:center;gap:12px;padding:10px 16px;margin:2px 8px;border-radius:8px;color:rgba(209,250,229,0.65);font-size:13px;font-weight:600;text-decoration:none;transition:all 0.15s;}
-  .nav-link:hover{background:rgba(255,255,255,0.07);color:#fff;}
-  .nav-link.active{background:rgba(74,222,128,0.18);color:#86efac;}
-  .nav-link.active .material-symbols-outlined{color:#4ade80;}
-  .nav-link.logout{color:rgba(252,165,165,0.7);}
-  .nav-link.logout:hover{background:rgba(239,68,68,0.1);color:#fca5a5;}
-  .nav-link.settings-link{color:rgba(209,250,229,0.65);}
-  .nav-link.settings-link:hover{background:rgba(255,255,255,0.07);color:#fff;}
-  .card{background:#fff;border-radius:14px;border:1px solid #e5e7eb;}
-  .stat-card{background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;}
-  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;}
-  .bar-track{height:8px;background:#f3f4f6;border-radius:99px;overflow:hidden;}
-  .bar-fill{height:100%;background:#006c49;border-radius:99px;transition:width 0.8s ease;}
-  .tbl-row:hover{background:#f9fafb;}
-  .section-head{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#6b7280;}
-</style>
-<script src="../assets/js/manager-auth-store.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriPulse — Manager Overview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Tailwind CDN offline fallback — basic readable layout */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f8f9ff;
+      color: #0b1c30;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+    img { max-width: 100%; }
+    a { color: #ea580c; }
+    a:hover { text-decoration: underline; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    input[type="text"], input[type="password"], input[type="email"],
+    input[type="number"], select, textarea {
+      width: 100%;
+      border: 1px solid #bfc9c3;
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: #0b1c30;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      background-color: #7c2d12;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    button:hover { background-color: #9a3412; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid #e5e7eb; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: 700; }
+  </style>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f6f8;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+
+    .sidebar {
+      background: #0f172a;
+      width: 220px;
+      min-width: 220px;
+      flex-shrink: 0;
+      min-height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      margin: 2px 8px;
+      border-radius: 8px;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .nav-link:hover {
+      background: #1e293b;
+      color: #fff;
+    }
+
+    .nav-link.active {
+      background: #ea580c;
+      color: #ffffff;
+    }
+
+    .nav-link.active .material-symbols-outlined {
+      color: #ffffff;
+    }
+
+    .nav-link.logout {
+      color: rgba(252, 165, 165, 0.7);
+    }
+
+    .nav-link.logout:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+    }
+
+    .nav-link.settings-link {
+      color: #94a3b8;
+    }
+
+    .nav-link.settings-link:hover {
+      background: #2d1a0e;
+      color: #fff;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .stat-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      padding: 16px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .bar-track {
+      height: 8px;
+      background: #f3f4f6;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: #ea580c;
+      border-radius: 99px;
+      transition: width 0.8s ease;
+    }
+
+    .tbl-row:hover {
+      background: #f9fafb;
+    }
+
+    .section-head {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #6b7280;
+    }
+  </style>
+  <script src="../assets/js/manager-auth-store.js"></script>
 </head>
+
 <body>
-<aside class="sidebar">
-  <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
-    <div style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;">
-      <span class="material-symbols-outlined" style="color:#4ade80;font-size:20px;">agriculture</span>
-    </div>
-    <div>
-      <div style="color:#f0fdf4;font-weight:800;font-size:14px;line-height:1.2;">Sri Sri Sugar</div>
-      <div style="color:rgba(209,250,229,0.5);font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL</div>
-    </div>
-  </div>
-  <nav style="flex:1;padding:8px 0;">
-    <a class="nav-link active" href="manager_dashboard.html"><span class="material-symbols-outlined" style="font-size:20px;">dashboard</span>Overview</a>
-    <a class="nav-link" href="manager_officers.html"><span class="material-symbols-outlined" style="font-size:20px;">group</span>Officers</a>
-    <a class="nav-link" href="manager_tasks.html"><span class="material-symbols-outlined" style="font-size:20px;">checklist</span>Tasks</a>
-    <a class="nav-link" href="manager_performance.html"><span class="material-symbols-outlined" style="font-size:20px;">bar_chart</span>Performance</a>
-    <a class="nav-link" href="manager_reports.html"><span class="material-symbols-outlined" style="font-size:20px;">assessment</span>Reports</a>
-  </nav>
-  <div style="border-top:1px solid rgba(255,255,255,0.07);padding:8px 0;">
-    <a class="nav-link settings-link" href="manager_settings.html"><span class="material-symbols-outlined" style="font-size:20px;">settings</span>Settings</a>
-    <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined" style="font-size:20px;">logout</span>Logout</a>
-  </div>
-</aside>
-
-<div style="margin-left:220px;min-height:100vh;">
-  <header style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
-    <div>
-      <span style="font-size:18px;font-weight:800;color:#003527;" id="greetMsg">Good morning</span>
-      <span style="font-size:12px;color:#6b7280;margin-left:10px;" id="todayDate"></span>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <span class="badge" style="background:#dbeafe;color:#1e40af;">Manager</span>
-      <div style="width:36px;height:36px;border-radius:99px;background:#d1fae5;color:#003527;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;" id="avatarCircle">M</div>
+  <aside class="sidebar">
+    <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
+      <div
+        style="width:36px;height:36px;background:#ea580c;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="color:#ffffff;font-size:20px;">agriculture</span>
+      </div>
       <div>
-        <div style="font-size:13px;font-weight:700;color:#374151;" id="headerName">—</div>
-        <div style="font-size:11px;color:#6b7280;">Manager</div>
-      </div>
-    </div>
-  </header>
-
-  <div style="padding:24px;display:flex;flex-direction:column;gap:20px;">
-    <!-- KPI cards -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
-      <div class="stat-card" style="border-left:4px solid #003527;">
-        <div class="section-head" style="margin-bottom:6px;">Total Tasks</div>
-        <div id="statTotalTasks" style="font-size:28px;font-weight:800;color:#003527;">—</div>
-        <div id="statPeriod" style="font-size:12px;color:#6b7280;margin-top:4px;">Loading…</div>
-      </div>
-      <div class="stat-card" style="border-left:4px solid #006c49;">
-        <div class="section-head" style="margin-bottom:6px;">Completed</div>
-        <div id="statCompleted" style="font-size:28px;font-weight:800;color:#006c49;">—</div>
-        <div style="font-size:12px;color:#6b7280;margin-top:4px;">Tasks marked complete</div>
-      </div>
-      <div class="stat-card" style="border-left:4px solid #059669;">
-        <div class="section-head" style="margin-bottom:6px;">In Progress</div>
-        <div id="statInProgress" style="font-size:28px;font-weight:800;color:#059669;">—</div>
-        <div style="font-size:12px;color:#6b7280;margin-top:4px;">Currently active tasks</div>
-      </div>
-      <div class="stat-card" style="border-left:4px solid #dc2626;cursor:pointer;transition:all 0.15s;" onclick="showOverdueModal()" onmouseover="this.style.boxShadow='0 4px 12px rgba(220,38,38,0.15)'" onmouseout="this.style.boxShadow='none'">
-        <div class="section-head" style="margin-bottom:6px;">Overdue</div>
-        <div id="statOverdue" style="font-size:28px;font-weight:800;color:#dc2626;">—</div>
-        <div style="font-size:12px;color:#dc2626;margin-top:4px;font-weight:600;">Click to see details →</div>
-      </div>
-    </div>
-
-    <!-- Row 2: Weekly chart + Work type breakdown -->
-    <div style="display:grid;grid-template-columns:1fr 340px;gap:20px;">
-      <div class="card" style="padding:20px;">
-        <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:4px;">Weekly Task Count</div>
-        <div id="weeklyPeriod" style="font-size:12px;color:#6b7280;margin-bottom:18px;">2026</div>
-        <div id="weeklyChart" style="display:flex;align-items:flex-end;gap:10px;height:140px;">
-          <div style="flex:1;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:12px;">Loading…</div>
-        </div>
-      </div>
-      <div class="card" style="padding:20px;">
-        <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:16px;">Tasks by Work Type</div>
-        <div id="workTypeList" style="display:flex;flex-direction:column;gap:12px;">
-          <div style="color:#9ca3af;font-size:12px;">Loading…</div>
+        <div style="color:#ffffff;font-weight:800;font-size:14px;line-height:1.2;">Sri Sri Sugar</div>
+        <div style="color:#94a3b8;font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL
         </div>
       </div>
     </div>
-
-    <!-- Row 3: Top officers + recent activities -->
-    <div style="display:grid;grid-template-columns:340px 1fr;gap:20px;">
-      <div class="card" style="padding:20px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-          <div style="font-size:15px;font-weight:700;color:#111827;">Top Officers</div>
-          <a href="manager_performance.html" style="font-size:12px;font-weight:700;color:#006c49;text-decoration:none;">View all →</a>
-        </div>
-        <div id="topOfficersList" style="display:flex;flex-direction:column;gap:10px;">
-          <div style="color:#9ca3af;font-size:12px;">Loading…</div>
-        </div>
-        <div id="topOfficerHint" style="margin-top:14px;padding:10px;background:#fef3c7;border-radius:8px;font-size:12px;color:#92400e;font-weight:600;"></div>
-      </div>
-      <div class="card" style="overflow:hidden;">
-        <div style="padding:16px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">
-          <div style="font-size:15px;font-weight:700;color:#111827;">Recent Tasks</div>
-          <a href="manager_tasks.html" style="font-size:12px;font-weight:700;color:#006c49;text-decoration:none;">View All Tasks →</a>
-        </div>
-        <div style="overflow-x:auto;">
-          <table style="width:100%;border-collapse:collapse;">
-            <thead style="background:#f9fafb;"><tr>
-              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Task</th>
-              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Work Type</th>
-              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Village</th>
-              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Date</th>
-              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Officer</th>
-            </tr></thead>
-            <tbody id="recentActivitiesTbody">
-              <tr><td colspan="5" style="padding:20px;text-align:center;color:#9ca3af;font-size:12px;">Loading…</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <nav style="flex:1;padding:8px 0;">
+      <a class="nav-link active" href="manager_dashboard.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">dashboard</span>Overview</a>
+      <a class="nav-link" href="manager_officers.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">group</span>Officers</a>
+      <a class="nav-link" href="manager_tasks.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">checklist</span>Tasks</a>
+      <a class="nav-link" href="manager_farmers.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">person_search</span>Farmers Registry</a>
+      <a class="nav-link" href="manager_performance.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">bar_chart</span>Performance</a>
+      <a class="nav-link" href="manager_reports.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">assessment</span>Reports Dashboard</a>
+      <a class="nav-link" href="manager_campaign_reports.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">query_stats</span>Campaign Reports</a>
+    </nav>
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding:8px 0;">
+      <a class="nav-link settings-link" href="manager_settings.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">settings</span>Settings</a>
+      <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined"
+          style="font-size:20px;">logout</span>Logout</a>
     </div>
+  </aside>
 
-    <!-- Quick actions -->
-    <div class="card" style="padding:20px;">
-      <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:14px;">Quick Actions</div>
-      <div style="display:flex;flex-wrap:wrap;gap:12px;">
-        <a href="manager_tasks.html" style="display:flex;align-items:center;gap:8px;background:#003527;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;"><span class="material-symbols-outlined" style="font-size:18px;">add_task</span> Assign New Task</a>
-        <a href="manager_officers.html" style="display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1.5px solid #bbf7d0;color:#003527;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;"><span class="material-symbols-outlined" style="font-size:18px;">group</span> View Officers</a>
-        <a href="manager_performance.html" style="display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1.5px solid #bbf7d0;color:#003527;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;"><span class="material-symbols-outlined" style="font-size:18px;">bar_chart</span> Performance</a>
-        <a href="manager_reports.html" style="display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1.5px solid #bbf7d0;color:#003527;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;"><span class="material-symbols-outlined" style="font-size:18px;">assessment</span> View Reports</a>
+  <div style="margin-left:220px;min-height:100vh;">
+    <header
+      style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
+      <div>
+        <span style="font-size:18px;font-weight:800;color:#7c2d12;" id="greetMsg">Good morning</span>
+        <span style="font-size:12px;color:#6b7280;margin-left:10px;" id="todayDate"></span>
       </div>
-    </div>
-  </div>
-
-<!-- Overdue Tasks Modal -->
-<div id="overdueModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;">
-  <div style="background:#fff;border-radius:16px;width:100%;max-width:900px;max-height:85vh;box-shadow:0 20px 60px rgba(0,0,0,0.2);display:flex;flex-direction:column;overflow:hidden;">
-    <div style="padding:16px 20px;background:linear-gradient(135deg,#fee2e2,#fef2f2);border-bottom:1px solid #fecaca;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
       <div style="display:flex;align-items:center;gap:10px;">
-        <span class="material-symbols-outlined" style="color:#dc2626;font-size:24px;">warning</span>
+        <span class="badge" style="background:#dbeafe;color:#1e40af;">Manager</span>
+        <div
+          style="width:36px;height:36px;border-radius:99px;background:#ffedd5;color:#7c2d12;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;"
+          id="avatarCircle">M</div>
         <div>
-          <span style="font-size:16px;font-weight:800;color:#991b1b;">Overdue Tasks</span>
-          <div style="font-size:11px;color:#b91c1c;margin-top:2px;" id="overdueSubtext">Loading...</div>
+          <div style="font-size:13px;font-weight:700;color:#374151;" id="headerName">—</div>
+          <div style="font-size:11px;color:#6b7280;">Manager</div>
         </div>
       </div>
-      <button onclick="document.getElementById('overdueModal').style.display='none'" style="background:none;border:none;cursor:pointer;color:#6b7280;">
-        <span class="material-symbols-outlined">close</span>
-      </button>
+    </header>
+
+    <div style="padding:24px;display:flex;flex-direction:column;gap:20px;">
+      <!-- KPI cards -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+        <div class="stat-card" style="border-left:4px solid #7c2d12;">
+          <div class="section-head" style="margin-bottom:6px;">Total Tasks</div>
+          <div id="statTotalTasks" style="font-size:28px;font-weight:800;color:#7c2d12;">—</div>
+          <div id="statPeriod" style="font-size:12px;color:#6b7280;margin-top:4px;">Loading…</div>
+        </div>
+        <div class="stat-card" style="border-left:4px solid #1e40af;">
+          <div class="section-head" style="margin-bottom:6px;">Completed</div>
+          <div id="statCompleted" style="font-size:28px;font-weight:800;color:#1e40af;">—</div>
+          <div style="font-size:12px;color:#6b7280;margin-top:4px;">Tasks marked complete</div>
+        </div>
+        <div class="stat-card" style="border-left:4px solid #7c3aed;">
+          <div class="section-head" style="margin-bottom:6px;">In Progress</div>
+          <div id="statInProgress" style="font-size:28px;font-weight:800;color:#7c3aed;">—</div>
+          <div style="font-size:12px;color:#6b7280;margin-top:4px;">Currently active tasks</div>
+        </div>
+        <div class="stat-card" style="border-left:4px solid #dc2626;cursor:pointer;transition:all 0.15s;"
+          onclick="showOverdueModal()" onmouseover="this.style.boxShadow='0 4px 12px rgba(220,38,38,0.15)'"
+          onmouseout="this.style.boxShadow='none'">
+          <div class="section-head" style="margin-bottom:6px;">Overdue</div>
+          <div id="statOverdue" style="font-size:28px;font-weight:800;color:#dc2626;">—</div>
+          <div style="font-size:12px;color:#dc2626;margin-top:4px;font-weight:600;">Click to see details →</div>
+        </div>
+      </div>
+
+      <!-- Row 2: Weekly chart + Work type breakdown -->
+      <div style="display:grid;grid-template-columns:1fr 340px;gap:20px;">
+        <div class="card" style="padding:20px;">
+          <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:4px;">Weekly Task Count</div>
+          <div id="weeklyPeriod" style="font-size:12px;color:#6b7280;margin-bottom:18px;">2026</div>
+          <div id="weeklyChart" style="display:flex;align-items:flex-end;gap:10px;height:140px;">
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:12px;">
+              Loading…</div>
+          </div>
+        </div>
+        <div class="card" style="padding:20px;">
+          <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:16px;">Tasks by Work Type</div>
+          <div id="workTypeList" style="display:flex;flex-direction:column;gap:12px;">
+            <div style="color:#9ca3af;font-size:12px;">Loading…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Top officers + recent activities -->
+      <div style="display:grid;grid-template-columns:340px 1fr;gap:20px;">
+        <div class="card" style="padding:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div style="font-size:15px;font-weight:700;color:#111827;">Top Officers</div>
+            <a href="manager_performance.html"
+              style="font-size:12px;font-weight:700;color:#ea580c;text-decoration:none;">View all →</a>
+          </div>
+          <div id="topOfficersList" style="display:flex;flex-direction:column;gap:10px;">
+            <div style="color:#9ca3af;font-size:12px;">Loading…</div>
+          </div>
+          <div id="topOfficerHint"
+            style="margin-top:14px;padding:10px;background:#fef3c7;border-radius:8px;font-size:12px;color:#92400e;font-weight:600;">
+          </div>
+        </div>
+        <div class="card" style="overflow:hidden;">
+          <div
+            style="padding:16px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:15px;font-weight:700;color:#111827;">Recent Tasks</div>
+            <a href="manager_tasks.html" style="font-size:12px;font-weight:700;color:#ea580c;text-decoration:none;">View
+              All Tasks →</a>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;">
+              <thead style="background:#f9fafb;">
+                <tr>
+                  <th
+                    style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                    Task</th>
+                  <th
+                    style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                    Work Type</th>
+                  <th
+                    style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                    Village</th>
+                  <th
+                    style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                    Date</th>
+                  <th
+                    style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                    Officer</th>
+                </tr>
+              </thead>
+              <tbody id="recentActivitiesTbody">
+                <tr>
+                  <td colspan="5" style="padding:20px;text-align:center;color:#9ca3af;font-size:12px;">Loading…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="card" style="padding:20px;">
+        <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:14px;">Quick Actions</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;">
+          <a href="manager_tasks.html"
+            style="display:flex;align-items:center;gap:8px;background:#7c2d12;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;"><span
+              class="material-symbols-outlined" style="font-size:18px;">add_task</span> Assign New Task</a>
+          <a href="manager_officers.html"
+            style="display:flex;align-items:center;gap:8px;background:#fff7ed;border:1.5px solid #fed7aa;color:#7c2d12;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;"><span
+              class="material-symbols-outlined" style="font-size:18px;">group</span> View Officers</a>
+          <a href="manager_performance.html"
+            style="display:flex;align-items:center;gap:8px;background:#fff7ed;border:1.5px solid #fed7aa;color:#7c2d12;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;"><span
+              class="material-symbols-outlined" style="font-size:18px;">bar_chart</span> Performance</a>
+          <a href="manager_reports.html"
+            style="display:flex;align-items:center;gap:8px;background:#fff7ed;border:1.5px solid #fed7aa;color:#7c2d12;padding:10px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:700;"><span
+              class="material-symbols-outlined" style="font-size:18px;">assessment</span> View Reports</a>
+        </div>
+      </div>
     </div>
-    <div style="overflow-y:auto;flex:1;" id="overdueModalBody">
-      <div style="padding:40px;text-align:center;color:#9ca3af;">Loading overdue tasks...</div>
+
+    <!-- Overdue Tasks Modal -->
+    <div id="overdueModal"
+      style="position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;">
+      <div
+        style="background:#fff;border-radius:16px;width:100%;max-width:900px;max-height:85vh;box-shadow:0 20px 60px rgba(0,0,0,0.2);display:flex;flex-direction:column;overflow:hidden;">
+        <div
+          style="padding:16px 20px;background:linear-gradient(135deg,#fee2e2,#fef2f2);border-bottom:1px solid #fecaca;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="material-symbols-outlined" style="color:#dc2626;font-size:24px;">warning</span>
+            <div>
+              <span style="font-size:16px;font-weight:800;color:#991b1b;">Overdue Tasks</span>
+              <div style="font-size:11px;color:#b91c1c;margin-top:2px;" id="overdueSubtext">Loading...</div>
+            </div>
+          </div>
+          <button onclick="document.getElementById('overdueModal').style.display='none'"
+            style="background:none;border:none;cursor:pointer;color:#6b7280;">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div style="overflow-y:auto;flex:1;" id="overdueModalBody">
+          <div style="padding:40px;text-align:center;color:#9ca3af;">Loading overdue tasks...</div>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<script>
-// ── API helper ───────────────────────────────────────────────────────────────
-async function apiFetch(path) {
-  const p = path.startsWith("/api") ? path : `/api${path.startsWith("/") ? path : "/" + path}`;
-  const res = await AgriAuth.apiFetch(p);
-  if (!res.ok) throw new Error(`API error ${res.status}: ${path}`);
-  return res.json();
-}
+    <script>
+      // ── API helper ───────────────────────────────────────────────────────────────
+      async function apiFetch(path) {
+        const p = path.startsWith("/api") ? path : `/api${path.startsWith("/") ? path : "/" + path}`;
+        const res = await AgriAuth.apiFetch(p);
+        if (!res.ok) throw new Error(`API error ${res.status}: ${path}`);
+        return res.json();
+      }
 
-// ── Render helpers ───────────────────────────────────────────────────────────
-function renderStats(stats) {
-  const ids = ["statTotalTasks", "statCompleted", "statInProgress", "statOverdue"];
-  const vals = [stats.total_tasks, stats.completed_tasks, stats.in_progress_tasks, stats.overdue_tasks];
-  ids.forEach((id, i) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = (vals[i] || 0).toLocaleString("en-IN");
-  });
-  const lbl = document.getElementById("statPeriod");
-  if (lbl) lbl.textContent = stats.period_label;
-}
+      // ── Render helpers ───────────────────────────────────────────────────────────
+      function renderStats(stats) {
+        const ids = ["statTotalTasks", "statCompleted", "statInProgress", "statOverdue"];
+        const vals = [stats.total_tasks, stats.completed_tasks, stats.in_progress_tasks, stats.overdue_tasks];
+        ids.forEach((id, i) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = (vals[i] || 0).toLocaleString("en-IN");
+        });
+        const lbl = document.getElementById("statPeriod");
+        if (lbl) lbl.textContent = stats.period_label;
+      }
 
-function renderWeekly(weeks) {
-  const container = document.getElementById("weeklyChart");
-  if (!container) return;
-  if (!weeks.length) {
-    container.innerHTML = '<div style="flex:1;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:12px;">No task data yet</div>';
-    return;
-  }
-  const maxVal = Math.max(...weeks.map(w => w.count), 1);
-  container.innerHTML = weeks.map(w => {
-    const h = Math.max(1, Math.round((w.count / maxVal) * 120));
-    const color = w.is_peak ? "#006c49" : "#003527";
-    const labelColor = w.is_peak ? "#4ade80" : "#6b7280";
-    const weekColor = w.is_peak ? "#006c49" : "#9ca3af";
-    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;">
-      <div style="font-size:10px;color:${labelColor};font-weight:${w.is_peak?'800':'600'};">${w.count.toLocaleString("en-IN")}</div>
+      function renderWeekly(weeks) {
+        const container = document.getElementById("weeklyChart");
+        if (!container) return;
+        if (!weeks.length) {
+          container.innerHTML = '<div style="flex:1;display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:12px;">No task data yet</div>';
+          return;
+        }
+        const maxVal = Math.max(...weeks.map(w => w.count), 1);
+        container.innerHTML = weeks.map(w => {
+          const h = Math.max(1, Math.round((w.count / maxVal) * 120));
+          const color = w.is_peak ? "#ea580c" : "#7c2d12";
+          const labelColor = w.is_peak ? "#ea580c" : "#6b7280";
+          const weekColor = w.is_peak ? "#ea580c" : "#9ca3af";
+          return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;">
+      <div style="font-size:10px;color:${labelColor};font-weight:${w.is_peak ? '800' : '600'};">${w.count.toLocaleString("en-IN")}</div>
       <div style="width:100%;background:${color};border-radius:5px 5px 0 0;height:${h}px;"></div>
-      <div style="font-size:10px;color:${weekColor};font-weight:${w.is_peak?'700':'400'};">${w.week_label}${w.is_peak?' ▲':''}</div>
+      <div style="font-size:10px;color:${weekColor};font-weight:${w.is_peak ? '700' : '400'};">${w.week_label}${w.is_peak ? ' ▲' : ''}</div>
     </div>`;
-  }).join("");
-}
+        }).join("");
+      }
 
-function renderWorkTypes(types) {
-  const container = document.getElementById("workTypeList");
-  if (!container) return;
-  container.innerHTML = types.map(t => `
+      function renderWorkTypes(types) {
+        const container = document.getElementById("workTypeList");
+        if (!container) return;
+        container.innerHTML = types.map(t => `
     <div>
       <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
         <span style="font-size:12px;font-weight:600;color:#111827;">${t.label}</span>
-        <span style="font-size:12px;font-weight:700;color:#003527;">${t.count.toLocaleString("en-IN")}</span>
+        <span style="font-size:12px;font-weight:700;color:#7c2d12;">${t.count.toLocaleString("en-IN")}</span>
       </div>
       <div class="bar-track"><div class="bar-fill" style="width:${t.pct}%"></div></div>
     </div>`).join("");
-}
+      }
 
-function renderTopOfficers(officers) {
-  const container = document.getElementById("topOfficersList");
-  if (!container) return;
-  if (!officers.length) {
-    container.innerHTML = '<div style="color:#9ca3af;font-size:12px;">No officer data yet</div>';
-    const hint = document.getElementById("topOfficerHint");
-    if (hint) hint.textContent = "";
-    return;
-  }
-  const total = officers.reduce((s, o) => s + o.tasks, 0) || 1;
-  const top = officers[0];
-  container.innerHTML = officers.map((o, i) => {
-    const bg = i === 0 ? "#f0fdf4" : "#f9fafb";
-    const rankBg = i === 0 ? "#003527" : "#e5e7eb";
-    const rankColor = i === 0 ? "#fff" : "#6b7280";
-    return `<div style="display:flex;align-items:center;gap:10px;padding:10px;background:${bg};border-radius:10px;">
+      function renderTopOfficers(officers) {
+        const container = document.getElementById("topOfficersList");
+        if (!container) return;
+        if (!officers.length) {
+          container.innerHTML = '<div style="color:#9ca3af;font-size:12px;">No officer data yet</div>';
+          const hint = document.getElementById("topOfficerHint");
+          if (hint) hint.textContent = "";
+          return;
+        }
+        const total = officers.reduce((s, o) => s + o.tasks, 0) || 1;
+        const top = officers[0];
+        container.innerHTML = officers.map((o, i) => {
+          const bg = i === 0 ? "#fff7ed" : "#f9fafb";
+          const rankBg = i === 0 ? "#7c2d12" : "#e5e7eb";
+          const rankColor = i === 0 ? "#fff" : "#6b7280";
+          return `<div style="display:flex;align-items:center;gap:10px;padding:10px;background:${bg};border-radius:10px;">
       <div style="width:28px;height:28px;border-radius:99px;background:${rankBg};color:${rankColor};font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;">${o.rank}</div>
       <div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#111827;">${o.name}</div></div>
-      <div style="font-size:16px;font-weight:800;color:${i===0?'#003527':'#374151'};">${o.tasks.toLocaleString("en-IN")}</div>
+      <div style="font-size:16px;font-weight:800;color:${i === 0 ? '#7c2d12' : '#374151'};">${o.tasks.toLocaleString("en-IN")}</div>
     </div>`;
-  }).join("");
-  if (top) {
-    const hint = document.getElementById("topOfficerHint");
-    if (hint) hint.innerHTML = `💡 ${top.name.split(" ")[0]} has <strong>${Math.round(top.tasks/total*100)}%</strong> of assigned tasks`;
-  }
-}
+        }).join("");
+        if (top) {
+          const hint = document.getElementById("topOfficerHint");
+          if (hint) hint.innerHTML = `💡 ${top.name.split(" ")[0]} has <strong>${Math.round(top.tasks / total * 100)}%</strong> of assigned tasks`;
+        }
+      }
 
-function renderRecentActivities(activities) {
-  const tbody = document.getElementById("recentActivitiesTbody");
-  if (!tbody) return;
-  const workTypeBadge = wt => {
-    const isVisit = wt.toLowerCase().includes("daily") || wt.toLowerCase().includes("visit");
-    const style = isVisit
-      ? "background:#d1fae5;color:#003527;"
-      : "background:#dbeafe;color:#1e40af;";
-    const label = wt.length > 12 ? wt.slice(0, 10) + "…" : wt;
-    return `<span class="badge" style="${style}">${label}</span>`;
-  };
-  if (!activities.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:#9ca3af;font-size:12px;">No recent tasks</td></tr>';
-    return;
-  }
-  tbody.innerHTML = activities.map(a => `
+      function renderRecentActivities(activities) {
+        const tbody = document.getElementById("recentActivitiesTbody");
+        if (!tbody) return;
+        const workTypeBadge = wt => {
+          const isVisit = wt.toLowerCase().includes("daily") || wt.toLowerCase().includes("visit");
+          const style = isVisit
+            ? "background:#ffedd5;color:#7c2d12;"
+            : "background:#dbeafe;color:#1e40af;";
+          const label = wt.length > 12 ? wt.slice(0, 10) + "…" : wt;
+          return `<span class="badge" style="${style}">${label}</span>`;
+        };
+        if (!activities.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:#9ca3af;font-size:12px;">No recent tasks</td></tr>';
+          return;
+        }
+        tbody.innerHTML = activities.map(a => `
     <tr class="tbl-row" style="border-top:1px solid #f3f4f6;">
       <td style="padding:12px 16px;font-size:13px;font-weight:600;color:#111827;">${a.task}</td>
       <td style="padding:12px 16px;">${workTypeBadge(a.work_type)}</td>
@@ -282,25 +477,25 @@ function renderRecentActivities(activities) {
       <td style="padding:12px 16px;font-size:12px;color:#6b7280;">${a.date}</td>
       <td style="padding:12px 16px;font-size:12px;color:#6b7280;">${a.officer}</td>
     </tr>`).join("");
-}
+      }
 
-// ── Overdue Modal ────────────────────────────────────────────────────────────
-async function showOverdueModal() {
-  const modal = document.getElementById("overdueModal");
-  modal.style.display = "flex";
-  const body = document.getElementById("overdueModalBody");
-  body.innerHTML = '<div style="padding:40px;text-align:center;color:#9ca3af;">Loading overdue tasks...</div>';
-  
-  try {
-    const tasks = await apiFetch("/dashboard/overdue-tasks");
-    document.getElementById("overdueSubtext").textContent = `${tasks.length} task${tasks.length !== 1 ? 's' : ''} past deadline`;
-    
-    if (!tasks.length) {
-      body.innerHTML = '<div style="padding:40px;text-align:center;"><span class="material-symbols-outlined" style="font-size:48px;color:#d1fae5;display:block;margin-bottom:12px;">check_circle</span><div style="font-size:15px;font-weight:700;color:#059669;">No Overdue Tasks!</div><div style="font-size:12px;color:#6b7280;margin-top:4px;">All tasks are within their deadlines.</div></div>';
-      return;
-    }
-    
-    body.innerHTML = `
+      // ── Overdue Modal ────────────────────────────────────────────────────────────
+      async function showOverdueModal() {
+        const modal = document.getElementById("overdueModal");
+        modal.style.display = "flex";
+        const body = document.getElementById("overdueModalBody");
+        body.innerHTML = '<div style="padding:40px;text-align:center;color:#9ca3af;">Loading overdue tasks...</div>';
+
+        try {
+          const tasks = await apiFetch("/dashboard/overdue-tasks");
+          document.getElementById("overdueSubtext").textContent = `${tasks.length} task${tasks.length !== 1 ? 's' : ''} past deadline`;
+
+          if (!tasks.length) {
+            body.innerHTML = '<div style="padding:40px;text-align:center;"><span class="material-symbols-outlined" style="font-size:48px;color:#ffedd5;display:block;margin-bottom:12px;">check_circle</span><div style="font-size:15px;font-weight:700;color:#ea580c;">No Overdue Tasks!</div><div style="font-size:12px;color:#6b7280;margin-top:4px;">All tasks are within their deadlines.</div></div>';
+            return;
+          }
+
+          body.innerHTML = `
       <table style="width:100%;border-collapse:collapse;">
         <thead style="background:#fef2f2;position:sticky;top:0;">
           <tr>
@@ -316,7 +511,7 @@ async function showOverdueModal() {
         <tbody>
           ${tasks.map(t => {
             const urgency = t.days_overdue > 7 ? 'background:#fef2f2;' : '';
-            const priColors = {High:'background:#fee2e2;color:#b91c1c;',Medium:'background:#fef3c7;color:#92400e;',Low:'background:#f3f4f6;color:#6b7280;'};
+            const priColors = { High: 'background:#fee2e2;color:#b91c1c;', Medium: 'background:#fef3c7;color:#92400e;', Low: 'background:#f3f4f6;color:#6b7280;' };
             const priStyle = priColors[t.priority] || priColors.Medium;
             return `<tr style="border-top:1px solid #fecaca;${urgency}">
               <td style="padding:12px 16px;">
@@ -335,48 +530,50 @@ async function showOverdueModal() {
           }).join("")}
         </tbody>
       </table>`;
-  } catch (err) {
-    body.innerHTML = `<div style="padding:40px;text-align:center;color:#dc2626;">Failed to load overdue tasks: ${err.message}</div>`;
-  }
-}
+        } catch (err) {
+          body.innerHTML = `<div style="padding:40px;text-align:center;color:#dc2626;">Failed to load overdue tasks: ${err.message}</div>`;
+        }
+      }
 
-// ── Main ─────────────────────────────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", async () => {
-  const s = AgriAuth.getSession();
-  if (!s) return;
-  const name = (s.name && s.name !== "None") ? s.name : s.username;
-  document.getElementById("avatarCircle").textContent = name.charAt(0).toUpperCase();
-  document.getElementById("headerName").textContent = name;
-  const h = new Date().getHours();
-  document.getElementById("greetMsg").textContent =
-    (h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening") +
-    ", " + name.split(" ")[0];
-  document.getElementById("todayDate").textContent =
-    new Date().toLocaleDateString("en-IN", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
+      // ── Main ─────────────────────────────────────────────────────────────────────
+      document.addEventListener("DOMContentLoaded", async () => {
+        const s = AgriAuth.getSession();
+        if (!s) return;
+        const name = (s.name && s.name !== "None") ? s.name : s.username;
+        document.getElementById("avatarCircle").textContent = name.charAt(0).toUpperCase();
+        document.getElementById("headerName").textContent = name;
+        const h = new Date().getHours();
+        document.getElementById("greetMsg").textContent =
+          (h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening") +
+          ", " + name.split(" ")[0];
+        document.getElementById("todayDate").textContent =
+          new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
-  document.getElementById("logoutBtn").addEventListener("click", e => {
-    e.preventDefault();
-    if (confirm("Sign out?")) { AgriAuth.clearSession(); window.location.replace("/login.html"); }
-  });
+        document.getElementById("logoutBtn").addEventListener("click", e => {
+          e.preventDefault();
+          if (confirm("Sign out?")) { AgriAuth.clearSession(); window.location.replace("/login.html"); }
+        });
 
-  // Fetch all dashboard data in parallel
-  try {
-    const [stats, weekly, workTypes, topOfficers, recent] = await Promise.all([
-      apiFetch("/dashboard/stats"),
-      apiFetch("/dashboard/weekly"),
-      apiFetch("/dashboard/work-types"),
-      apiFetch("/dashboard/top-officers"),
-      apiFetch("/dashboard/recent-activities"),
-    ]);
-    renderStats(stats);
-    renderWeekly(weekly);
-    renderWorkTypes(workTypes);
-    renderTopOfficers(topOfficers);
-    renderRecentActivities(recent);
-  } catch (err) {
-    console.error("Dashboard load error:", err);
-  }
-});
-</script>
+        // Fetch all dashboard data in parallel
+        try {
+          const [stats, weekly, workTypes, topOfficers, recent] = await Promise.all([
+            apiFetch("/dashboard/stats"),
+            apiFetch("/dashboard/weekly"),
+            apiFetch("/dashboard/work-types"),
+            apiFetch("/dashboard/top-officers"),
+            apiFetch("/dashboard/recent-activities"),
+          ]);
+          renderStats(stats);
+          renderWeekly(weekly);
+          renderWorkTypes(workTypes);
+          renderTopOfficers(topOfficers);
+          renderRecentActivities(recent);
+        } catch (err) {
+          console.error("Dashboard load error:", err);
+        }
+      });
+    </script>
 </body>
+
 </html>
+<!-- cache-bust: 2026-06-23-2 -->

@@ -5,7 +5,7 @@ Supports: plain text, MD5, and Django PBKDF2-SHA256 passwords.
 from fastapi import APIRouter, HTTPException
 from database import db_cursor
 from models import LoginRequest, SessionUser
-from auth import password_ok
+from auth import password_ok, create_access_token
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -47,17 +47,16 @@ def login(body: LoginRequest):
     if not (password_ok(body.password, stored_pw) or password_ok(body.password, details_pw)):
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
-    # Role mapping: 'admin' is the HR user, staff are managers, and the rest are officers
-    if username.lower() == "admin":
-        role = "hr"
-    elif is_staff:
+    # Role mapping: staff are managers, and the rest are officers
+    if is_staff:
         role = "manager"
     else:
         role = "officer"
 
     name = (full_name or "").strip() or username
 
-    return SessionUser(id=uid, username=username, name=name, role=role)
+    token = create_access_token(user_id=uid, role=role)
+    return SessionUser(id=uid, username=username, name=name, role=role, access_token=token)
 
 
 @router.post("/logout")

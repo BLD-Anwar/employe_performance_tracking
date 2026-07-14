@@ -5,16 +5,18 @@ const MANAGER_PAGES = new Set([
   "manager_performance.html", "manager_performance",
   "manager_reports.html", "manager_reports",
   "manager_settings.html", "manager_settings",
+  "manager_task_detail.html", "manager_task_detail",
+  "manager_farmers.html", "manager_farmers",
+  "manager_campaign_reports.html", "manager_campaign_reports",
 ]);
 
 const AgriAuth = {
   /** Backend origin — use absolute URL when HTML is not served from port 8000 */
   apiOrigin() {
     if (location.protocol === "file:") return "http://127.0.0.1:8000";
-    const host = location.hostname;
     const port = location.port;
-    if ((host === "localhost" || host === "127.0.0.1") && port && port !== "8000") {
-      return "http://127.0.0.1:8000";
+    if (port && port !== "8000") {
+      return `${location.protocol}//${location.hostname}:8000`;
     }
     return "";
   },
@@ -24,8 +26,19 @@ const AgriAuth = {
     return `${this.apiOrigin()}${p}`;
   },
 
-  async apiFetch(path, options) {
+  async apiFetch(path, options = {}) {
+    const headers = options.headers || {};
+    const session = this.getSession();
+    if (session && session.token) {
+      headers["Authorization"] = `Bearer ${session.token}`;
+    }
+    options.headers = headers;
     const res = await fetch(this.apiUrl(path), options);
+    if (res.status === 401) {
+      this.clearSession();
+      window.location.href = "/login.html";
+      return null;
+    }
     return res;
   },
 
@@ -34,7 +47,16 @@ const AgriAuth = {
       const raw = localStorage.getItem("agri_session") || sessionStorage.getItem("agri_session");
       if (raw) {
         const s = JSON.parse(raw);
-        if (s && s.role === "manager") return s;
+        if (s && s.role === "manager") {
+          return {
+            id: s.id,
+            userId: s.id,
+            username: s.username,
+            name: s.name,
+            role: s.role,
+            token: s.token || s.access_token
+          };
+        }
       }
       return null;
     } catch {
@@ -66,26 +88,14 @@ const AgriAuth = {
     return true;
   },
 
-  /** Default manager session so portal pages work without login during development if dev_mode is set */
   ensureManagerSession() {
-    if (this.getSession()) return;
-    if (localStorage.getItem("dev_mode") === "true") {
-      this.setSession({
-        id: 1,
-        username: "admin",
-        name: "Manager",
-        role: "manager",
-      });
-    }
+    const s = this.getSession();
+    if (!s) { window.location.replace("/login.html"); }
   },
 };
 
 const currentPage = window.location.pathname.split("/").pop() || "";
 const pageKey = currentPage.replace(".html", "");
-
-if (MANAGER_PAGES.has(currentPage) || MANAGER_PAGES.has(pageKey)) {
-  AgriAuth.ensureManagerSession();
-}
 
 if (
   currentPage &&

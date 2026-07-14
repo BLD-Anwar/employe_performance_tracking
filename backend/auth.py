@@ -1,10 +1,21 @@
 """
-auth.py  –  Password verification utilities for AgriPulse
+auth.py  –  Password verification and JWT utilities for AgriPulse
 Supports: plain text, MD5, and Django PBKDF2-SHA256 passwords.
+Also provides JWT token generation and endpoint verification.
 """
 import hashlib
 import base64
 import hmac
+import jwt
+import os
+from typing import Optional
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+security = HTTPBearer(auto_error=False)
+
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "agripulse_secret_key_2026")
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 
 
 def md5_hash(plain: str) -> str:
@@ -45,3 +56,33 @@ def password_ok(plain: str, stored: str | None) -> bool:
     if verify_django_pbkdf2(plain, stored):
         return True
     return False
+
+
+def create_access_token(user_id: int, role: str) -> str:
+    """Generate a JWT token for a specific user ID and role."""
+    payload = {
+        "user_id": user_id,
+        "role": role
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def verify_token(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security), token: Optional[str] = None):
+    """FastAPI dependency to verify bearer token."""
+    if not credentials and not token:
+        raise HTTPException(status_code=401, detail="Missing authorization token")
+    actual_token = credentials.credentials if credentials else token
+    try:
+        payload = jwt.decode(actual_token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Invalid or expired authorization token")
+
+
+def require_role(*allowed_roles):
+    def checker(payload: dict = Depends(verify_token)):
+        if payload.get("role") not in allowed_roles:
+            raise HTTPException(status_code=403, detail="Insufficient permissions")
+        return payload
+    return checker
+

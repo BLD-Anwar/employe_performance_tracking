@@ -2,7 +2,7 @@
 routers/officers.py  –  Officer management
 Tables: dbo.auth_user, dbo.user_details, dbo.activities, TASK_MASTER, TASK_ACTIVITY_LOG, TASK_LOCATION, TASK_FARMER_MAPPING
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from database import db_cursor
 from models import (
     OfficerOut, BlockRequest, OfficerDashboardResponse,
@@ -10,6 +10,7 @@ from models import (
     OfficerDashboardActivity, OfficerDashboardAlert, OfficerDashboardInsight,
     OfficerWorkTypeStat, WorkTypePoint, WeekPoint,
 )
+from auth import require_role
 
 
 def _build_work_type_stat(label, wid, task_count, tasks_completed, tasks_remaining,
@@ -29,7 +30,7 @@ def _build_work_type_stat(label, wid, task_count, tasks_completed, tasks_remaini
         is_master=is_master,
     )
 
-router = APIRouter(prefix="/api/officers", tags=["officers"])
+router = APIRouter(prefix="/api/officers", tags=["officers"], dependencies=[Depends(require_role("manager"))])
 
 
 @router.get("", response_model=list[OfficerOut])

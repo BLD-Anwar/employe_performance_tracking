@@ -5,12 +5,13 @@ Provides task-aware work submission and activity tracking for logged-in officers
 Tables: TASK_MASTER, TASK_FARMER_MAPPING, TASK_ACTIVITY_LOG, TASK_LOCATION,
         dbo.activities, dbo.auth_user, dbo.user_details
 """
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
 from database import db_cursor
 from pydantic import BaseModel
 from typing import Optional
+from auth import require_role, verify_token
 
-router = APIRouter(prefix="/api/me", tags=["employee"])
+router = APIRouter(prefix="/api/me", tags=["employee"], dependencies=[Depends(require_role("officer", "manager"))])
 
 
 # ── Models ──────────────────────────────────────────────────────────────────
@@ -45,8 +46,10 @@ class WorkSubmission(BaseModel):
 
 # ── Profile ─────────────────────────────────────────────────────────────────
 @router.get("/profile/{user_id}")
-def get_my_profile(user_id: int):
+def get_my_profile(user_id: int, payload: dict = Depends(verify_token)):
     """Get own profile for the officer dashboard header."""
+    if payload.get("role") != "manager" and payload.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     with db_cursor() as cur:
         cur.execute("""
             SELECT
@@ -147,8 +150,10 @@ def get_my_profile(user_id: int):
 
 # ── Metrics ─────────────────────────────────────────────────────────────────
 @router.get("/metrics/{user_id}")
-def get_my_metrics(user_id: int):
+def get_my_metrics(user_id: int, payload: dict = Depends(verify_token)):
     """Dashboard summary metrics for the officer — includes real KPI percentages."""
+    if payload.get("role") != "manager" and payload.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     with db_cursor() as cur:
         # Task stats
         cur.execute("""
@@ -258,8 +263,10 @@ def get_my_metrics(user_id: int):
 
 # ── Tasks (from TASK_MASTER) ───────────────────────────────────────────────
 @router.get("/tasks/{user_id}")
-def get_my_tasks(user_id: int):
+def get_my_tasks(user_id: int, payload: dict = Depends(verify_token)):
     """All tasks assigned to this officer from TASK_MASTER."""
+    if payload.get("role") != "manager" and payload.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     with db_cursor() as cur:
         cur.execute("""
             SELECT
@@ -313,8 +320,10 @@ def get_my_tasks(user_id: int):
 
 
 @router.get("/tasks/{user_id}/{task_id}")
-def get_my_task_detail(user_id: int, task_id: int):
+def get_my_task_detail(user_id: int, task_id: int, payload: dict = Depends(verify_token)):
     """Task detail with farmer rows — for the work submission page."""
+    if payload.get("role") != "manager" and payload.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     with db_cursor() as cur:
         # Verify this task belongs to the officer
         cur.execute("""
@@ -381,8 +390,15 @@ def get_my_task_detail(user_id: int, task_id: int):
 
 # ── Task Farmer Progress ───────────────────────────────────────────────────
 @router.patch("/task-farmers/{mapping_id}/progress")
-def update_farmer_progress(mapping_id: int, body: ProgressUpdate, user_id: int = Query(...)):
+def update_farmer_progress(mapping_id: int, body: ProgressUpdate, user_id: Optional[int] = Query(None), payload: dict = Depends(verify_token)):
     """Mark a farmer mapping as IN_PROGRESS and log activity."""
+    if payload.get("role") == "manager":
+        effective_user_id = user_id if user_id is not None else payload.get("user_id")
+    else:
+        if user_id is not None and user_id != payload.get("user_id"):
+            raise HTTPException(status_code=403, detail="Cannot act on behalf of another user")
+        effective_user_id = payload.get("user_id")
+
     with db_cursor() as cur:
         # Verify mapping exists and belongs to user's task
         cur.execute("""
@@ -394,7 +410,7 @@ def update_farmer_progress(mapping_id: int, body: ProgressUpdate, user_id: int =
         row = cur.fetchone()
         if not row:
             raise HTTPException(status_code=404, detail="Mapping not found")
-        if row[1] != user_id:
+        if row[1] != effective_user_id:
             raise HTTPException(status_code=403, detail="Not your task")
 
         task_id = row[0]
@@ -416,14 +432,21 @@ def update_farmer_progress(mapping_id: int, body: ProgressUpdate, user_id: int =
         cur.execute("""
             INSERT INTO TASK_ACTIVITY_LOG (task_id, action, remarks, officer)
             VALUES (?, 'FARMER_IN_PROGRESS', ?, ?)
-        """, task_id, remarks, user_id)
+        """, task_id, remarks, effective_user_id)
 
     return {"ok": True, "status": "IN_PROGRESS"}
 
 
 @router.post("/task-farmers/{mapping_id}/evidence")
-def submit_farmer_evidence(mapping_id: int, body: EvidenceSubmission, user_id: int = Query(...)):
+def submit_farmer_evidence(mapping_id: int, body: EvidenceSubmission, user_id: Optional[int] = Query(None), payload: dict = Depends(verify_token)):
     """Log evidence / telemetry for a farmer visit. Also inserts into dbo.activities."""
+    if payload.get("role") == "manager":
+        effective_user_id = user_id if user_id is not None else payload.get("user_id")
+    else:
+        if user_id is not None and user_id != payload.get("user_id"):
+            raise HTTPException(status_code=403, detail="Cannot act on behalf of another user")
+        effective_user_id = payload.get("user_id")
+
     with db_cursor() as cur:
         cur.execute("""
             SELECT tfm.task_id, tfm.farmer_id, tm.assigned_officer, tm.work_type
@@ -434,7 +457,7 @@ def submit_farmer_evidence(mapping_id: int, body: EvidenceSubmission, user_id: i
         row = cur.fetchone()
         if not row:
             raise HTTPException(status_code=404, detail="Mapping not found")
-        if row[2] != user_id:
+        if row[2] != effective_user_id:
             raise HTTPException(status_code=403, detail="Not your task")
 
         task_id, farmer_id, _, work_type = row
@@ -446,7 +469,7 @@ def submit_farmer_evidence(mapping_id: int, body: EvidenceSubmission, user_id: i
         cur.execute("""
             INSERT INTO TASK_ACTIVITY_LOG (task_id, action, remarks, officer)
             VALUES (?, 'EVIDENCE_SUBMITTED', ?, ?)
-        """, task_id, remarks, user_id)
+        """, task_id, remarks, effective_user_id)
 
         # Also insert into dbo.activities for backward compatibility
         cur.execute("""
@@ -454,15 +477,22 @@ def submit_farmer_evidence(mapping_id: int, body: EvidenceSubmission, user_id: i
                 (user_id, farmer_name, mobile_number, purpose_of_work_id, village, city,
                  latitude, longitude, description, created_on, deleted)
             VALUES (?, ?, ?, NULL, ?, '', ?, ?, ?, GETDATE(), 0)
-        """, user_id, body.farmer_name or "", body.mobile or "",
+        """, effective_user_id, body.farmer_name or "", body.mobile or "",
              "", body.latitude, body.longitude, body.description or "")
 
     return {"ok": True}
 
 
 @router.post("/task-farmers/{mapping_id}/complete")
-def complete_farmer(mapping_id: int, body: CompleteSubmission, user_id: int = Query(...)):
+def complete_farmer(mapping_id: int, body: CompleteSubmission, user_id: Optional[int] = Query(None), payload: dict = Depends(verify_token)):
     """Mark a farmer mapping as COMPLETED and check if all farmers are done."""
+    if payload.get("role") == "manager":
+        effective_user_id = user_id if user_id is not None else payload.get("user_id")
+    else:
+        if user_id is not None and user_id != payload.get("user_id"):
+            raise HTTPException(status_code=403, detail="Cannot act on behalf of another user")
+        effective_user_id = payload.get("user_id")
+
     with db_cursor() as cur:
         cur.execute("""
             SELECT tfm.task_id, tm.assigned_officer
@@ -473,7 +503,7 @@ def complete_farmer(mapping_id: int, body: CompleteSubmission, user_id: int = Qu
         row = cur.fetchone()
         if not row:
             raise HTTPException(status_code=404, detail="Mapping not found")
-        if row[1] != user_id:
+        if row[1] != effective_user_id:
             raise HTTPException(status_code=403, detail="Not your task")
 
         task_id = row[0]
@@ -489,7 +519,7 @@ def complete_farmer(mapping_id: int, body: CompleteSubmission, user_id: int = Qu
         cur.execute("""
             INSERT INTO TASK_ACTIVITY_LOG (task_id, action, remarks, officer)
             VALUES (?, 'FARMER_COMPLETED', ?, ?)
-        """, task_id, remarks, user_id)
+        """, task_id, remarks, effective_user_id)
 
         # Check if all farmers for this task are completed
         cur.execute("""
@@ -505,15 +535,17 @@ def complete_farmer(mapping_id: int, body: CompleteSubmission, user_id: int = Qu
             cur.execute("""
                 INSERT INTO TASK_ACTIVITY_LOG (task_id, action, remarks, officer)
                 VALUES (?, 'TASK_COMPLETED', 'All farmers completed — task auto-closed', ?)
-            """, task_id, user_id)
+            """, task_id, effective_user_id)
 
     return {"ok": True, "status": "COMPLETED", "remaining": remaining}
 
 
 # ── Activity History ────────────────────────────────────────────────────────
 @router.get("/activity/{user_id}")
-def get_my_activity(user_id: int):
+def get_my_activity(user_id: int, payload: dict = Depends(verify_token)):
     """Officer's own activity history from TASK_ACTIVITY_LOG."""
+    if payload.get("role") != "manager" and payload.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     with db_cursor() as cur:
         cur.execute("""
             SELECT TOP 30
@@ -548,8 +580,10 @@ def get_my_activity(user_id: int):
 
 # ── Alerts (dynamically computed) ──────────────────────────────────────────
 @router.get("/alerts/{user_id}")
-def get_my_alerts(user_id: int):
+def get_my_alerts(user_id: int, payload: dict = Depends(verify_token)):
     """Dynamic alerts based on task states."""
+    if payload.get("role") != "manager" and payload.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     alerts = []
     with db_cursor() as cur:
         cur.execute("""
@@ -590,8 +624,10 @@ def get_my_alerts(user_id: int):
 
 # ── Insights (dynamically computed) ────────────────────────────────────────
 @router.get("/insights/{user_id}")
-def get_my_insights(user_id: int):
+def get_my_insights(user_id: int, payload: dict = Depends(verify_token)):
     """Dynamic performance insights for the officer."""
+    if payload.get("role") != "manager" and payload.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     insights = []
     with db_cursor() as cur:
         cur.execute("""
@@ -651,8 +687,10 @@ def get_my_insights(user_id: int):
 
 
 @router.get("/villages/{user_id}")
-def get_my_villages(user_id: int):
+def get_my_villages(user_id: int, payload: dict = Depends(verify_token)):
     """Top villages visited by this officer from TbL_TRN_Farmer_Meeting."""
+    if payload.get("role") != "manager" and payload.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     with db_cursor() as cur:
         cur.execute("""
             SELECT TOP 5
@@ -671,23 +709,32 @@ def get_my_villages(user_id: int):
 
 # ── Legacy Work Submission (dbo.activities) ─────────────────────────────────
 @router.post("/submissions")
-def create_submission(body: WorkSubmission, user_id: int = Query(...)):
+def create_submission(body: WorkSubmission, user_id: Optional[int] = Query(None), payload: dict = Depends(verify_token)):
     """Insert a telemetry/activity log into dbo.activities."""
+    if payload.get("role") == "manager":
+        effective_user_id = user_id if user_id is not None else payload.get("user_id")
+    else:
+        if user_id is not None and user_id != payload.get("user_id"):
+            raise HTTPException(status_code=403, detail="Cannot act on behalf of another user")
+        effective_user_id = payload.get("user_id")
+
     with db_cursor() as cur:
         cur.execute("""
             INSERT INTO dbo.activities
                 (user_id, farmer_name, mobile_number, purpose_of_work_id, village, city,
                  latitude, longitude, description, created_on, deleted)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), 0)
-        """, user_id, body.farmer_name, body.mobile, body.purpose_code,
+        """, effective_user_id, body.farmer_name, body.mobile, body.purpose_code,
              body.village, body.city, body.latitude, body.longitude, body.description)
 
     return {"ok": True, "message": "Submission recorded"}
 
 
 @router.get("/submissions/{user_id}")
-def get_my_submissions(user_id: int, skip: int = Query(default=0), limit: int = Query(default=20)):
+def get_my_submissions(user_id: int, skip: int = Query(default=0), limit: int = Query(default=20), payload: dict = Depends(verify_token)):
     """List the officer's own farmer meetings from TbL_TRN_Farmer_Meeting."""
+    if payload.get("role") != "manager" and payload.get("user_id") != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
     with db_cursor() as cur:
         cur.execute("""
             SELECT

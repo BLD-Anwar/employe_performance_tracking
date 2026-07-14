@@ -5,6 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AgriPulse – Employee Performance Portal</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style>
+    /* Tailwind CDN offline fallback — basic readable layout */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f8f9ff;
+      color: #0b1c30;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+    img { max-width: 100%; }
+    a { color: #ea580c; }
+    a:hover { text-decoration: underline; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    input[type="text"], input[type="password"], input[type="email"],
+    input[type="number"], select, textarea {
+      width: 100%;
+      border: 1px solid #bfc9c3;
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: #0b1c30;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      background-color: #7c2d12;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    button:hover { background-color: #9a3412; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid #e5e7eb; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: 700; }
+  </style>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
       rel="stylesheet"
@@ -15,17 +56,17 @@
         theme: {
           extend: {
             colors: {
-              primary: "#003527", // Deep Emerald
-              "primary-light": "#004d39",
-              secondary: "#006c49", // Forest Green
-              "secondary-light": "#00855a",
+              primary: "#7c2d12", // Deep Orange
+              "primary-light": "#9a3412",
+              secondary: "#ea580c", // Forest Orange
+              "secondary-light": "#f97316",
               background: "#f4f6f8", // Cool light slate
               surface: "#ffffff",
               "surface-muted": "#f8fafc",
               "border-color": "#e2e8f0",
               "text-main": "#0f172a", // Deep dark gray
               "text-muted": "#64748b", // Slate gray
-              "accent-success": "#10b981", // Mint green
+              "accent-success": "#f97316", // Mint orange
               "accent-warning": "#f59e0b", // Warm amber
               "accent-error": "#ef4444", // Soft red
             },
@@ -70,32 +111,28 @@
 
       /* Sidebar design with sleek gradient */
       .agri-sidebar {
-        background: linear-gradient(180deg, #002b1f 0%, #001f16 100%);
+        background: #0f172a;
         box-shadow:
           inset -1px 0 0 rgba(255, 255, 255, 0.03),
           4px 0 24px rgba(0, 0, 0, 0.15);
       }
       .nav-link {
-        color: rgba(255, 255, 255, 0.7);
+        color: #94a3b8;
         transition: all 0.2s ease;
       }
       .nav-link:hover {
-        background: rgba(255, 255, 255, 0.06);
+        background: #1e293b;
         color: #ffffff;
         transform: translateX(2px);
       }
       .nav-link.active {
-        background: linear-gradient(
-          90deg,
-          rgba(16, 185, 129, 0.15),
-          rgba(16, 185, 129, 0.02)
-        );
-        color: #34d399;
-        border-left: 3px solid #10b981;
+        background: #ea580c;
+        color: #ffffff;
+        border-left: 3px solid #ea580c;
         box-shadow: inset 0 0 12px rgba(16, 185, 129, 0.04);
       }
       .nav-link.active .material-symbols-outlined {
-        color: #10b981;
+        color: #ffffff;
       }
 
       /* Premium Cards */
@@ -149,9 +186,9 @@
     >
       <div class="px-6 mb-8 flex items-center gap-3">
         <div
-          class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center rounded-xl shadow-lg shrink-0"
+          class="w-10 h-10 bg-[#ea580c] flex items-center justify-center rounded-xl shadow-lg shrink-0"
         >
-          <span class="material-symbols-outlined text-2xl text-emerald-400"
+          <span class="material-symbols-outlined text-2xl text-white"
             >agriculture</span
           >
         </div>
@@ -162,7 +199,7 @@
             Sri Sri Sugar
           </h1>
           <p
-            class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-1"
+            class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1"
           >
             Operations Portal
           </p>
@@ -266,7 +303,7 @@
               >
                 <span>Recent Alerts</span>
                 <span
-                  class="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-normal"
+                  class="text-[10px] text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full font-normal"
                   >Active Notifications</span
                 >
               </p>
@@ -285,14 +322,14 @@
                 Loading Officer
               </p>
               <p
-                class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider mt-1"
+                class="text-[9px] text-orange-600 font-bold uppercase tracking-wider mt-1"
                 id="headerUserRole"
               >
                 Field Officer
               </p>
             </div>
             <div
-              class="w-9 h-9 rounded-xl bg-[#003527] text-emerald-300 font-bold text-xs flex items-center justify-center shadow"
+              class="w-9 h-9 rounded-xl bg-[#7c2d12] text-orange-300 font-bold text-xs flex items-center justify-center shadow"
               id="avatarCircle"
             >
               A
@@ -320,10 +357,10 @@
           </div>
           <div class="flex items-center gap-3">
             <div
-              class="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-3.5 py-1.5 rounded-full border border-emerald-200 text-[10px] font-bold uppercase tracking-wider"
+              class="flex items-center gap-1.5 bg-orange-50 text-orange-700 px-3.5 py-1.5 rounded-full border border-orange-200 text-[10px] font-bold uppercase tracking-wider"
             >
               <span
-                class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"
+                class="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"
               ></span>
               <span>Verified Secure Connection</span>
             </div>
@@ -332,18 +369,18 @@
 
         <!-- Operational Highlight Banner -->
         <div
-          class="bg-gradient-to-r from-[#003527] to-[#005a41] text-white rounded-3xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl shadow-emerald-950/10"
+          class="bg-gradient-to-r from-[#7c2d12] to-[#4a1505] text-white rounded-3xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl shadow-orange-950/10"
         >
           <div>
             <p
-              class="text-[9px] uppercase font-bold tracking-widest text-emerald-400 mb-1"
+              class="text-[9px] uppercase font-bold tracking-widest text-orange-400 mb-1"
             >
               PRECISION GROWTH & SYSTEM MONITORING
             </p>
             <h3 class="text-lg font-black leading-tight mb-2">
               My Operations & Sugarcane Telemetry
             </h3>
-            <p class="text-xs text-emerald-100 max-w-xl">
+            <p class="text-xs text-orange-100 max-w-xl">
               Track cane registrations, monitor GPS telemetry points, complete
               recovery operations, and evaluate farmer meetings to boost your
               operational performance score.
@@ -354,36 +391,36 @@
           >
             <div class="text-center">
               <p
-                class="text-xl font-black text-emerald-300"
+                class="text-xl font-black text-orange-300"
                 id="totalTasksCount"
               >
                 0
               </p>
-              <p class="text-[9px] font-bold uppercase text-emerald-200 mt-0.5">
+              <p class="text-[9px] font-bold uppercase text-orange-200 mt-0.5">
                 Farmer Tasks
               </p>
             </div>
             <div class="w-[1px] h-8 bg-white/10"></div>
             <div class="text-center">
               <p
-                class="text-xl font-black text-emerald-300"
+                class="text-xl font-black text-orange-300"
                 id="totalVillagesText"
               >
                 0
               </p>
-              <p class="text-[9px] font-bold uppercase text-emerald-200 mt-0.5">
+              <p class="text-[9px] font-bold uppercase text-orange-200 mt-0.5">
                 Villages
               </p>
             </div>
             <div class="w-[1px] h-8 bg-white/10"></div>
             <div class="text-center">
               <p
-                class="text-xl font-black text-emerald-300"
+                class="text-xl font-black text-orange-300"
                 id="totalFarmersText"
               >
                 0
               </p>
-              <p class="text-[9px] font-bold uppercase text-emerald-200 mt-0.5">
+              <p class="text-[9px] font-bold uppercase text-orange-200 mt-0.5">
                 Farmers
               </p>
             </div>
@@ -408,13 +445,13 @@
                       class="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5"
                     >
                       <span
-                        class="material-symbols-outlined text-sm text-emerald-600"
+                        class="material-symbols-outlined text-sm text-orange-600"
                         >badge</span
                       >
                       Employee Profile Section
                     </h4>
                     <span
-                      class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase"
+                      class="bg-orange-50 text-orange-700 border border-orange-200 px-2.5 py-0.5 rounded-full text-[9px] font-black tracking-wider uppercase"
                       id="empStatus"
                       >ACTIVE</span
                     >
@@ -424,7 +461,7 @@
                       class="w-14 h-14 rounded-2xl bg-slate-100 border flex items-center justify-center shadow-inner shrink-0"
                     >
                       <span
-                        class="text-lg font-black text-[#003527]"
+                        class="text-lg font-black text-[#7c2d12]"
                         id="empInitials"
                         >??</span
                       >
@@ -437,7 +474,7 @@
                         Loading Name...
                       </h3>
                       <p
-                        class="text-xs text-[#006c49] font-bold mt-1"
+                        class="text-xs text-[#ea580c] font-bold mt-1"
                         id="empRole"
                       >
                         Loading Role...
@@ -505,7 +542,7 @@
                       cy="50"
                       r="40"
                       stroke-width="8"
-                      stroke="#10b981"
+                      stroke="#f97316"
                       class="radial-fill"
                       id="radialProgress"
                       stroke-dasharray="251.2"
@@ -522,7 +559,7 @@
                       >0%</span
                     >
                     <span
-                      class="text-[9px] text-[#006c49] font-extrabold uppercase mt-1"
+                      class="text-[9px] text-[#ea580c] font-extrabold uppercase mt-1"
                       >Calculated</span
                     >
                   </div>
@@ -547,7 +584,7 @@
               <h4
                 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2"
               >
-                <span class="material-symbols-outlined text-sm text-[#006c49]"
+                <span class="material-symbols-outlined text-sm text-[#ea580c]"
                   >dashboard_customize</span
                 >
                 B. KPI Target Summary Cards
@@ -584,20 +621,20 @@
                 </div>
 
                 <!-- Cards 3-5: Core Math Metrics -->
-                <div class="premium-card p-3 border-l-4 border-l-emerald-600">
+                <div class="premium-card p-3 border-l-4 border-l-orange-600">
                   <p
                     class="text-[9px] font-bold text-slate-400 uppercase tracking-wider"
                   >
                     Crushing (40%)
                   </p>
                   <h3
-                    class="text-lg font-black text-emerald-700 mt-1"
+                    class="text-lg font-black text-orange-700 mt-1"
                     id="kpiCrushing"
                   >
                     0%
                   </h3>
                   <p
-                    class="text-[8px] text-emerald-600 mt-1 font-semibold"
+                    class="text-[8px] text-orange-600 mt-1 font-semibold"
                     id="kpiCrushingStatus"
                   >
                     On Track
@@ -622,20 +659,20 @@
                     On Track
                   </p>
                 </div>
-                <div class="premium-card p-3 border-l-4 border-l-green-600">
+                <div class="premium-card p-3 border-l-4 border-l-orange-600">
                   <p
                     class="text-[9px] font-bold text-slate-400 uppercase tracking-wider"
                   >
                     Recovery (20%)
                   </p>
                   <h3
-                    class="text-lg font-black text-green-700 mt-1"
+                    class="text-lg font-black text-orange-700 mt-1"
                     id="kpiRecovery"
                   >
                     0%
                   </h3>
                   <p
-                    class="text-[8px] text-green-600 mt-1 font-semibold"
+                    class="text-[8px] text-orange-600 mt-1 font-semibold"
                     id="kpiRecoveryStatus"
                   >
                     On Track
@@ -739,7 +776,7 @@
                 >
                   <span>Target Achievement Levels</span>
                   <span
-                    class="text-[9px] text-[#006c49] font-bold uppercase tracking-wide bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100"
+                    class="text-[9px] text-[#ea580c] font-bold uppercase tracking-wide bg-orange-50 px-2 py-0.5 rounded border border-orange-100"
                     >Cane vs Crushing</span
                   >
                 </h4>
@@ -770,7 +807,7 @@
                     class="flex-1 flex flex-col items-center group relative cursor-pointer z-10"
                   >
                     <div
-                      class="w-8 bg-[#003527] rounded-t-lg transition-all duration-500 group-hover:opacity-90 relative"
+                      class="w-8 bg-[#7c2d12] rounded-t-lg transition-all duration-500 group-hover:opacity-90 relative"
                       id="barCrushing"
                       style="height: 0%"
                     >
@@ -792,7 +829,7 @@
                     class="flex-1 flex flex-col items-center group relative cursor-pointer z-10"
                   >
                     <div
-                      class="w-8 bg-[#006c49] rounded-t-lg transition-all duration-500 group-hover:opacity-90 relative"
+                      class="w-8 bg-[#ea580c] rounded-t-lg transition-all duration-500 group-hover:opacity-90 relative"
                       id="barCaneReg"
                       style="height: 0%"
                     >
@@ -813,7 +850,7 @@
                     class="flex-1 flex flex-col items-center group relative cursor-pointer z-10"
                   >
                     <div
-                      class="w-8 bg-emerald-500 rounded-t-lg transition-all duration-500 group-hover:opacity-90 relative"
+                      class="w-8 bg-orange-500 rounded-t-lg transition-all duration-500 group-hover:opacity-90 relative"
                       id="barRecovery"
                       style="height: 0%"
                     >
@@ -838,7 +875,7 @@
                 >
                   <span>H&T Loan Targets Allocation</span>
                   <span
-                    class="text-[9px] text-[#006c49] font-bold uppercase tracking-wide bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100"
+                    class="text-[9px] text-[#ea580c] font-bold uppercase tracking-wide bg-orange-50 px-2 py-0.5 rounded border border-orange-100"
                     >Distribution</span
                   >
                 </h4>
@@ -856,7 +893,7 @@
                       cy="20"
                       r="15.915"
                       fill="transparent"
-                      stroke="#003527"
+                      stroke="#7c2d12"
                       stroke-width="5"
                       stroke-dasharray="35 65"
                       stroke-dashoffset="25"
@@ -866,7 +903,7 @@
                       cy="20"
                       r="15.915"
                       fill="transparent"
-                      stroke="#006c49"
+                      stroke="#ea580c"
                       stroke-width="5"
                       stroke-dasharray="30 70"
                       stroke-dashoffset="90"
@@ -876,7 +913,7 @@
                       cy="20"
                       r="15.915"
                       fill="transparent"
-                      stroke="#34d399"
+                      stroke="#fb923c"
                       stroke-width="5"
                       stroke-dasharray="35 65"
                       stroke-dashoffset="160"
@@ -887,7 +924,7 @@
                     <div class="flex items-center justify-between">
                       <span
                         class="flex items-center gap-1.5 text-slate-500 font-medium"
-                        ><span class="w-2 h-2 rounded bg-[#003527]"></span> H&T
+                        ><span class="w-2 h-2 rounded bg-[#7c2d12]"></span> H&T
                         Compliance</span
                       >
                       <span class="font-bold text-slate-700" id="donutHt"
@@ -897,7 +934,7 @@
                     <div class="flex items-center justify-between">
                       <span
                         class="flex items-center gap-1.5 text-slate-500 font-medium"
-                        ><span class="w-2 h-2 rounded bg-[#006c49]"></span>
+                        ><span class="w-2 h-2 rounded bg-[#ea580c]"></span>
                         Canara Bank H&T</span
                       >
                       <span class="font-bold text-slate-700" id="donutCanara"
@@ -907,7 +944,7 @@
                     <div class="flex items-center justify-between">
                       <span
                         class="flex items-center gap-1.5 text-slate-500 font-medium"
-                        ><span class="w-2 h-2 rounded bg-[#34d399]"></span>
+                        ><span class="w-2 h-2 rounded bg-[#fb923c]"></span>
                         Sangola H&T Loan</span
                       >
                       <span class="font-bold text-slate-700" id="donutSangola"
@@ -926,7 +963,7 @@
               >
                 <span>Weekly Operations Heatmap</span>
                 <span
-                  class="text-[9px] text-[#006c49] font-bold uppercase tracking-wide bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100"
+                  class="text-[9px] text-[#ea580c] font-bold uppercase tracking-wide bg-orange-50 px-2 py-0.5 rounded border border-orange-100"
                   >Daily Target Completion</span
                 >
               </h4>
@@ -1036,7 +1073,7 @@
               <h4
                 class="text-xs font-bold text-slate-800 uppercase tracking-widest mb-4 text-left border-b pb-2 flex items-center gap-1.5"
               >
-                <span class="material-symbols-outlined text-sm text-[#006c49]"
+                <span class="material-symbols-outlined text-sm text-[#ea580c]"
                   >download</span
                 >
                 Reports & Export Center
@@ -1049,7 +1086,7 @@
               </p>
               <div class="grid grid-cols-3 gap-2">
                 <button
-                  class="bg-[#003527] hover:bg-[#002d21] text-emerald-300 py-2.5 px-1.5 rounded-xl font-bold text-[10px] tracking-wide transition-all shadow active:scale-[0.98] uppercase flex flex-col items-center justify-center gap-1 border border-emerald-900/40"
+                  class="bg-[#7c2d12] hover:bg-[#4a1505] text-orange-300 py-2.5 px-1.5 rounded-xl font-bold text-[10px] tracking-wide transition-all shadow active:scale-[0.98] uppercase flex flex-col items-center justify-center gap-1 border border-orange-900/40"
                   onclick="exportData('PDF')"
                 >
                   <span class="material-symbols-outlined text-base"
@@ -1058,14 +1095,14 @@
                   PDF
                 </button>
                 <button
-                  class="bg-[#006c49] hover:bg-[#005a3d] text-emerald-100 py-2.5 px-1.5 rounded-xl font-bold text-[10px] tracking-wide transition-all shadow active:scale-[0.98] uppercase flex flex-col items-center justify-center gap-1 border border-emerald-800/40"
+                  class="bg-[#ea580c] hover:bg-[#9a3412] text-orange-100 py-2.5 px-1.5 rounded-xl font-bold text-[10px] tracking-wide transition-all shadow active:scale-[0.98] uppercase flex flex-col items-center justify-center gap-1 border border-orange-800/40"
                   onclick="exportData('CSV')"
                 >
                   <span class="material-symbols-outlined text-base">csv</span>
                   CSV
                 </button>
                 <button
-                  class="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-1.5 rounded-xl font-bold text-[10px] tracking-wide transition-all shadow active:scale-[0.98] uppercase flex flex-col items-center justify-center gap-1 border border-emerald-500/20"
+                  class="bg-orange-600 hover:bg-orange-700 text-white py-2.5 px-1.5 rounded-xl font-bold text-[10px] tracking-wide transition-all shadow active:scale-[0.98] uppercase flex flex-col items-center justify-center gap-1 border border-orange-500/20"
                   onclick="exportData('EXCEL')"
                 >
                   <span class="material-symbols-outlined text-base"
@@ -1081,7 +1118,7 @@
               <h4
                 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2"
               >
-                <span class="material-symbols-outlined text-sm text-[#006c49]"
+                <span class="material-symbols-outlined text-sm text-[#ea580c]"
                   >lightbulb</span
                 >
                 F. Smart Insights Panel
@@ -1098,7 +1135,7 @@
               >
                 <span>E. My Assigned Work Plans</span>
                 <span
-                  class="text-[9px] text-[#006c49] font-black uppercase tracking-wide bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100"
+                  class="text-[9px] text-[#ea580c] font-black uppercase tracking-wide bg-orange-50 px-2 py-0.5 rounded border border-orange-100"
                   id="taskRatio"
                   >0 plans</span
                 >
@@ -1126,7 +1163,7 @@
               </p>
             </div>
             <button
-              class="bg-[#003527] hover:bg-[#002d21] text-emerald-300 font-bold text-[10px] tracking-wide px-3.5 py-1.5 rounded-lg transition-all shadow"
+              class="bg-[#7c2d12] hover:bg-[#4a1505] text-orange-300 font-bold text-[10px] tracking-wide px-3.5 py-1.5 rounded-lg transition-all shadow"
               onclick="location.href = 'work_submission.html'"
             >
               SUBMIT NEW ACTIVITY
@@ -1320,7 +1357,7 @@
           val >= 85 ? "Excellent" : val >= 70 ? "On Track" : "Action Required";
         const cardColor = (val) =>
           val >= 85
-            ? "text-emerald-600 mt-1 font-semibold"
+            ? "text-orange-600 mt-1 font-semibold"
             : val >= 70
               ? "text-amber-500 mt-1 font-semibold"
               : "text-red-500 mt-1 font-semibold animate-pulse";
@@ -1376,11 +1413,11 @@
         const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
         const heatColor = (val) => {
           if (val >= 90)
-            return "bg-emerald-600/90 text-white border-emerald-700 shadow-md shadow-emerald-600/10";
+            return "bg-orange-600/90 text-white border-orange-700 shadow-md shadow-orange-600/10";
           if (val >= 80)
-            return "bg-emerald-500/80 text-white border-emerald-600";
+            return "bg-orange-500/80 text-white border-orange-600";
           if (val >= 70)
-            return "bg-emerald-400/20 text-[#006c49] border-emerald-300/40";
+            return "bg-orange-400/20 text-[#ea580c] border-orange-300/40";
           if (val >= 40) return "bg-amber-100 text-amber-800 border-amber-200";
           return "bg-red-50 text-red-700 border-red-200";
         };
@@ -1409,7 +1446,7 @@
             icon.className += " text-red-500 animate-pulse";
             icon.textContent = "error";
           } else {
-            icon.className += " text-emerald-500";
+            icon.className += " text-orange-500";
             icon.textContent = "info";
           }
           const timeStr = a.created_at
@@ -1432,9 +1469,9 @@
         insights.forEach((ins) => {
           const block = document.createElement("div");
           block.className =
-            "flex items-start gap-2.5 p-3 rounded-xl border border-emerald-100 bg-emerald-50/30 hover:bg-emerald-50/50 transition-colors";
+            "flex items-start gap-2.5 p-3 rounded-xl border border-orange-100 bg-orange-50/30 hover:bg-orange-50/50 transition-colors";
           block.innerHTML = `
-      <span class="material-symbols-outlined text-emerald-600 text-base mt-0.5 select-none">check_circle</span>
+      <span class="material-symbols-outlined text-orange-600 text-base mt-0.5 select-none">check_circle</span>
       <p class="text-[11px] font-medium text-slate-700 leading-relaxed">${ins.content || ins}</p>
     `;
           insPanel.appendChild(block);
@@ -1501,14 +1538,14 @@
 
           header.innerHTML = `
       <div class="flex items-center gap-2 min-w-0">
-        <span class="material-symbols-outlined text-[#006c49] text-base">assignment</span>
+        <span class="material-symbols-outlined text-[#ea580c] text-base">assignment</span>
         <div class="min-w-0">
           <p class="text-[11px] font-black text-slate-800 truncate">Task #${task.task_master_id} — ${taskLabel}</p>
           <p class="text-[9px] text-slate-400 font-medium mt-0.5 truncate">${dateRange}</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <span class="bg-emerald-50 text-emerald-700 border border-emerald-100 px-2 py-0.5 rounded-full text-[9px] font-black uppercase">${farmerCount} farmers</span>
+        <span class="bg-orange-50 text-orange-700 border border-orange-100 px-2 py-0.5 rounded-full text-[9px] font-black uppercase">${farmerCount} farmers</span>
       </div>`;
 
           // Detail line with required fields
@@ -1522,7 +1559,7 @@
         </div>
         <div class="text-xs text-right">
           <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Completion</p>
-          <p class="font-bold text-emerald-700">${completionPct}%</p>
+          <p class="font-bold text-orange-700">${completionPct}%</p>
         </div>
       </div>`;
 
@@ -1542,7 +1579,7 @@
         <td colspan="6" class="px-6 py-10 text-center">
           <span class="material-symbols-outlined text-3xl text-slate-200 block mb-2 select-none">inbox</span>
           <p class="text-xs font-semibold text-slate-400">No activity submissions yet.</p>
-          <p class="text-[10px] text-slate-400 mt-1">Use <a href="work_submission.html" class="text-[#006c49] font-bold hover:underline">Submit Work</a> to log your first field activity.</p>
+          <p class="text-[10px] text-slate-400 mt-1">Use <a href="work_submission.html" class="text-[#ea580c] font-bold hover:underline">Submit Work</a> to log your first field activity.</p>
         </td>
       </tr>`;
           return;
@@ -1583,7 +1620,7 @@
         <td class="px-6 py-3.5 uppercase text-slate-500 text-[10px] font-bold">${sector}</td>
         <td class="px-6 py-3.5 text-center text-slate-500">${time}</td>
         <td class="px-6 py-3.5 text-right">
-          <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider">Submitted</span>
+          <span class="bg-orange-50 text-orange-700 border border-orange-200 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider">Submitted</span>
         </td>
       </tr>`;
           })
@@ -1676,7 +1713,7 @@
           content += `<tr><td><b>Assigned Region</b></td><td>${region}</td></tr>`;
           content += `<tr><td><b>Performance Score</b></td><td><b>${score}</b></td></tr>`;
           content += `<tr><td colspan="2"></td></tr>`;
-          content += `<tr style="background:#003527;color:#fff"><td><b>KPI Target Parameter</b></td><td><b>Achievement</b></td></tr>`;
+          content += `<tr style="background:#7c2d12;color:#fff"><td><b>KPI Target Parameter</b></td><td><b>Achievement</b></td></tr>`;
           kpis.forEach(([k, v]) => {
             content += `<tr><td>${k}</td><td>${v}</td></tr>`;
           });
@@ -1705,10 +1742,10 @@
             "<html><head><title>AgriPulse - Telemetry Report</title>",
             "<style>",
             "body{font-family:sans-serif;padding:40px;color:#333}",
-            ".header{border-bottom:2px solid #003527;padding-bottom:12px;margin-bottom:30px}",
-            ".title{font-size:24px;font-weight:bold;color:#003527}",
+            ".header{border-bottom:2px solid #7c2d12;padding-bottom:12px;margin-bottom:30px}",
+            ".title{font-size:24px;font-weight:bold;color:#7c2d12}",
             "table{width:100%;border-collapse:collapse;margin-top:20px}",
-            "th{background:#003527;color:#fff;padding:8px 12px;text-align:left}",
+            "th{background:#7c2d12;color:#fff;padding:8px 12px;text-align:left}",
             "td{padding:8px 12px;border-bottom:1px solid #e2e8f0}",
             "</style></head><body>",
             '<div class="header"><div class="title">AgriPulse &ndash; Telemetry Summary Report</div></div>',

@@ -1,334 +1,592 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgriPulse — Officers</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
-<style>
-  body{font-family:'Inter',sans-serif;background:#f4f6f8;}
-  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}
-  .sidebar{background:linear-gradient(180deg,#0f1f18 0%,#0a150f 100%);width:220px;min-height:100vh;position:fixed;left:0;top:0;z-index:50;display:flex;flex-direction:column;}
-  .nav-link{display:flex;align-items:center;gap:12px;padding:10px 16px;margin:2px 8px;border-radius:8px;color:rgba(209,250,229,0.65);font-size:13px;font-weight:600;text-decoration:none;transition:all 0.15s;}
-  .nav-link:hover{background:rgba(255,255,255,0.07);color:#fff;}
-  .nav-link.active{background:rgba(74,222,128,0.18);color:#86efac;}
-  .nav-link.active .material-symbols-outlined{color:#4ade80;}
-  .nav-link.logout{color:rgba(252,165,165,0.7);}
-  .nav-link.logout:hover{background:rgba(239,68,68,0.1);color:#fca5a5;}
-  .nav-link.settings-link{color:rgba(209,250,229,0.65);}
-  .card{background:#fff;border-radius:14px;border:1px solid #e5e7eb;}
-  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;}
-  .tbl-row:hover{background:#f9fafb;cursor:pointer;}
-  body input, body select, body textarea {
-    font-family: 'Inter', sans-serif !important;
-    font-size: 13px !important;
-  }
-  input,select{border:1.5px solid #d1d5db;border-radius:8px;padding:8px 12px;color:#111827;background:#fff;}
-  input:focus,select:focus{outline:none;border-color:#006c49;box-shadow:0 0 0 3px rgba(0,108,73,0.08);}
-  body select{
-    appearance: none !important;
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E") !important;
-    background-position: right 10px center !important;
-    background-repeat: no-repeat !important;
-    background-size: 1.25rem !important;
-    padding-right: 32px !important;
-    cursor: pointer !important;
-  }
-  .view-toggle{display:none;}
-  .view-toggle.active{display:block;}
-  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;}
-  .modal-bg.show{display:flex;}
-  label.form-label{font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:5px;}
-  .task-section{border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;margin-bottom:16px;}
-  .task-section-header{background:#f9fafb;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e5e7eb;}
-  .progress-bar{height:8px;background:#f3f4f6;border-radius:99px;overflow:hidden;margin-top:6px;}
-  .progress-fill{height:100%;border-radius:99px;transition:width 0.8s ease;}
-  .stat-mini{background:#f9fafb;border-radius:10px;padding:12px;text-align:center;}
-  .premium-card{background:#fff;border:1px solid #e2e8f0;border-radius:1rem;box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.05);transition:all 0.25s ease;}
-  .premium-card:hover{transform:translateY(-2px);box-shadow:0 10px 15px -3px rgb(0 0 0 / 0.08);}
-  .radial-bg{fill:none;stroke:#e2e8f0;}
-  .radial-fill{fill:none;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50px 50px;transition:stroke-dasharray 0.8s ease-in-out;}
-  .bar-track-officer{height:8px;background:#f3f4f6;border-radius:99px;overflow:hidden;}
-  .bar-fill-officer{height:100%;background:#006c49;border-radius:99px;transition:width 0.8s ease;}
-</style>
-<script src="/assets/js/manager-auth-store.js"></script>
-<script>
-  AgriAuth.ensureManagerSession();
-</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriPulse — Officers</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Tailwind CDN offline fallback — basic readable layout */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f8f9ff;
+      color: #0b1c30;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+    img { max-width: 100%; }
+    a { color: #ea580c; }
+    a:hover { text-decoration: underline; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    input[type="text"], input[type="password"], input[type="email"],
+    input[type="number"], select, textarea {
+      width: 100%;
+      border: 1px solid #bfc9c3;
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: #0b1c30;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      background-color: #7c2d12;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    button:hover { background-color: #9a3412; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid #e5e7eb; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: 700; }
+  </style>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f6f8;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+
+    .sidebar {
+      background: #0f172a;
+      width: 220px;
+      min-width: 220px;
+      flex-shrink: 0;
+      min-height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      margin: 2px 8px;
+      border-radius: 8px;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .nav-link:hover {
+      background: #1e293b;
+      color: #ffffff;
+    }
+
+    .nav-link.active {
+      background: #ea580c;
+      color: #ffffff;
+    }
+
+    .nav-link.active .material-symbols-outlined {
+      color: #ffffff;
+    }
+
+    .nav-link.logout {
+      color: rgba(252, 165, 165, 0.7);
+    }
+
+    .nav-link.logout:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+    }
+
+    .nav-link.settings-link {
+      color: #94a3b8;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .tbl-row:hover {
+      background: #f9fafb;
+      cursor: pointer;
+    }
+
+    body input,
+    body select,
+    body textarea {
+      font-family: 'Inter', sans-serif !important;
+      font-size: 13px !important;
+    }
+
+    input,
+    select {
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #111827;
+      background: #fff;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #ea580c;
+      box-shadow: 0 0 0 3px rgba(0, 108, 73, 0.08);
+    }
+
+    body select {
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E") !important;
+      background-position: right 10px center !important;
+      background-repeat: no-repeat !important;
+      background-size: 1.25rem !important;
+      padding-right: 32px !important;
+      cursor: pointer !important;
+    }
+
+    .view-toggle {
+      display: none;
+    }
+
+    .view-toggle.active {
+      display: block;
+    }
+
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-bg.show {
+      display: flex;
+    }
+
+    label.form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #374151;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .task-section {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .task-section-header {
+      background: #f9fafb;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #f3f4f6;
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.8s ease;
+    }
+
+    .stat-mini {
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .premium-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+      transition: all 0.25s ease;
+    }
+
+    .premium-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.08);
+    }
+
+    .radial-bg {
+      fill: none;
+      stroke: #e2e8f0;
+    }
+
+    .radial-fill {
+      fill: none;
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: 50px 50px;
+      transition: stroke-dasharray 0.8s ease-in-out;
+    }
+
+    .bar-track-officer {
+      height: 8px;
+      background: #f3f4f6;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .bar-fill-officer {
+      height: 100%;
+      background: #ea580c;
+      border-radius: 99px;
+      transition: width 0.8s ease;
+    }
+  </style>
+  <script src="/assets/js/manager-auth-store.js"></script>
+  <script src="/assets/js/task-edit.js"></script>
+  <script>
+    AgriAuth.ensureManagerSession();
+  </script>
 </head>
+
 <body>
-<aside class="sidebar">
-  <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
-    <div style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:#4ade80;font-size:20px;">agriculture</span></div>
-    <div><div style="color:#f0fdf4;font-weight:800;font-size:14px;">Sri Sri Sugar</div><div style="color:rgba(209,250,229,0.5);font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL</div></div>
-  </div>
-  <nav style="flex:1;padding:8px 0;">
-    <a class="nav-link" href="manager_dashboard.html"><span class="material-symbols-outlined" style="font-size:20px;">dashboard</span>Overview</a>
-    <a class="nav-link active" href="manager_officers.html"><span class="material-symbols-outlined" style="font-size:20px;">group</span>Officers</a>
-    <a class="nav-link" href="manager_tasks.html"><span class="material-symbols-outlined" style="font-size:20px;">checklist</span>Tasks</a>
-    <a class="nav-link" href="manager_performance.html"><span class="material-symbols-outlined" style="font-size:20px;">bar_chart</span>Performance</a>
-    <a class="nav-link" href="manager_reports.html"><span class="material-symbols-outlined" style="font-size:20px;">assessment</span>Reports</a>
-  </nav>
-  <div style="border-top:1px solid rgba(255,255,255,0.07);padding:8px 0;">
-    <a class="nav-link settings-link" href="manager_settings.html"><span class="material-symbols-outlined" style="font-size:20px;">settings</span>Settings</a>
-    <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined" style="font-size:20px;">logout</span>Logout</a>
-  </div>
-</aside>
-
-<!-- Edit Task Modal -->
-<div class="modal-bg" id="editModal">
-  <div style="background:#fff;border-radius:16px;width:100%;max-width:650px;max-height:90vh;box-shadow:0 20px 60px rgba(0,0,0,0.2);display:flex;flex-direction:column;overflow:hidden;">
-    <div style="padding:16px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
-      <span style="font-size:15px;font-weight:700;color:#003527;" id="editModalTitle">Edit Task Assignment</span>
-      <button onclick="closeEditModal()" style="background:none;border:none;cursor:pointer;color:#6b7280;"><span class="material-symbols-outlined">close</span></button>
-    </div>
-    <div style="padding:20px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;flex:1;" id="editModalBody">
-    </div>
-  </div>
-</div>
-
-<!-- History Modal -->
-<div class="modal-bg" id="historyModal">
-  <div style="background:#fff;border-radius:16px;width:100%;max-width:550px;max-height:85vh;box-shadow:0 20px 60px rgba(0,0,0,0.2);display:flex;flex-direction:column;overflow:hidden;">
-    <div style="padding:16px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
-      <span style="font-size:15px;font-weight:700;color:#003527;">Task Audit History</span>
-      <button onclick="closeHistoryModal()" style="background:none;border:none;cursor:pointer;color:#6b7280;"><span class="material-symbols-outlined">close</span></button>
-    </div>
-    <div style="padding:20px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:12px;" id="historyModalBody">
-    </div>
-  </div>
-</div>
-
-<div style="margin-left:220px;min-height:100vh;">
-  <header style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
-    <div style="display:flex;align-items:center;gap:12px;">
-      <button id="backBtn" onclick="showListView()" style="display:none;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:8px;padding:7px 12px;font-size:13px;font-weight:700;color:#003527;cursor:pointer;display:none;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>Officers</button>
-      <span style="font-size:18px;font-weight:800;color:#003527;" id="pageTitle">Officers</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <span class="badge" style="background:#dbeafe;color:#1e40af;">Manager</span>
-      <div style="width:36px;height:36px;border-radius:99px;background:#d1fae5;color:#003527;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;" id="avatarCircle">M</div>
-      <span style="font-size:13px;font-weight:600;color:#374151;" id="headerName">—</span>
-    </div>
-  </header>
-
-  <!-- LIST VIEW -->
-  <div id="listView" style="padding:24px;display:flex;flex-direction:column;gap:20px;">
-    <!-- Stats -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
-      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #003527;">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:6px;">Total Officers</div>
-        <div style="font-size:28px;font-weight:800;color:#003527;" id="countTotal">—</div>
+  <aside class="sidebar">
+    <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
+      <div
+        style="width:36px;height:36px;background:#ea580c;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="color:#ffffff;font-size:20px;">agriculture</span>
       </div>
-      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #059669;">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:6px;">Active</div>
-        <div style="font-size:28px;font-weight:800;color:#059669;" id="countActive">—</div>
-      </div>
-      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #dc2626;">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:6px;">Blocked</div>
-        <div style="font-size:28px;font-weight:800;color:#dc2626;" id="countBlocked">—</div>
-      </div>
-      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #d97706;">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:6px;">Tasks Pending</div>
-        <div style="font-size:28px;font-weight:800;color:#d97706;" id="countPending">—</div>
-      </div>
-    </div>
-
-    <!-- Table -->
-    <div class="card" style="overflow:hidden;">
-      <div style="padding:16px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
-        <div style="position:relative;">
-          <span class="material-symbols-outlined" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:18px;">search</span>
-          <input type="text" id="searchInput" placeholder="Search by name or username..." oninput="renderTable()" style="width:280px;padding-left:36px;">
+      <div>
+        <div style="color:#ffffff;font-weight:800;font-size:14px;line-height:1.2;">Sri Sri Sugar</div>
+        <div style="color:#94a3b8;font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL
         </div>
-        <select id="statusFilter" onchange="renderTable()" style="width:160px;">
-          <option value="">All Officers</option>
-          <option value="active">Active Only</option>
-          <option value="blocked">Blocked Only</option>
-        </select>
-        <select id="roleFilter" onchange="renderTable()" style="width:140px;">
-          <option value="">All Roles</option>
-          <option value="officer">Field Officers</option>
-          <option value="staff">Staff / Manager</option>
-        </select>
-        <span style="font-size:12px;color:#6b7280;margin-left:auto;" id="rowCount"></span>
       </div>
-      <div style="overflow-x:auto;">
-        <table style="width:100%;border-collapse:collapse;">
-          <thead style="background:#f9fafb;">
-            <tr>
-              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Officer</th>
-              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Username</th>
-              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Status</th>
-              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Activities</th>
-              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Tasks</th>
-              <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Role</th>
-              <th style="padding:10px 16px;text-align:right;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Action</th>
-            </tr>
-          </thead>
-          <tbody id="officerBody"></tbody>
-        </table>
+    </div>
+    <nav style="flex:1;padding:8px 0;">
+      <a class="nav-link" href="manager_dashboard.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">dashboard</span>Overview</a>
+      <a class="nav-link active" href="manager_officers.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">group</span>Officers</a>
+      <a class="nav-link" href="manager_tasks.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">checklist</span>Tasks</a>
+      <a class="nav-link" href="manager_farmers.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">person_search</span>Farmers Registry</a>
+      <a class="nav-link" href="manager_performance.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">bar_chart</span>Performance</a>
+      <a class="nav-link" href="manager_reports.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">assessment</span>Reports Dashboard</a>
+      <a class="nav-link" href="manager_campaign_reports.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">query_stats</span>Campaign Reports</a>
+    </nav>
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding:8px 0;">
+      <a class="nav-link settings-link" href="manager_settings.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">settings</span>Settings</a>
+      <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined"
+          style="font-size:20px;">logout</span>Logout</a>
+    </div>
+  </aside>
+
+  <div style="margin-left:220px;min-height:100vh;">
+    <header
+      style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button id="backBtn" onclick="showListView()"
+          style="display:none;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:8px;padding:7px 12px;font-size:13px;font-weight:700;color:#7c2d12;cursor:pointer;display:none;align-items:center;gap:6px;"><span
+            class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>Officers</button>
+        <span style="font-size:18px;font-weight:800;color:#7c2d12;" id="pageTitle">Officers</span>
       </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="badge" style="background:#dbeafe;color:#1e40af;">Manager</span>
+        <div
+          style="width:36px;height:36px;border-radius:99px;background:#ffedd5;color:#7c2d12;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;"
+          id="avatarCircle">M</div>
+        <span style="font-size:13px;font-weight:600;color:#374151;" id="headerName">—</span>
+      </div>
+    </header>
+
+    <!-- LIST VIEW -->
+    <div id="listView" style="padding:24px;display:flex;flex-direction:column;gap:20px;">
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+        <div
+          style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #7c2d12;">
+          <div
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:6px;">
+            Total Officers</div>
+          <div style="font-size:28px;font-weight:800;color:#7c2d12;" id="countTotal">—</div>
+        </div>
+        <div
+          style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #ea580c;">
+          <div
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:6px;">
+            Active</div>
+          <div style="font-size:28px;font-weight:800;color:#ea580c;" id="countActive">—</div>
+        </div>
+        <div
+          style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #dc2626;">
+          <div
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:6px;">
+            Blocked</div>
+          <div style="font-size:28px;font-weight:800;color:#dc2626;" id="countBlocked">—</div>
+        </div>
+        <div
+          style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #d97706;">
+          <div
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:6px;">
+            Tasks Pending</div>
+          <div style="font-size:28px;font-weight:800;color:#d97706;" id="countPending">—</div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="card" style="overflow:hidden;">
+        <div
+          style="padding:16px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+          <div style="position:relative;">
+            <span class="material-symbols-outlined"
+              style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:18px;">search</span>
+            <input type="text" id="searchInput" placeholder="Search by name or username..." oninput="renderTable()"
+              style="width:280px;padding-left:36px;">
+          </div>
+          <select id="statusFilter" onchange="renderTable()" style="width:160px;">
+            <option value="">All Officers</option>
+            <option value="active">Active Only</option>
+            <option value="blocked">Blocked Only</option>
+          </select>
+          <select id="roleFilter" onchange="renderTable()" style="width:140px;">
+            <option value="">All Roles</option>
+            <option value="officer">Field Officers</option>
+            <option value="staff">Staff / Manager</option>
+          </select>
+          <span style="font-size:12px;color:#6b7280;margin-left:auto;" id="rowCount"></span>
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead style="background:#f9fafb;">
+              <tr>
+                <th
+                  style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                  Officer</th>
+                <th
+                  style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                  Username</th>
+                <th
+                  style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                  Status</th>
+                <th
+                  style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                  Activities</th>
+                <th
+                  style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                  Tasks</th>
+                <th
+                  style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                  Role</th>
+                <th
+                  style="padding:10px 16px;text-align:right;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                  Action</th>
+              </tr>
+            </thead>
+            <tbody id="officerBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE VIEW -->
+    <div id="profileView" style="display:none;padding:24px;">
+      <div id="profileContent"></div>
     </div>
   </div>
 
-  <!-- PROFILE VIEW -->
-  <div id="profileView" style="display:none;padding:24px;">
-    <div id="profileContent"></div>
-  </div>
-</div>
+  <script>
+    // ── Officers loaded from API ─────────────────────────────────────────────────
+    let officers = [];  // populated from /api/officers on page load
 
-<script>
-// ── Officers loaded from API ─────────────────────────────────────────────────
-let officers = [];  // populated from /api/officers on page load
+    async function loadOfficers() {
+      const search = document.getElementById("searchBox")?.value || "";
+      const role = document.getElementById("roleFilter")?.value || "all";
+      const params = new URLSearchParams();
+      if (search) params.append("search", search);
+      if (role !== "all") params.append("role", role);
+      const res = await AgriAuth.apiFetch(`/api/officers?${params}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      // Normalize API response to match existing JS keys
+      officers = data.map(o => ({
+        id: o.id,
+        name: o.name,
+        username: o.username,
+        email: o.email || "—",
+        phone: o.phone || "—",
+        isStaff: o.is_staff,
+        isBlocked: o.is_blocked,
+        joined: o.joined || "—",
+        lastLogin: o.last_login || "—",
+        activities: o.activities || 0,
+        totalAssigned: o.total_assigned || 0,
+        completedTasks: o.completed_tasks || 0,
+        inProgressTasks: o.in_progress_tasks || 0,
+        pendingTasks: o.pending_tasks || 0,
+        overdueTasks: o.overdue_tasks || 0,
+        farmersAssigned: o.farmers_assigned || 0
+      }));
+      renderTable();
+    }
 
-async function loadOfficers() {
-  const search = document.getElementById("searchBox")?.value || "";
-  const role   = document.getElementById("roleFilter")?.value || "all";
-  const params = new URLSearchParams();
-  if (search) params.append("search", search);
-  if (role !== "all") params.append("role", role);
-  const res = await AgriAuth.apiFetch(`/api/officers?${params}`);
-  if (!res.ok) return;
-  const data = await res.json();
-  // Normalize API response to match existing JS keys
-  officers = data.map(o => ({
-    id: o.id,
-    name: o.name,
-    username: o.username,
-    email: o.email || "—",
-    phone: o.phone || "—",
-    isStaff: o.is_staff,
-    isBlocked: o.is_blocked,
-    joined: o.joined || "—",
-    lastLogin: o.last_login || "—",
-    activities: o.activities || 0,
-    totalAssigned: o.total_assigned || 0,
-    completedTasks: o.completed_tasks || 0,
-    inProgressTasks: o.in_progress_tasks || 0,
-    pendingTasks: o.pending_tasks || 0,
-    overdueTasks: o.overdue_tasks || 0,
-    farmersAssigned: o.farmers_assigned || 0
-  }));
-  renderTable();
-}
+    function renderTable() {
+      const q = document.getElementById("searchInput").value.toLowerCase();
+      const st = document.getElementById("statusFilter").value;
+      const rl = document.getElementById("roleFilter").value;
+      const filtered = officers.filter(o => {
+        const matchQ = !q || o.name.toLowerCase().includes(q) || o.username.toLowerCase().includes(q);
+        const matchS = !st || (st === "blocked" ? o.isBlocked : !o.isBlocked);
+        const matchR = !rl || (rl === "staff" ? o.isStaff : !o.isStaff);
+        return matchQ && matchS && matchR;
+      });
+      document.getElementById("rowCount").textContent = filtered.length + " officers";
+      document.getElementById("countTotal").textContent = officers.length;
+      document.getElementById("countActive").textContent = officers.filter(o => !o.isBlocked).length;
+      document.getElementById("countBlocked").textContent = officers.filter(o => o.isBlocked).length;
 
-function renderTable(){
-  const q=document.getElementById("searchInput").value.toLowerCase();
-  const st=document.getElementById("statusFilter").value;
-  const rl=document.getElementById("roleFilter").value;
-  const filtered=officers.filter(o=>{
-    const matchQ=!q||o.name.toLowerCase().includes(q)||o.username.toLowerCase().includes(q);
-    const matchS=!st||(st==="blocked"?o.isBlocked:!o.isBlocked);
-    const matchR=!rl||(rl==="staff"?o.isStaff:!o.isStaff);
-    return matchQ&&matchS&&matchR;
-  });
-  document.getElementById("rowCount").textContent=filtered.length+" officers";
-  document.getElementById("countTotal").textContent=officers.length;
-  document.getElementById("countActive").textContent=officers.filter(o=>!o.isBlocked).length;
-  document.getElementById("countBlocked").textContent=officers.filter(o=>o.isBlocked).length;
-  
-  const totalPending=officers.reduce((sum, o) => sum + o.pendingTasks, 0);
-  document.getElementById("countPending").textContent=totalPending;
+      const totalPending = officers.reduce((sum, o) => sum + o.pendingTasks, 0);
+      document.getElementById("countPending").textContent = totalPending;
 
-  const body=document.getElementById("officerBody");
-  if(!filtered.length){
-    body.innerHTML=`<tr><td colspan="7" style="padding:32px;text-align:center;color:#9ca3af;font-size:13px;">No officers match your search.</td></tr>`;
-    return;
-  }
-  body.innerHTML=filtered.map(o=>{
-    return `<tr class="tbl-row" style="border-top:1px solid #f3f4f6;" onclick="showProfile(${o.id})">
+      const body = document.getElementById("officerBody");
+      if (!filtered.length) {
+        body.innerHTML = `<tr><td colspan="7" style="padding:32px;text-align:center;color:#9ca3af;font-size:13px;">No officers match your search.</td></tr>`;
+        return;
+      }
+      body.innerHTML = filtered.map(o => {
+        return `<tr class="tbl-row" style="border-top:1px solid #f3f4f6;" onclick="showProfile(${o.id})">
       <td style="padding:12px 16px;">
         <div style="display:flex;align-items:center;gap:10px;">
-          <div style="width:34px;height:34px;border-radius:99px;background:${o.isBlocked?'#fee2e2':'#d1fae5'};color:${o.isBlocked?'#b91c1c':'#003527'};font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;">${o.name.charAt(0)}</div>
+          <div style="width:34px;height:34px;border-radius:99px;background:${o.isBlocked ? '#fee2e2' : '#ffedd5'};color:${o.isBlocked ? '#b91c1c' : '#7c2d12'};font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;">${o.name.charAt(0)}</div>
           <div>
             <div style="font-size:13px;font-weight:700;color:#111827;">${o.name}</div>
-            <div style="font-size:11px;color:#9ca3af;">${o.email!=="—"?o.email:"Field Officer"}</div>
+            <div style="font-size:11px;color:#9ca3af;">${o.email !== "—" ? o.email : "Field Officer"}</div>
           </div>
         </div>
       </td>
       <td style="padding:12px 16px;font-size:12px;color:#6b7280;font-family:monospace;">${o.username}</td>
-      <td style="padding:12px 16px;">${o.isBlocked?'<span class="badge" style="background:#fee2e2;color:#b91c1c;">⛔ Blocked</span>':'<span class="badge" style="background:#d1fae5;color:#003527;">✓ Active</span>'}</td>
-      <td style="padding:12px 16px;font-size:14px;font-weight:700;color:#003527;">${o.activities?o.activities.toLocaleString():"—"}</td>
+      <td style="padding:12px 16px;">${o.isBlocked ? '<span class="badge" style="background:#fee2e2;color:#b91c1c;">⛔ Blocked</span>' : '<span class="badge" style="background:#ffedd5;color:#7c2d12;">✓ Active</span>'}</td>
+      <td style="padding:12px 16px;font-size:14px;font-weight:700;color:#7c2d12;">${o.activities ? o.activities.toLocaleString() : "—"}</td>
       <td style="padding:12px 16px;">
-        <div style="font-size:12px;color:#374151;"><span style="color:#059669;font-weight:700;">${o.completedTasks} done</span> · <span style="color:#d97706;font-weight:700;">${o.pendingTasks} pending</span></div>
+        <div style="font-size:12px;color:#374151;"><span style="color:#ea580c;font-weight:700;">${o.completedTasks} done</span> · <span style="color:#d97706;font-weight:700;">${o.pendingTasks} pending</span></div>
       </td>
-      <td style="padding:12px 16px;">${o.isStaff?'<span class="badge" style="background:#dbeafe;color:#1e40af;">Staff</span>':'<span class="badge" style="background:#f3f4f6;color:#374151;">Officer</span>'}</td>
+      <td style="padding:12px 16px;">${o.isStaff ? '<span class="badge" style="background:#dbeafe;color:#1e40af;">Staff</span>' : '<span class="badge" style="background:#f3f4f6;color:#374151;">Officer</span>'}</td>
       <td style="padding:12px 16px;text-align:right;">
-        <button onclick="event.stopPropagation();showProfile(${o.id})" style="background:#003527;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;">View Profile</button>
+        <button onclick="event.stopPropagation();showProfile(${o.id})" style="background:#7c2d12;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;">View Profile</button>
       </td>
     </tr>`;
-  }).join("");
-}
+      }).join("");
+    }
 
-async function showProfile(id){
-  const o=officers.find(x=>x.id===id);
-  if(!o)return;
+    async function showProfile(id) {
+      const o = officers.find(x => x.id === id);
+      if (!o) return;
 
-  document.getElementById("pageTitle").textContent=o.name;
-  document.getElementById("backBtn").style.display="flex";
-  document.getElementById("listView").style.display="none";
-  document.getElementById("profileView").style.display="block";
-  document.getElementById("profileContent").innerHTML = '<div style="padding:40px;text-align:center;color:#9ca3af;">Loading officer dashboard...</div>';
+      document.getElementById("pageTitle").textContent = o.name;
+      document.getElementById("backBtn").style.display = "flex";
+      document.getElementById("listView").style.display = "none";
+      document.getElementById("profileView").style.display = "block";
+      document.getElementById("profileContent").innerHTML = '<div style="padding:40px;text-align:center;color:#9ca3af;">Loading officer dashboard...</div>';
 
-  try {
-    const [res, kpiRes] = await Promise.all([
-      AgriAuth.apiFetch(`/api/officers/${id}/dashboard`),
-      AgriAuth.apiFetch(`/api/officers/${id}/meeting-kpis`)
-    ]);
-    if (!res.ok) throw new Error("Failed to load dashboard");
-    const data = await res.json();
-    const kpiData = kpiRes.ok ? await kpiRes.json() : null;
-    renderOfficerDashboard(data, id, o, kpiData);
-  } catch (err) {
-    document.getElementById("profileContent").innerHTML = '<div style="padding:40px;text-align:center;color:#dc2626;">Failed to load officer dashboard. Ensure the backend is running.</div>';
-  }
-}
+      try {
+        const [res, kpiRes] = await Promise.all([
+          AgriAuth.apiFetch(`/api/officers/${id}/dashboard`),
+          AgriAuth.apiFetch(`/api/officers/${id}/meeting-kpis`)
+        ]);
+        if (!res.ok) throw new Error("Failed to load dashboard");
+        const data = await res.json();
+        const kpiData = kpiRes.ok ? await kpiRes.json() : null;
+        renderOfficerDashboard(data, id, o, kpiData);
+      } catch (err) {
+        document.getElementById("profileContent").innerHTML = '<div style="padding:40px;text-align:center;color:#dc2626;">Failed to load officer dashboard. Ensure the backend is running.</div>';
+      }
+    }
 
-function renderOfficerDashboard(data, officerId, o, kpiData) {
-  const p = data.profile;
-  const s = data.stats;
-  const score = s.completion_score || 0;
-  const strokeDash = 251.2;
-  const strokeOffset = strokeDash - (strokeDash * score) / 100;
+    function renderOfficerDashboard(data, officerId, o, kpiData) {
+      const p = data.profile;
+      const s = data.stats;
+      const score = s.completion_score || 0;
+      const strokeDash = 251.2;
 
-  // ── Compute KPI percentages from meeting data (mirrors employee dashboard) ──
-  const kcc_target = kpiData ? Math.round(kpiData.kpis.kcc.pct) : 0;
-  const canara_ht_loan = kpiData ? Math.round(kpiData.kpis.canara_hnt.pct) : 0;
-  const sangola_ht_loan = kpiData ? Math.round(kpiData.kpis.sangola_hnt.pct) : 0;
-  const cane_reg_target = kpiData ? Math.round(kpiData.kpis.cane_registration.pct) : 0;
-  const recovery_target = kpiData ? Math.round(kpiData.kpis.recovery.pct) : 0;
-  const ht_agreement = kpiData ? Math.round(kpiData.kpis.vehicle_agreement.pct) : 0;
-  const total_meetings = kpiData ? kpiData.kpis.total_meetings : 0;
-  const farmer_meetings = s.farmers_assigned > 0 ? Math.min(Math.round(total_meetings / s.farmers_assigned * 100), 100) : 0;
-  const crushing_target = cane_reg_target; // proxy from cane registration
-  const calculated_score = Math.round(crushing_target * 0.4 + recovery_target * 0.2 + farmer_meetings * 0.2 + kcc_target * 0.2);
+      // ── Compute KPI percentages from meeting data (mirrors employee dashboard) ──
+      const kcc_target = kpiData ? Math.round(kpiData.kpis.kcc.pct) : 0;
+      const canara_ht_loan = kpiData ? Math.round(kpiData.kpis.canara_hnt.pct) : 0;
+      const sangola_ht_loan = kpiData ? Math.round(kpiData.kpis.sangola_hnt.pct) : 0;
+      const cane_reg_target = kpiData ? Math.round(kpiData.kpis.cane_registration.pct) : 0;
+      const recovery_target = kpiData ? Math.round(kpiData.kpis.recovery.pct) : 0;
+      const ht_agreement = kpiData ? Math.round(kpiData.kpis.vehicle_agreement.pct) : 0;
+      const total_meetings = kpiData ? kpiData.kpis.total_meetings : 0;
+      const farmer_meetings = s.farmers_assigned > 0 ? Math.min(Math.round(total_meetings / s.farmers_assigned * 100), 100) : 0;
+      const crushing_target = cane_reg_target; // proxy from cane registration
+      const calculated_score = Math.round(crushing_target * 0.4 + recovery_target * 0.2 + farmer_meetings * 0.2 + kcc_target * 0.2);
+      const strokeOffset = strokeDash - (strokeDash * calculated_score) / 100;
 
-  const kpiSt = (v) => v >= 85 ? "Excellent" : v >= 70 ? "On Track" : "Action Required";
-  const kpiStColor = (v) => v >= 85 ? "#059669" : v >= 70 ? "#d97706" : "#dc2626";
+      const kpiSt = (v) => v >= 85 ? "Excellent" : v >= 70 ? "On Track" : "Action Required";
+      const kpiStColor = (v) => v >= 85 ? "#ea580c" : v >= 70 ? "#d97706" : "#dc2626";
 
-  const kpiCards = [
-    { label: "Villages", val: s.villages_count, sub: "Assigned Count", color: "#64748b", isPct: false },
-    { label: "Farmers", val: s.farmers_assigned, sub: "Engagement Base", color: "#64748b", isPct: false },
-    { label: "Crushing (40%)", val: crushing_target, sub: kpiSt(crushing_target), color: "#059669", isPct: true, sc: kpiStColor(crushing_target) },
-    { label: "Cane Reg", val: cane_reg_target, sub: kpiSt(cane_reg_target), color: "#0d9488", isPct: true, sc: kpiStColor(cane_reg_target) },
-    { label: "Recovery (20%)", val: recovery_target, sub: kpiSt(recovery_target), color: "#16a34a", isPct: true, sc: kpiStColor(recovery_target) },
-    { label: "Meetings (20%)", val: farmer_meetings, sub: kpiSt(farmer_meetings), color: "#0891b2", isPct: true, sc: kpiStColor(farmer_meetings) },
-    { label: "KCC (20%)", val: kcc_target, sub: kpiSt(kcc_target), color: "#4f46e5", isPct: true, sc: kpiStColor(kcc_target) },
-    { label: "H&T Agreement", val: ht_agreement, sub: "Contract Compliance", color: "#7c3aed", isPct: true },
-    { label: "Canara H&T", val: canara_ht_loan, sub: "Loan Allocation", color: "#9333ea", isPct: true },
-    { label: "Sangola H&T", val: sangola_ht_loan, sub: "Loan Allocation", color: "#d97706", isPct: true },
-  ];
+      const kpiCards = [
+        { label: "Villages", val: s.villages_count, sub: "Assigned Count", color: "#64748b", isPct: false },
+        { label: "Farmers", val: s.farmers_assigned, sub: "Engagement Base", color: "#64748b", isPct: false },
+        { label: "Crushing (40%)", val: crushing_target, sub: kpiSt(crushing_target), color: "#ea580c", isPct: true, sc: kpiStColor(crushing_target) },
+        { label: "Cane Reg", val: cane_reg_target, sub: kpiSt(cane_reg_target), color: "#0d9488", isPct: true, sc: kpiStColor(cane_reg_target) },
+        { label: "Recovery (20%)", val: recovery_target, sub: kpiSt(recovery_target), color: "#ea580c", isPct: true, sc: kpiStColor(recovery_target) },
+        { label: "Meetings (20%)", val: farmer_meetings, sub: kpiSt(farmer_meetings), color: "#0891b2", isPct: true, sc: kpiStColor(farmer_meetings) },
+        { label: "KCC (20%)", val: kcc_target, sub: kpiSt(kcc_target), color: "#4f46e5", isPct: true, sc: kpiStColor(kcc_target) },
+        { label: "H&T Agreement", val: ht_agreement, sub: "Contract Compliance", color: "#7c3aed", isPct: true },
+        { label: "Canara H&T", val: canara_ht_loan, sub: "Loan Allocation", color: "#9333ea", isPct: true },
+        { label: "Sangola H&T", val: sangola_ht_loan, sub: "Loan Allocation", color: "#d97706", isPct: true },
+      ];
 
-  const workTypeStats = data.work_type_stats || [];
-  const wtCardColors = ["#003527", "#006c49", "#059669", "#0d9488", "#6366f1", "#8b5cf6", "#d97706", "#dc2626"];
-  const workTypeCardsHtml = workTypeStats.map((wt, i) => {
-    const color = wtCardColors[i % wtCardColors.length];
-    const hasWork = wt.task_count > 0 || wt.farmers_total > 0;
-    return `
+      const workTypeStats = data.work_type_stats || [];
+      const wtCardColors = ["#7c2d12", "#ea580c", "#ea580c", "#0d9488", "#6366f1", "#8b5cf6", "#d97706", "#dc2626"];
+      const workTypeCardsHtml = workTypeStats.map((wt, i) => {
+        const color = wtCardColors[i % wtCardColors.length];
+        const hasWork = wt.task_count > 0 || wt.farmers_total > 0;
+        return `
       <div class="premium-card" style="padding:14px;border-left:4px solid ${color};${hasWork ? '' : 'opacity:0.75;'}">
         <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;margin-bottom:8px;">
           <p style="font-size:11px;font-weight:800;color:#111827;margin:0;line-height:1.3;">${wt.label}</p>
@@ -336,63 +594,63 @@ function renderOfficerDashboard(data, officerId, o, kpiData) {
         </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:10px;margin-bottom:8px;">
           <div><p style="color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0;font-size:8px;">Tasks</p><p style="font-weight:800;color:#111827;margin:2px 0 0;">${wt.task_count}</p></div>
-          <div><p style="color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0;font-size:8px;">Done</p><p style="font-weight:800;color:#059669;margin:2px 0 0;">${wt.tasks_completed}</p></div>
+          <div><p style="color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0;font-size:8px;">Done</p><p style="font-weight:800;color:#ea580c;margin:2px 0 0;">${wt.tasks_completed}</p></div>
           <div><p style="color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0;font-size:8px;">Left</p><p style="font-weight:800;color:#d97706;margin:2px 0 0;">${wt.tasks_remaining}</p></div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:10px;margin-bottom:8px;">
           <div><p style="color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0;font-size:8px;">Farmers</p><p style="font-weight:800;color:#111827;margin:2px 0 0;">${wt.farmers_total}</p></div>
-          <div><p style="color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0;font-size:8px;">Done</p><p style="font-weight:800;color:#059669;margin:2px 0 0;">${wt.farmers_completed}</p></div>
+          <div><p style="color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0;font-size:8px;">Done</p><p style="font-weight:800;color:#ea580c;margin:2px 0 0;">${wt.farmers_completed}</p></div>
           <div><p style="color:#9ca3af;font-weight:700;text-transform:uppercase;margin:0;font-size:8px;">Left</p><p style="font-weight:800;color:#dc2626;margin:2px 0 0;">${wt.farmers_remaining}</p></div>
         </div>
         <div class="bar-track-officer"><div class="bar-fill-officer" style="width:${wt.completion_pct}%;background:${color};"></div></div>
         <p style="font-size:9px;color:#6b7280;margin:4px 0 0;text-align:right;font-weight:700;">${wt.completion_pct}% farmer completion</p>
       </div>`;
-  }).join("");
+      }).join("");
 
-  const statusBars = [
-    { label: "Completed", val: s.completed_tasks, color: "#003527" },
-    { label: "In Progress", val: s.in_progress_tasks, color: "#006c49" },
-    { label: "Pending", val: s.pending_tasks, color: "#d97706" },
-  ];
-  const maxBar = Math.max(...statusBars.map(b => b.val), 1);
+      const statusBars = [
+        { label: "Completed", val: s.completed_tasks, color: "#1e40af" },
+        { label: "In Progress", val: s.in_progress_tasks, color: "#7c3aed" },
+        { label: "Pending", val: s.pending_tasks, color: "#d97706" },
+      ];
+      const maxBar = Math.max(...statusBars.map(b => b.val), 1);
 
-  const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-  const dayCounts = data.day_activity || [0,0,0,0,0,0,0];
-  const maxDay = Math.max(...dayCounts, 1);
+      const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      const dayCounts = data.day_activity || [0, 0, 0, 0, 0, 0, 0];
+      const maxDay = Math.max(...dayCounts, 1);
 
-  const statusBadge = (st) => {
-    if (st === "COMPLETED") return "background:#d1fae5;color:#003527;";
-    if (st === "OVERDUE") return "background:#fee2e2;color:#b91c1c;";
-    if (st === "IN_PROGRESS") return "background:#dbeafe;color:#1e40af;";
-    return "background:#f3f4f6;color:#374151;";
-  };
+      const statusBadge = (st) => {
+        if (st === "COMPLETED") return "background:#ffedd5;color:#7c2d12;";
+        if (st === "OVERDUE") return "background:#fee2e2;color:#b91c1c;";
+        if (st === "IN_PROGRESS") return "background:#dbeafe;color:#1e40af;";
+        return "background:#f3f4f6;color:#374151;";
+      };
 
-  document.getElementById("profileContent").innerHTML = `
+      document.getElementById("profileContent").innerHTML = `
     <section style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;">
       <div>
         <h2 style="font-size:22px;font-weight:800;color:#0f172a;margin:0;">Hello, ${p.name}</h2>
-        <p style="font-size:12px;color:#64748b;margin-top:4px;">${new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"})} — Officer task dashboard</p>
+        <p style="font-size:12px;color:#64748b;margin-top:4px;">${new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} — Officer task dashboard</p>
       </div>
       <div style="display:flex;gap:8px;align-items:center;">
         ${!o.isBlocked
           ? `<button onclick="toggleBlock(${officerId},true)" style="background:#fee2e2;border:1.5px solid #fecaca;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#b91c1c;cursor:pointer;">Block Officer</button>`
-          : `<button onclick="toggleBlock(${officerId},false)" style="background:#d1fae5;border:1.5px solid #bbf7d0;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#003527;cursor:pointer;">Unblock Officer</button>`}
-        <span class="badge" style="background:#d1fae5;color:#003527;">Live from Database</span>
+          : `<button onclick="toggleBlock(${officerId},false)" style="background:#ffedd5;border:1.5px solid #fed7aa;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#7c2d12;cursor:pointer;">Unblock Officer</button>`}
+        <span class="badge" style="background:#ffedd5;color:#7c2d12;">Live from Database</span>
       </div>
     </section>
 
-    <div style="background:linear-gradient(to right,#003527,#005a41);color:#fff;border-radius:20px;padding:24px;margin-bottom:20px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;box-shadow:0 10px 30px rgba(0,53,39,0.15);">
+    <div style="background:linear-gradient(to right,#7c2d12,#4a1505);color:#fff;border-radius:20px;padding:24px;margin-bottom:20px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;box-shadow:0 10px 30px rgba(0,53,39,0.15);">
       <div>
-        <p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#34d399;margin-bottom:4px;">OFFICER OPERATIONS OVERVIEW</p>
+        <p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#fb923c;margin-bottom:4px;">OFFICER OPERATIONS OVERVIEW</p>
         <h3 style="font-size:18px;font-weight:800;margin:0 0 8px;">Task Performance & Field Coverage</h3>
-        <p style="font-size:12px;color:#d1fae5;max-width:480px;margin:0;">Track assigned tasks, farmer mappings, village coverage, and completion progress for this officer.</p>
+        <p style="font-size:12px;color:#ffedd5;max-width:480px;margin:0;">Track assigned tasks, farmer mappings, village coverage, and completion progress for this officer.</p>
       </div>
       <div style="display:flex;gap:20px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:16px 24px;border-radius:16px;">
-        <div style="text-align:center;"><p style="font-size:22px;font-weight:800;color:#6ee7b7;margin:0;">${s.total_tasks}</p><p style="font-size:9px;font-weight:700;text-transform:uppercase;color:#a7f3d0;margin-top:2px;">Tasks</p></div>
+        <div style="text-align:center;"><p style="font-size:22px;font-weight:800;color:#fdba74;margin:0;">${s.total_tasks}</p><p style="font-size:9px;font-weight:700;text-transform:uppercase;color:#fed7aa;margin-top:2px;">Tasks</p></div>
         <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
-        <div style="text-align:center;"><p style="font-size:22px;font-weight:800;color:#6ee7b7;margin:0;">${s.villages_count}</p><p style="font-size:9px;font-weight:700;text-transform:uppercase;color:#a7f3d0;margin-top:2px;">Villages</p></div>
+        <div style="text-align:center;"><p style="font-size:22px;font-weight:800;color:#fdba74;margin:0;">${s.villages_count}</p><p style="font-size:9px;font-weight:700;text-transform:uppercase;color:#fed7aa;margin-top:2px;">Villages</p></div>
         <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
-        <div style="text-align:center;"><p style="font-size:22px;font-weight:800;color:#6ee7b7;margin:0;">${s.farmers_assigned}</p><p style="font-size:9px;font-weight:700;text-transform:uppercase;color:#a7f3d0;margin-top:2px;">Farmers</p></div>
+        <div style="text-align:center;"><p style="font-size:22px;font-weight:800;color:#fdba74;margin:0;">${s.farmers_assigned}</p><p style="font-size:9px;font-weight:700;text-transform:uppercase;color:#fed7aa;margin-top:2px;">Farmers</p></div>
       </div>
     </div>
 
@@ -402,13 +660,13 @@ function renderOfficerDashboard(data, officerId, o, kpiData) {
           <div class="premium-card" style="padding:20px;">
             <div style="display:flex;justify-content:space-between;border-bottom:1px solid #e5e7eb;padding-bottom:12px;margin-bottom:14px;">
               <span style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.06em;">Employee Profile</span>
-              <span class="badge" style="${p.is_blocked?'background:#fee2e2;color:#b91c1c;':'background:#d1fae5;color:#003527;'}">${p.status.toUpperCase()}</span>
+              <span class="badge" style="${p.is_blocked ? 'background:#fee2e2;color:#b91c1c;' : 'background:#ffedd5;color:#7c2d12;'}">${p.status.toUpperCase()}</span>
             </div>
             <div style="display:flex;gap:14px;margin-bottom:14px;">
-              <div style="width:56px;height:56px;border-radius:14px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#003527;">${p.initials}</div>
+              <div style="width:56px;height:56px;border-radius:14px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#7c2d12;">${p.initials}</div>
               <div>
                 <div style="font-size:16px;font-weight:800;color:#111827;">${p.name}</div>
-                <div style="font-size:12px;color:#006c49;font-weight:700;margin-top:2px;">${p.role}</div>
+                <div style="font-size:12px;color:#ea580c;font-weight:700;margin-top:2px;">${p.role}</div>
                 <div style="font-size:10px;color:#9ca3af;margin-top:2px;">ID: ${p.id} · @${p.username}</div>
               </div>
             </div>
@@ -420,18 +678,18 @@ function renderOfficerDashboard(data, officerId, o, kpiData) {
             </div>
           </div>
           <div class="premium-card" style="padding:20px;display:flex;flex-direction:column;align-items:center;">
-            <span style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.06em;align-self:flex-start;border-bottom:1px solid #e5e7eb;padding-bottom:8px;width:100%;margin-bottom:8px;">Task Completion Score</span>
+            <span style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.06em;align-self:flex-start;border-bottom:1px solid #e5e7eb;padding-bottom:8px;width:100%;margin-bottom:8px;">Overall Performance Score</span>
             <div style="position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center;margin:8px 0;">
-              <svg width="120" height="120" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" stroke-width="8" class="radial-bg"/><circle cx="50" cy="50" r="40" stroke-width="8" stroke="#10b981" class="radial-fill" id="officerRadial" stroke-dasharray="251.2" stroke-dashoffset="${strokeDash}"/></svg>
-              <div style="position:absolute;text-align:center;"><span style="font-size:24px;font-weight:800;color:#111827;" id="officerScoreText">${score}%</span><br><span style="font-size:9px;color:#006c49;font-weight:800;">COMPLETED</span></div>
+              <svg width="120" height="120" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" stroke-width="8" class="radial-bg"/><circle cx="50" cy="50" r="40" stroke-width="8" stroke="#f97316" class="radial-fill" id="officerRadial" stroke-dasharray="251.2" stroke-dashoffset="${strokeOffset}"/></svg>
+              <div style="position:absolute;text-align:center;"><span style="font-size:24px;font-weight:800;color:#111827;" id="officerScoreText">${calculated_score}%</span><br><span style="font-size:9px;color:#ea580c;font-weight:800;">PERFORMANCE</span></div>
             </div>
-            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:8px 10px;font-size:10px;color:#64748b;text-align:center;width:100%;">Based on completed tasks vs total assigned</div>
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:8px 10px;font-size:10px;color:#64748b;text-align:center;width:100%;">Weighted score based on crushing, recovery, meetings & KCC</div>
           </div>
         </div>
 
         <div>
           <h4 style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.06em;margin:0 0 12px;display:flex;align-items:center;gap:6px;">
-            <span class="material-symbols-outlined" style="font-size:14px;color:#006c49;">dashboard_customize</span>
+            <span class="material-symbols-outlined" style="font-size:14px;color:#ea580c;">dashboard_customize</span>
             KPI Target Summary Cards
           </h4>
           <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px;">
@@ -444,7 +702,7 @@ function renderOfficerDashboard(data, officerId, o, kpiData) {
           </div>
           <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;font-size:10px;color:#64748b;margin-bottom:18px;">
             <span style="font-weight:700;color:#111827;text-transform:uppercase;display:block;margin-bottom:4px;">Score Formula Breakdown</span>
-            40% Crushing + 20% Recovery + 20% Meetings + 20% KCC = <strong style="color:#006c49;">${calculated_score}%</strong>
+            40% Crushing + 20% Recovery + 20% Meetings + 20% KCC = <strong style="color:#ea580c;">${calculated_score}%</strong>
           </div>
           <!-- Meeting Performance KPIs (New) -->
           <h4 style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.06em;margin:18px 0 12px;">Farmer Meeting Compliance (Live)</h4>
@@ -455,7 +713,7 @@ function renderOfficerDashboard(data, officerId, o, kpiData) {
                 <div style="font-size:11px; color:#6b7280; margin-top:2px;">Aggregated compliance rates from ${kpiData ? kpiData.kpis.total_meetings : 0} farmer meetings</div>
               </div>
               <div style="text-align:right;">
-                <span style="font-size:18px; font-weight:800; color:#006c49;">${kpiData ? kpiData.kpis.avg_tonnage : 0} kg</span>
+                <span style="font-size:18px; font-weight:800; color:#ea580c;">${kpiData ? kpiData.kpis.avg_tonnage : 0} kg</span>
                 <div style="font-size:9px; color:#9ca3af; text-transform:uppercase; font-weight:700;">Avg Expected Tonnage</div>
               </div>
             </div>
@@ -466,21 +724,21 @@ function renderOfficerDashboard(data, officerId, o, kpiData) {
                 <div>
                   <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
                     <span style="font-weight:600; color:#374151;">KCC Application Rate</span>
-                    <span style="font-weight:700; color:#003527;">${kpiData ? kpiData.kpis.kcc.pct : 0}% (${kpiData ? kpiData.kpis.kcc.yes : 0}/${kpiData ? kpiData.kpis.total_meetings : 0})</span>
+                    <span style="font-weight:700; color:#7c2d12;">${kpiData ? kpiData.kpis.kcc.pct : 0}% (${kpiData ? kpiData.kpis.kcc.yes : 0}/${kpiData ? kpiData.kpis.total_meetings : 0})</span>
                   </div>
                   <div class="bar-track-officer"><div class="bar-fill-officer" style="width:${kpiData ? kpiData.kpis.kcc.pct : 0}%; background:#6366f1;"></div></div>
                 </div>
                 <div>
                   <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
                     <span style="font-weight:600; color:#374151;">Canara HNT Rate</span>
-                    <span style="font-weight:700; color:#003527;">${kpiData ? kpiData.kpis.canara_hnt.pct : 0}% (${kpiData ? kpiData.kpis.canara_hnt.yes : 0}/${kpiData ? kpiData.kpis.total_meetings : 0})</span>
+                    <span style="font-weight:700; color:#7c2d12;">${kpiData ? kpiData.kpis.canara_hnt.pct : 0}% (${kpiData ? kpiData.kpis.canara_hnt.yes : 0}/${kpiData ? kpiData.kpis.total_meetings : 0})</span>
                   </div>
                   <div class="bar-track-officer"><div class="bar-fill-officer" style="width:${kpiData ? kpiData.kpis.canara_hnt.pct : 0}%; background:#8b5cf6;"></div></div>
                 </div>
                 <div>
                   <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
                     <span style="font-weight:600; color:#374151;">Sangola HNT Rate</span>
-                    <span style="font-weight:700; color:#003527;">${kpiData ? kpiData.kpis.sangola_hnt.pct : 0}% (${kpiData ? kpiData.kpis.sangola_hnt.yes : 0}/${kpiData ? kpiData.kpis.total_meetings : 0})</span>
+                    <span style="font-weight:700; color:#7c2d12;">${kpiData ? kpiData.kpis.sangola_hnt.pct : 0}% (${kpiData ? kpiData.kpis.sangola_hnt.yes : 0}/${kpiData ? kpiData.kpis.total_meetings : 0})</span>
                   </div>
                   <div class="bar-track-officer"><div class="bar-fill-officer" style="width:${kpiData ? kpiData.kpis.sangola_hnt.pct : 0}%; background:#ec4899;"></div></div>
                 </div>
@@ -491,21 +749,21 @@ function renderOfficerDashboard(data, officerId, o, kpiData) {
                 <div>
                   <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
                     <span style="font-weight:600; color:#374151;">Cane Registration Rate</span>
-                    <span style="font-weight:700; color:#003527;">${kpiData ? kpiData.kpis.cane_registration.pct : 0}% (${kpiData ? kpiData.kpis.cane_registration.yes : 0}/${kpiData ? kpiData.kpis.total_meetings : 0})</span>
+                    <span style="font-weight:700; color:#7c2d12;">${kpiData ? kpiData.kpis.cane_registration.pct : 0}% (${kpiData ? kpiData.kpis.cane_registration.yes : 0}/${kpiData ? kpiData.kpis.total_meetings : 0})</span>
                   </div>
                   <div class="bar-track-officer"><div class="bar-fill-officer" style="width:${kpiData ? kpiData.kpis.cane_registration.pct : 0}%; background:#0ea5e9;"></div></div>
                 </div>
                 <div>
                   <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
                     <span style="font-weight:600; color:#374151;">Recovery Yes Rate</span>
-                    <span style="font-weight:700; color:#003527;">${kpiData ? kpiData.kpis.recovery.pct : 0}% (${kpiData ? kpiData.kpis.recovery.yes : 0}/${kpiData ? kpiData.kpis.total_meetings : 0})</span>
+                    <span style="font-weight:700; color:#7c2d12;">${kpiData ? kpiData.kpis.recovery.pct : 0}% (${kpiData ? kpiData.kpis.recovery.yes : 0}/${kpiData ? kpiData.kpis.total_meetings : 0})</span>
                   </div>
-                  <div class="bar-track-officer"><div class="bar-fill-officer" style="width:${kpiData ? kpiData.kpis.recovery.pct : 0}%; background:#10b981;"></div></div>
+                  <div class="bar-track-officer"><div class="bar-fill-officer" style="width:${kpiData ? kpiData.kpis.recovery.pct : 0}%; background:#f97316;"></div></div>
                 </div>
                 <div>
                   <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
                     <span style="font-weight:600; color:#374151;">Vehicle Agreement Rate</span>
-                    <span style="font-weight:700; color:#003527;">${kpiData ? kpiData.kpis.vehicle_agreement.pct : 0}% (${kpiData ? kpiData.kpis.vehicle_agreement.yes : 0}/${kpiData ? kpiData.kpis.total_meetings : 0})</span>
+                    <span style="font-weight:700; color:#7c2d12;">${kpiData ? kpiData.kpis.vehicle_agreement.pct : 0}% (${kpiData ? kpiData.kpis.vehicle_agreement.yes : 0}/${kpiData ? kpiData.kpis.total_meetings : 0})</span>
                   </div>
                   <div class="bar-track-officer"><div class="bar-fill-officer" style="width:${kpiData ? kpiData.kpis.vehicle_agreement.pct : 0}%; background:#f59e0b;"></div></div>
                 </div>
@@ -520,13 +778,13 @@ function renderOfficerDashboard(data, officerId, o, kpiData) {
             <h4 style="font-size:11px;font-weight:700;color:#111827;text-transform:uppercase;margin:0 0 16px;">Task Status Breakdown</h4>
             <div style="display:flex;align-items:flex-end;gap:16px;height:140px;padding-top:8px;">
               ${statusBars.map(b => {
-                const h = Math.max(4, Math.round((b.val / maxBar) * 110));
-                return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;justify-content:flex-end;height:100%;">
+            const h = Math.max(4, Math.round((b.val / maxBar) * 110));
+            return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;justify-content:flex-end;height:100%;">
                   <span style="font-size:10px;font-weight:700;color:#6b7280;">${b.val}</span>
                   <div style="width:100%;background:${b.color};border-radius:6px 6px 0 0;height:${h}px;"></div>
                   <span style="font-size:9px;font-weight:700;color:#9ca3af;text-transform:uppercase;">${b.label}</span>
                 </div>`;
-              }).join("")}
+          }).join("")}
             </div>
           </div>
           <div class="premium-card" style="padding:20px;">
@@ -535,7 +793,7 @@ function renderOfficerDashboard(data, officerId, o, kpiData) {
               <div style="margin-bottom:10px;">
                 <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;">
                   <span style="font-weight:600;">${t.label}</span>
-                  <span style="font-weight:700;color:#003527;">${t.farmers_completed}/${t.farmers_total} farmers</span>
+                  <span style="font-weight:700;color:#7c2d12;">${t.farmers_completed}/${t.farmers_total} farmers</span>
                 </div>
                 <div class="bar-track-officer"><div class="bar-fill-officer" style="width:${t.completion_pct}%;"></div></div>
               </div>`).join("") : '<p style="font-size:12px;color:#9ca3af;">No active assignments yet for this officer.</p>'}
@@ -545,16 +803,16 @@ function renderOfficerDashboard(data, officerId, o, kpiData) {
         <div class="premium-card" style="padding:20px;">
           <h4 style="font-size:11px;font-weight:700;color:#111827;text-transform:uppercase;margin:0 0 14px;">Weekly Activity Heatmap</h4>
           <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;">
-            ${days.map((d,i) => {
-              const cnt = dayCounts[i] || 0;
-              const pct = Math.round((cnt / maxDay) * 100);
-              const bg = pct >= 75 ? "#059669" : pct >= 40 ? "#fbbf24" : cnt > 0 ? "#fca5a5" : "#f8fafc";
-              const fg = pct >= 40 ? "#fff" : "#374151";
-              return `<div style="padding:12px 6px;border-radius:12px;border:1px solid #e5e7eb;text-align:center;background:${bg};color:${fg};">
+            ${days.map((d, i) => {
+            const cnt = dayCounts[i] || 0;
+            const pct = Math.round((cnt / maxDay) * 100);
+            const bg = pct >= 75 ? "#ea580c" : pct >= 40 ? "#fbbf24" : cnt > 0 ? "#fca5a5" : "#f8fafc";
+            const fg = pct >= 40 ? "#fff" : "#374151";
+            return `<div style="padding:12px 6px;border-radius:12px;border:1px solid #e5e7eb;text-align:center;background:${bg};color:${fg};">
                 <div style="font-size:9px;font-weight:700;opacity:0.8;">${d}</div>
                 <div style="font-size:14px;font-weight:800;margin-top:6px;">${cnt || "—"}</div>
               </div>`;
-            }).join("")}
+          }).join("")}
           </div>
         </div>
       </div>
@@ -564,15 +822,15 @@ function renderOfficerDashboard(data, officerId, o, kpiData) {
           <h4 style="font-size:11px;font-weight:700;color:#111827;text-transform:uppercase;margin:0 0 12px;">Smart Insights</h4>
           <div style="display:flex;flex-direction:column;gap:8px;">
             ${data.insights.length ? data.insights.map(ins => `
-              <div style="display:flex;gap:8px;padding:10px;border-radius:10px;border:1px solid #d1fae5;background:#f0fdf4;">
-                <span class="material-symbols-outlined" style="font-size:16px;color:#059669;">check_circle</span>
+              <div style="display:flex;gap:8px;padding:10px;border-radius:10px;border:1px solid #ffedd5;background:#fff7ed;">
+                <span class="material-symbols-outlined" style="font-size:16px;color:#ea580c;">check_circle</span>
                 <p style="font-size:11px;color:#374151;margin:0;line-height:1.4;">${ins.content}</p>
               </div>`).join("") : '<p style="font-size:12px;color:#9ca3af;">No insights yet</p>'}
           </div>
         </div>
         <div class="premium-card" style="padding:20px;">
           <h4 style="font-size:11px;font-weight:700;color:#111827;text-transform:uppercase;margin:0 0 4px;display:flex;justify-content:space-between;">
-            <span>Assigned Tasks</span><span style="color:#006c49;">${data.tasks.length} total</span>
+            <span>Assigned Tasks</span><span style="color:#ea580c;">${data.tasks.length} total</span>
           </h4>
           <div style="display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;margin-top:10px;">
             ${data.tasks.length ? data.tasks.map(t => `
@@ -581,18 +839,18 @@ function renderOfficerDashboard(data, officerId, o, kpiData) {
                 <div style="font-size:10px;color:#6b7280;margin-top:2px;">${t.work_type} · ${t.village}</div>
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
                   <span class="badge" style="${statusBadge(t.status)}">${t.status}</span>
-                  <span style="font-size:10px;font-weight:700;color:#006c49;">${t.completion_pct}% done</span>
+                  <span style="font-size:10px;font-weight:700;color:#ea580c;">${t.completion_pct}% done</span>
                 </div>
                 <div style="display:flex;gap:6px;margin-top:8px;">
-                  <button onclick="editTask(${t.task_id})" style="flex:1;background:#003527;color:#fff;border:none;border-radius:6px;padding:5px;font-size:10px;font-weight:700;cursor:pointer;">Edit</button>
-                  <button onclick="viewTaskHistory(${t.task_id})" style="flex:1;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:6px;padding:5px;font-size:10px;font-weight:700;cursor:pointer;">History</button>
+                  <button onclick="TaskEdit.editTask(${t.task_id})" style="flex:1;background:#7c2d12;color:#fff;border:none;border-radius:6px;padding:5px;font-size:10px;font-weight:700;cursor:pointer;">Edit</button>
+                  <button onclick="TaskEdit.viewTaskHistory(${t.task_id})" style="flex:1;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:6px;padding:5px;font-size:10px;font-weight:700;cursor:pointer;">History</button>
                 </div>
               </div>`).join("") : '<p style="font-size:12px;color:#9ca3af;text-align:center;padding:16px;">No tasks assigned</p>'}
           </div>
         </div>
         ${data.alerts.length ? `<div class="premium-card" style="padding:16px;">
           <h4 style="font-size:11px;font-weight:700;color:#111827;text-transform:uppercase;margin:0 0 10px;">Alerts (${data.alerts.length})</h4>
-          ${data.alerts.map(a => `<div style="font-size:11px;padding:8px;border-radius:8px;margin-bottom:6px;background:${a.type==='warning'?'#fef3c7':a.type==='alert'?'#fee2e2':'#eff6ff'};color:#374151;">${a.message}</div>`).join("")}
+          ${data.alerts.map(a => `<div style="font-size:11px;padding:8px;border-radius:8px;margin-bottom:6px;background:${a.type === 'warning' ? '#fef3c7' : a.type === 'alert' ? '#fee2e2' : '#eff6ff'};color:#374151;">${a.message}</div>`).join("")}
         </div>` : ""}
       </div>
     </div>
@@ -647,12 +905,12 @@ function renderOfficerDashboard(data, officerId, o, kpiData) {
           </thead>
           <tbody>
             ${(kpiData && kpiData.recent_meetings && kpiData.recent_meetings.length) ? kpiData.recent_meetings.map(m => {
-              const yesNo = (v, reason) => {
-                if (v === true) return '<span style="color:#059669; font-weight:bold;">Yes</span>';
-                if (v === false) return `<span style="color:#dc2626; font-weight:bold;">No</span>${reason ? `<div style="color:#9ca3af; font-size:8px;">${reason}</div>` : ''}`;
-                return '<span style="color:#9ca3af;">—</span>';
-              };
-              return `
+            const yesNo = (v, reason) => {
+              if (v === true) return '<span style="color:#ea580c; font-weight:bold;">Yes</span>';
+              if (v === false) return `<span style="color:#dc2626; font-weight:bold;">No</span>${reason ? `<div style="color:#9ca3af; font-size:8px;">${reason}</div>` : ''}`;
+              return '<span style="color:#9ca3af;">—</span>';
+            };
+            return `
                 <tr style="border-top:1px solid #f3f4f6;">
                   <td style="padding:10px 16px; font-weight:700;">
                     ${m.farmer_name}
@@ -673,531 +931,66 @@ function renderOfficerDashboard(data, officerId, o, kpiData) {
                     ${(!m.feedback && !m.remark) ? '<span style="color:#9ca3af;">—</span>' : ''}
                   </td>
                 </tr>`;
-            }).join("") : '<tr><td colspan="11" style="padding:24px; text-align:center; color:#9ca3af;">No farmer meetings logged yet</td></tr>'}
+          }).join("") : '<tr><td colspan="11" style="padding:24px; text-align:center; color:#9ca3af;">No farmer meetings logged yet</td></tr>'}
           </tbody>
         </table>
       </div>
     </div>
   `;
 
-  setTimeout(() => {
-    const radial = document.getElementById("officerRadial");
-    if (radial) radial.setAttribute("stroke-dashoffset", strokeOffset);
-  }, 100);
-}
+      setTimeout(() => {
+        const radial = document.getElementById("officerRadial");
+        if (radial) radial.setAttribute("stroke-dashoffset", strokeOffset);
+      }, 100);
+    }
 
-function toggleBlock(id, block) {
-  const o = officers.find(x => x.id === id);
-  if (!o) return;
-  if (confirm((block ? "Block" : "Unblock") + " officer " + o.name + "?")) {
-    AgriAuth.apiFetch(`/api/officers/${id}/block`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ is_blocked: block }),
-    }).then(r => r.json()).then(() => {
-      o.isBlocked = block;
-      showProfile(id);
-    }).catch(() => alert("Failed to update officer status."));
-  }
-}
+    function toggleBlock(id, block) {
+      const o = officers.find(x => x.id === id);
+      if (!o) return;
+      if (confirm((block ? "Block" : "Unblock") + " officer " + o.name + "?")) {
+        AgriAuth.apiFetch(`/api/officers/${id}/block`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ is_blocked: block }),
+        }).then(r => r.json()).then(() => {
+          o.isBlocked = block;
+          showProfile(id);
+        }).catch(() => alert("Failed to update officer status."));
+      }
+    }
 
-let currentEditingTaskId = null;
-let currentEditingOfficerId = null;
-let selectedFarmers = [];
-let availableFarmers = [];
+    function showListView() {
+      document.getElementById("pageTitle").textContent = "Officers";
+      document.getElementById("backBtn").style.display = "none";
+      document.getElementById("listView").style.display = "flex";
+      document.getElementById("profileView").style.display = "none";
+      renderTable();
+    }
 
-async function populateLocations(selectedTaluka = "", selectedVillage = "", selectedSubVillage = "") {
-  try {
-    const tRes = await AgriAuth.apiFetch("/api/tasks/talukas");
-    const talukas = await tRes.json();
-    const tSelect = document.getElementById("editDistrict");
-    tSelect.innerHTML = '<option value="">Select Taluka</option>';
-    talukas.forEach(t => {
-      const opt = document.createElement("option");
-      opt.value = t;
-      opt.textContent = t;
-      if (t === selectedTaluka) opt.selected = true;
-      tSelect.appendChild(opt);
-    });
+    document.addEventListener("DOMContentLoaded", () => {
+      const s = AgriAuth.getSession();
+      if (s) {
+        const name = (s.name && s.name !== "None") ? s.name : s.username;
+        document.getElementById("avatarCircle").textContent = name.charAt(0).toUpperCase();
+        document.getElementById("headerName").textContent = name;
+      }
+      loadOfficers();   // ← loads from API instead of using hardcoded array
+      document.getElementById("logoutBtn").addEventListener("click", e => {
+        e.preventDefault();
+        if (confirm("Sign out?")) { AgriAuth.clearSession(); window.location.replace("/login.html"); }
+      });
 
-    const triggerChange = async () => {
-      const tVal = tSelect.value;
-      const vSelect = document.getElementById("editVillage");
-      vSelect.innerHTML = '<option value="">Select Village</option>';
-      document.getElementById("editSubVillage").innerHTML = '<option value="">Select Sub Village</option>';
-      if (tVal) {
-        const vRes = await AgriAuth.apiFetch(`/api/tasks/villages?taluka=${encodeURIComponent(tVal)}`);
-        const villages = await vRes.json();
-        villages.forEach(v => {
-          const opt = document.createElement("option");
-          opt.value = v;
-          opt.textContent = v;
-          if (v === selectedVillage) opt.selected = true;
-          vSelect.appendChild(opt);
-        });
-        if (selectedVillage) {
-          await triggerVillageChange();
+      TaskEdit.init(async (tid) => {
+        const o = officers.find(x => x.name === document.getElementById("pageTitle").textContent);
+        const currentEditingOfficerId = o ? o.id : null;
+        if (currentEditingOfficerId) {
+          await loadOfficers();
+          await showProfile(currentEditingOfficerId);
         }
-      }
-    };
-
-    const triggerVillageChange = async () => {
-      const vVal = document.getElementById("editVillage").value;
-      const sSelect = document.getElementById("editSubVillage");
-      sSelect.innerHTML = '<option value="">Select Sub Village</option>';
-      if (vVal) {
-        const sRes = await AgriAuth.apiFetch(`/api/tasks/sub-villages?village=${encodeURIComponent(vVal)}`);
-        const subs = await sRes.json();
-        subs.forEach(s => {
-          const opt = document.createElement("option");
-          opt.value = s;
-          opt.textContent = s;
-          if (s === selectedSubVillage) opt.selected = true;
-          sSelect.appendChild(opt);
-        });
-        loadAvailableFarmers(vVal);
-      } else {
-        document.getElementById("availableFarmersList").innerHTML = '<div style="font-size:12px;color:#9ca3af;text-align:center;">Choose a village to load available farmers</div>';
-      }
-    };
-
-    tSelect.onchange = () => { selectedVillage = ""; selectedSubVillage = ""; triggerChange(); };
-    document.getElementById("editVillage").onchange = () => { selectedSubVillage = ""; triggerVillageChange(); };
-
-    await triggerChange();
-  } catch (err) {
-    console.error("populateLocations error:", err);
-  }
-}
-
-async function editTask(taskId) {
-  currentEditingTaskId = taskId;
-  const o = officers.find(x => x.name === document.getElementById("pageTitle").textContent);
-  currentEditingOfficerId = o ? o.id : null;
-  
-  document.getElementById("editModal").classList.add("show");
-  document.getElementById("editModalBody").innerHTML = '<div style="padding:20px;text-align:center;color:#6b7280;">Loading task details...</div>';
-
-  try {
-    const [res, wtRes] = await Promise.all([
-      AgriAuth.apiFetch(`/api/tasks/${taskId}`),
-      AgriAuth.apiFetch("/api/tasks/work-types"),
-    ]);
-    if (!res.ok) throw new Error("Failed to load task");
-    const task = await res.json();
-    const workTypes = wtRes.ok ? await wtRes.json() : [];
-    const workTypeOptions = workTypes.map(wt => {
-      const sel = wt.name === task.work_type ? "selected" : "";
-      return `<option value="${wt.name}" ${sel}>${wt.name}</option>`;
-    }).join("");
-    const legacyOption = task.work_type && !workTypes.some(w => w.name === task.work_type)
-      ? `<option value="${task.work_type}" selected>${task.work_type} (update required)</option>` : "";
-
-    selectedFarmers = task.farmers.map(f => ({
-      id: f.id,
-      name: f.name,
-      village: f.village,
-      taluka: f.taluka,
-      mobile: f.mobile
-    }));
-
-    document.getElementById("editModalBody").innerHTML = `
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div>
-          <label class="form-label">Task Name</label>
-          <input type="text" id="editTaskName" value="${task.task_name}" style="width:100%;box-sizing:border-box;">
-        </div>
-        <div>
-          <label class="form-label">Work Type</label>
-          <select id="editWorkType" style="width:100%;">
-            <option value="">Select work type...</option>
-            ${legacyOption}${workTypeOptions}
-          </select>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div>
-          <label class="form-label">Schedule Type</label>
-          <select id="editScheduleType" onchange="onEditScheduleTypeChange()" style="width:100%;">
-            <option value="DAILY" ${task.schedule_type === 'DAILY' ? 'selected' : ''}>Daily</option>
-            <option value="WEEKLY" ${task.schedule_type === 'WEEKLY' ? 'selected' : ''}>Weekly</option>
-            <option value="MONTHLY" ${task.schedule_type === 'MONTHLY' ? 'selected' : ''}>Monthly</option>
-          </select>
-        </div>
-        <div>
-          <label class="form-label">Priority</label>
-          <select id="editPriority" style="width:100%;">
-            <option value="Low" ${task.priority === 'Low' ? 'selected' : ''}>Low</option>
-            <option value="Medium" ${task.priority === 'Medium' ? 'selected' : ''}>Medium</option>
-            <option value="High" ${task.priority === 'High' ? 'selected' : ''}>High</option>
-          </select>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        <div>
-          <label class="form-label" id="editStartDateLabel">Start Date</label>
-          <input type="date" id="editStartDate" onchange="onEditDateChange()" style="width:100%;box-sizing:border-box;">
-        </div>
-        <div id="editEndDateWrapper">
-          <label class="form-label">End Date</label>
-          <input type="date" id="editEndDate" style="width:100%;box-sizing:border-box;">
-        </div>
-      </div>
-      <div id="editDateAutoHint" style="font-size:11px;color:#006c49;background:#f0fdf4;border:1px solid #bbf7d0;padding:6px 10px;border-radius:8px;margin-top:6px;display:none;align-items:center;gap:6px;font-weight:600;"></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;">
-        <div>
-          <label class="form-label">Status</label>
-          <select id="editStatus" style="width:100%;">
-            <option value="ASSIGNED" ${task.status === 'ASSIGNED' ? 'selected' : ''}>ASSIGNED</option>
-            <option value="PENDING" ${task.status === 'PENDING' ? 'selected' : ''}>PENDING</option>
-            <option value="IN_PROGRESS" ${task.status === 'IN_PROGRESS' ? 'selected' : ''}>IN_PROGRESS</option>
-            <option value="COMPLETED" ${task.status === 'COMPLETED' ? 'selected' : ''}>COMPLETED</option>
-            <option value="CANCELLED" ${task.status === 'CANCELLED' ? 'selected' : ''}>CANCELLED</option>
-          </select>
-        </div>
-        <div>
-          <label class="form-label">Remarks</label>
-          <input type="text" id="editRemarks" value="${task.remarks || ''}" style="width:100%;box-sizing:border-box;">
-        </div>
-      </div>
-      
-      <div style="border-top:1px solid #e5e7eb;padding-top:10px;">
-        <span style="font-size:12px;font-weight:700;color:#003527;display:block;margin-bottom:8px;">Task Location</span>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-          <select id="editDistrict" style="width:100%;"></select>
-          <select id="editVillage" style="width:100%;"></select>
-          <select id="editSubVillage" style="width:100%;"></select>
-        </div>
-      </div>
-
-      <div style="border-top:1px solid #e5e7eb;padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <div>
-          <span style="font-size:12px;font-weight:700;color:#003527;display:block;margin-bottom:6px;">Currently Mapped Farmers</span>
-          <div id="selectedFarmersList" style="border:1px solid #e5e7eb;border-radius:8px;padding:8px;max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;min-height:100px;">
-          </div>
-        </div>
-        <div>
-          <span style="font-size:12px;font-weight:700;color:#003527;display:block;margin-bottom:6px;">Search & Add Farmers</span>
-          <input type="text" id="farmerSearchInput" placeholder="Search farmer name or ID..." style="width:100%;box-sizing:border-box;margin-bottom:6px;padding:6px 10px;font-size:12px;" oninput="filterAvailableFarmers()">
-          <div id="availableFarmersList" style="border:1px solid #e5e7eb;border-radius:8px;padding:8px;max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;min-height:100px;">
-            <div style="font-size:12px;color:#9ca3af;text-align:center;padding:12px;">Choose a village to load available farmers</div>
-          </div>
-        </div>
-      </div>
-
-      <div style="border-top:1px solid #e5e7eb;padding-top:12px;display:flex;gap:10px;justify-content:flex-end;">
-        <button onclick="closeEditModal()" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;color:#374151;cursor:pointer;">Cancel</button>
-        <button id="saveEditBtn" onclick="saveTaskChanges()" style="background:#003527;color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:18px;">save</span>Save Changes</button>
-      </div>
-    `;
-
-    onEditScheduleTypeChange();
-    const startInput = document.getElementById("editStartDate");
-    if (task.schedule_type === "MONTHLY") {
-      startInput.value = task.start_date ? task.start_date.substring(0, 7) : "";
-    } else {
-      startInput.value = task.start_date || "";
-    }
-    document.getElementById("editEndDate").value = task.end_date || "";
-    onEditDateChange();
-
-    renderSelectedFarmers();
-    await populateLocations(task.location.district, task.location.village, task.location.sub_village);
-  } catch (err) {
-    document.getElementById("editModalBody").innerHTML = `<div style="padding:20px;text-align:center;color:#dc2626;">${err.message}</div>`;
-  }
-}
-
-function renderSelectedFarmers() {
-  const container = document.getElementById("selectedFarmersList");
-  if (!container) return;
-  if (selectedFarmers.length === 0) {
-    container.innerHTML = '<div style="font-size:12px;color:#9ca3af;text-align:center;padding:12px;">No farmers assigned to this task.</div>';
-    return;
-  }
-  container.innerHTML = selectedFarmers.map(f => `
-    <div style="display:flex;align-items:center;justify-content:space-between;background:#f9fafb;padding:6px 10px;border-radius:8px;border:1px solid #e5e7eb;">
-      <div>
-        <div style="font-size:12px;font-weight:700;color:#111827;">${f.name}</div>
-        <div style="font-size:10px;color:#6b7280;">ID ${f.id} · ${f.village}</div>
-      </div>
-      <button onclick="removeFarmerFromTask(${f.id})" style="background:none;border:none;color:#dc2626;cursor:pointer;display:flex;align-items:center;padding:2px;"><span class="material-symbols-outlined" style="font-size:18px;">delete</span></button>
-    </div>
-  `).join("");
-}
-
-async function loadAvailableFarmers(village) {
-  const list = document.getElementById("availableFarmersList");
-  if (!list) return;
-  list.innerHTML = '<div style="font-size:12px;color:#6b7280;text-align:center;padding:12px;">Loading eligible farmers...</div>';
-  try {
-    const res = await AgriAuth.apiFetch(`/api/tasks/farmers?village=${encodeURIComponent(village)}&exclude_task_id=${currentEditingTaskId}`);
-    if (!res.ok) throw new Error("Failed");
-    availableFarmers = await res.json();
-    renderAvailableFarmers();
-  } catch (err) {
-    list.innerHTML = '<div style="font-size:12px;color:#dc2626;text-align:center;padding:12px;">Failed to load farmers</div>';
-  }
-}
-
-function renderAvailableFarmers() {
-  const container = document.getElementById("availableFarmersList");
-  if (!container) return;
-  const query = document.getElementById("farmerSearchInput")?.value.toLowerCase() || "";
-  const selectedIds = new Set(selectedFarmers.map(f => f.id));
-  const filtered = availableFarmers.filter(f => {
-    const matchQuery = !query || f.name.toLowerCase().includes(query) || String(f.id).includes(query);
-    const notSelected = !selectedIds.has(f.id);
-    return matchQuery && notSelected;
-  });
-
-  if (filtered.length === 0) {
-    container.innerHTML = '<div style="font-size:12px;color:#9ca3af;text-align:center;padding:12px;">No available farmers found.</div>';
-    return;
-  }
-
-  container.innerHTML = filtered.map(f => `
-    <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;padding:6px 10px;border-radius:8px;border:1px solid #e5e7eb;">
-      <div>
-        <div style="font-size:12px;font-weight:700;color:#111827;">${f.name}</div>
-        <div style="font-size:10px;color:#6b7280;">ID ${f.id} · ${f.mobile || 'No Mobile'}</div>
-      </div>
-      <button onclick="addFarmerToTask(${f.id})" style="background:#003527;border:none;border-radius:6px;color:#fff;cursor:pointer;padding:4px 8px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:2px;"><span class="material-symbols-outlined" style="font-size:13px;">add</span>Add</button>
-    </div>
-  `).join("");
-}
-
-function filterAvailableFarmers() {
-  renderAvailableFarmers();
-}
-
-function addFarmerToTask(farmerId) {
-  const f = availableFarmers.find(x => x.id === farmerId);
-  if (f && !selectedFarmers.some(x => x.id === farmerId)) {
-    selectedFarmers.push(f);
-    renderSelectedFarmers();
-    renderAvailableFarmers();
-  }
-}
-
-function removeFarmerFromTask(farmerId) {
-  selectedFarmers = selectedFarmers.filter(x => x.id !== farmerId);
-  renderSelectedFarmers();
-  renderAvailableFarmers();
-}
-
-async function saveTaskChanges() {
-  const btn = document.getElementById("saveEditBtn");
-  btn.disabled = true;
-  btn.textContent = "Saving...";
-
-  const session = AgriAuth.getSession();
-  const managerId = session ? session.id : 1;
-
-  const schedType = document.getElementById("editScheduleType").value;
-  let startDateVal = document.getElementById("editStartDate").value;
-  if (schedType === "MONTHLY" && document.getElementById("editStartDate").type === "month") {
-    if (startDateVal) startDateVal = startDateVal + "-01";
-  }
-
-  const payload = {
-    task_name: document.getElementById("editTaskName").value,
-    work_type_name: document.getElementById("editWorkType").value,
-    priority: document.getElementById("editPriority").value,
-    start_date: startDateVal,
-    end_date: document.getElementById("editEndDate").value,
-    status: document.getElementById("editStatus").value,
-    remarks: document.getElementById("editRemarks").value,
-    district: document.getElementById("editDistrict").value,
-    village: document.getElementById("editVillage").value,
-    sub_village: document.getElementById("editSubVillage").value,
-    farmers: selectedFarmers.map(f => f.id),
-    manager_id: managerId,
-    schedule_type: schedType
-  };
-
-  if (!payload.task_name || !payload.work_type_name || !payload.start_date || !payload.end_date || !payload.district || !payload.village) {
-    alert("Please fill in all required fields (Task Name, Work Type, Dates, and Location).");
-    btn.disabled = false;
-    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">save</span>Save Changes';
-    return;
-  }
-
-  try {
-    const res = await AgriAuth.apiFetch(`/api/tasks/${currentEditingTaskId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      });
     });
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || "Failed to save changes");
-    }
-    closeEditModal();
-    if (currentEditingOfficerId) {
-      await loadOfficers();
-      await showProfile(currentEditingOfficerId);
-    }
-  } catch (err) {
-    alert("Error: " + err.message);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">save</span>Save Changes';
-  }
-}
-
-function closeEditModal() {
-  document.getElementById("editModal").classList.remove("show");
-}
-
-function toISO(d) {
-  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
-}
-
-function formatDateDisplay(d) {
-  return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
-}
-
-function onEditScheduleTypeChange() {
-  const schedType = document.getElementById("editScheduleType").value;
-  const startInput = document.getElementById("editStartDate");
-  const endInput = document.getElementById("editEndDate");
-  const endWrapper = document.getElementById("editEndDateWrapper");
-  const startLabel = document.getElementById("editStartDateLabel");
-  const hint = document.getElementById("editDateAutoHint");
-
-  // Reset
-  startInput.type = "date";
-  endInput.readOnly = false;
-  hint.style.display = "none";
-  hint.textContent = "";
-
-  if (schedType === "DAILY") {
-    startLabel.innerHTML = 'Task Date <span style="color:#dc2626;">*</span>';
-    endWrapper.style.display = "none";
-    endInput.value = startInput.value;
-    hint.style.display = "flex";
-    hint.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;">info</span> Single day — start and end date are the same.';
-  } else if (schedType === "WEEKLY") {
-    startLabel.innerHTML = 'Week Start Date (Monday) <span style="color:#dc2626;">*</span>';
-    endWrapper.style.display = "block";
-    endInput.readOnly = true;
-    hint.style.display = "flex";
-    onEditDateChange();
-  } else if (schedType === "MONTHLY") {
-    startLabel.innerHTML = 'Month <span style="color:#dc2626;">*</span>';
-    endWrapper.style.display = "block";
-    endInput.readOnly = true;
-    startInput.type = "month";
-    if (startInput.value && startInput.value.length > 7) {
-      startInput.value = startInput.value.substring(0, 7);
-    }
-    onEditDateChange();
-  }
-}
-
-function onEditDateChange() {
-  const schedType = document.getElementById("editScheduleType").value;
-  const startInput = document.getElementById("editStartDate");
-  const endInput = document.getElementById("editEndDate");
-  const hint = document.getElementById("editDateAutoHint");
-
-  if (schedType === "DAILY") {
-    endInput.value = startInput.value;
-    if (startInput.value) {
-      const d = new Date(startInput.value);
-      hint.style.display = "flex";
-      hint.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;">today</span> ${formatDateDisplay(d)} — single day task.`;
-    }
-  } else if (schedType === "WEEKLY") {
-    if (!startInput.value) return;
-    const selected = new Date(startInput.value);
-    const dayOfWeek = selected.getDay();
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const monday = new Date(selected);
-    monday.setDate(selected.getDate() + mondayOffset);
-    startInput.value = toISO(monday);
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    endInput.value = toISO(sunday);
-    hint.style.display = "flex";
-    hint.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;">date_range</span> ${formatDateDisplay(monday)} → ${formatDateDisplay(sunday)} (7 days)`;
-  } else if (schedType === "MONTHLY") {
-    const monthStr = startInput.value;
-    if (!monthStr) return;
-    const [year, month] = monthStr.split("-").map(Number);
-    const firstDay = new Date(year, month - 1, 1);
-    const lastDay = new Date(year, month, 0);
-    endInput.value = toISO(lastDay);
-    hint.style.display = "flex";
-    const monthName = firstDay.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
-    hint.innerHTML = `<span class="material-symbols-outlined" style="font-size:14px;">calendar_month</span> ${monthName}: ${formatDateDisplay(firstDay)} → ${formatDateDisplay(lastDay)}`;
-  }
-}
-
-async function viewTaskHistory(taskId) {
-  document.getElementById("historyModal").classList.add("show");
-  const body = document.getElementById("historyModalBody");
-  body.innerHTML = '<div style="padding:20px;text-align:center;color:#6b7280;">Loading audit history...</div>';
-
-  try {
-    const res = await AgriAuth.apiFetch(`/api/tasks/${taskId}/history`);
-    if (!res.ok) throw new Error("Failed to load history");
-    const history = await res.json();
-
-    if (history.length === 0) {
-      body.innerHTML = '<div style="padding:20px;text-align:center;color:#9ca3af;font-size:13px;">No history logs found for this task.</div>';
-      return;
-    }
-
-    body.innerHTML = `
-      <div style="border-left:2px solid #e5e7eb;margin-left:10px;padding-left:16px;display:flex;flex-direction:column;gap:16px;padding-top:4px;padding-bottom:4px;">
-        ${history.map(h => {
-          let dotColor = '#003527';
-          if (h.action === 'TASK_STATUS_CHANGED') dotColor = '#3b82f6';
-          else if (h.action === 'TASK_FARMER_REMOVED') dotColor = '#dc2626';
-          else if (h.action === 'TASK_FARMER_ADDED') dotColor = '#059669';
-          
-          return `
-          <div style="position:relative;">
-            <div style="position:absolute;left:-22px;top:4px;width:10px;height:10px;border-radius:99px;background:${dotColor};"></div>
-            <div style="font-size:11px;font-weight:700;color:#9ca3af;">${h.timestamp} · by ${h.officer_name}</div>
-            <div style="font-size:13px;font-weight:700;color:#111827;margin-top:2px;">${h.action}</div>
-            <div style="font-size:12px;color:#6b7280;margin-top:1px;">${h.remarks}</div>
-          </div>`;
-        }).join("")}
-      </div>
-    `;
-  } catch (err) {
-    body.innerHTML = `<div style="padding:20px;text-align:center;color:#dc2626;">${err.message}</div>`;
-  }
-}
-
-function closeHistoryModal() {
-  document.getElementById("historyModal").classList.remove("show");
-}
-
-function showListView(){
-  document.getElementById("pageTitle").textContent="Officers";
-  document.getElementById("backBtn").style.display="none";
-  document.getElementById("listView").style.display="flex";
-  document.getElementById("profileView").style.display="none";
-  renderTable();
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const s = AgriAuth.getSession();
-  if (s) {
-    const name = (s.name && s.name !== "None") ? s.name : s.username;
-    document.getElementById("avatarCircle").textContent = name.charAt(0).toUpperCase();
-    document.getElementById("headerName").textContent = name;
-  }
-  loadOfficers();   // ← loads from API instead of using hardcoded array
-  document.getElementById("logoutBtn").addEventListener("click", e => {
-    e.preventDefault();
-    if (confirm("Sign out?")) { AgriAuth.clearSession(); window.location.replace("/login.html"); }
-  });
-});
-</script>
+  </script>
 </body>
+
 </html>
+<!-- cache-bust: 2026-06-23-2 -->

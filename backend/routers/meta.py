@@ -6,8 +6,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 import pyodbc
 
 from backend.database import get_db
+from auth import verify_token
 
-router = APIRouter(prefix="/meta", tags=["meta"])
+router = APIRouter(prefix="/meta", tags=["meta"], dependencies=[Depends(verify_token)])
 
 
 def _fetchall(conn: pyodbc.Connection, sql: str, params: Optional[List[Any]] = None) -> List[Dict[str, Any]]:

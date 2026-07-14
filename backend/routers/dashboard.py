@@ -5,11 +5,12 @@ Tables used:
   TASK_LOCATION        – village/taluka per task
   dbo.auth_user        – officer names (first_name + last_name)
 """
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from database import db_cursor
 from models import DashboardStats, WeekPoint, WorkTypePoint, TopOfficer, RecentActivity
+from auth import require_role
 
-router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
+router = APIRouter(prefix="/api/dashboard", tags=["dashboard"], dependencies=[Depends(require_role("manager"))])
 
 
 @router.get("/stats", response_model=DashboardStats)

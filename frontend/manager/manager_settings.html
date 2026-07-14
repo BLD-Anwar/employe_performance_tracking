@@ -1,252 +1,543 @@
-7777777777777777777<!DOCTYPE html>
+7777777777777777777
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgriPulse — Settings</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
-<style>
-  body{font-family:'Inter',sans-serif;background:#f4f6f8;}
-  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}
-  .sidebar{background:linear-gradient(180deg,#0f1f18 0%,#0a150f 100%);width:220px;min-height:100vh;position:fixed;left:0;top:0;z-index:50;display:flex;flex-direction:column;}
-  .nav-link{display:flex;align-items:center;gap:12px;padding:10px 16px;margin:2px 8px;border-radius:8px;color:rgba(209,250,229,0.65);font-size:13px;font-weight:600;text-decoration:none;transition:all 0.15s;}
-  .nav-link:hover{background:rgba(255,255,255,0.07);color:#fff;}
-  .nav-link.active{background:rgba(74,222,128,0.18);color:#86efac;}
-  .nav-link.active .material-symbols-outlined{color:#4ade80;}
-  .nav-link.logout{color:rgba(252,165,165,0.7);}
-  .nav-link.logout:hover{background:rgba(239,68,68,0.1);color:#fca5a5;}
-  .nav-link.settings-link.active{background:rgba(74,222,128,0.18);color:#86efac;}
-  .card{background:#fff;border-radius:14px;border:1px solid #e5e7eb;}
-  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;}
-  .form-field input,.form-field select,.form-field textarea{
-    width:100%;border:1.5px solid #d1d5db;border-radius:8px;padding:9px 12px;font-size:13px;
-    color:#111827;font-family:inherit;background:#fafafa;box-sizing:border-box;
-  }
-  .form-field input:focus,.form-field select:focus,.form-field textarea:focus{
-    outline:none;border-color:#006c49;background:#fff;box-shadow:0 0 0 3px rgba(0,108,73,0.08);
-  }
-  label.flabel{font-size:11px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:5px;}
-  .toggle-switch{width:44px;height:24px;border-radius:99px;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0;}
-  .toggle-switch input{opacity:0;width:0;height:0;position:absolute;}
-  .toggle-knob{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:99px;background:#fff;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
-  .section-head{padding:16px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;}
-  .setting-row{display:flex;align-items:center;padding:14px 20px;border-bottom:1px solid #f3f4f6;}
-  .setting-row:last-child{border-bottom:none;}
-  .toast{position:fixed;top:70px;right:20px;background:#003527;color:#fff;border-radius:10px;padding:12px 20px;font-size:13px;font-weight:600;z-index:999;transform:translateX(140%);transition:transform 0.3s ease;}
-  .toast.show{transform:translateX(0);}
-</style>
-<script src="../assets/js/manager-auth-store.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriPulse — Settings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Tailwind CDN offline fallback — basic readable layout */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f8f9ff;
+      color: #0b1c30;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+    img { max-width: 100%; }
+    a { color: #ea580c; }
+    a:hover { text-decoration: underline; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    input[type="text"], input[type="password"], input[type="email"],
+    input[type="number"], select, textarea {
+      width: 100%;
+      border: 1px solid #bfc9c3;
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: #0b1c30;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      background-color: #7c2d12;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    button:hover { background-color: #9a3412; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid #e5e7eb; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: 700; }
+  </style>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f6f8;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+
+    .sidebar {
+      background: #0f172a;
+      width: 220px;
+      min-width: 220px;
+      flex-shrink: 0;
+      min-height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      margin: 2px 8px;
+      border-radius: 8px;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .nav-link:hover {
+      background: #1e293b;
+      color: #ffffff;
+    }
+
+    .nav-link.active {
+      background: #ea580c;
+      color: #ffffff;
+    }
+
+    .nav-link.active .material-symbols-outlined {
+      color: #ffffff;
+    }
+
+    .nav-link.logout {
+      color: rgba(252, 165, 165, 0.7);
+    }
+
+    .nav-link.logout:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+    }
+
+    .nav-link.settings-link.active {
+      background: #ea580c;
+      color: #ffffff;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      width: 100%;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 13px;
+      color: #111827;
+      font-family: inherit;
+      background: #fafafa;
+      box-sizing: border-box;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      outline: none;
+      border-color: #ea580c;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(0, 108, 73, 0.08);
+    }
+
+    label.flabel {
+      font-size: 11px;
+      font-weight: 700;
+      color: #374151;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .toggle-switch {
+      width: 44px;
+      height: 24px;
+      border-radius: 99px;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .toggle-knob {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 99px;
+      background: #fff;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .section-head {
+      padding: 16px 20px;
+      background: #f9fafb;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      padding: 14px 20px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+
+    .toast {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      background: #7c2d12;
+      color: #fff;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 999;
+      transform: translateX(140%);
+      transition: transform 0.3s ease;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+  </style>
+  <script src="../assets/js/manager-auth-store.js"></script>
 </head>
+
 <body>
-<aside class="sidebar">
-  <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
-    <div style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:#4ade80;font-size:20px;">agriculture</span></div>
-    <div><div style="color:#f0fdf4;font-weight:800;font-size:14px;">Sri Sri Sugar</div><div style="color:rgba(209,250,229,0.5);font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL</div></div>
+  <aside class="sidebar">
+    <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
+      <div
+        style="width:36px;height:36px;background:#ea580c;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="color:#ffffff;font-size:20px;">agriculture</span>
+      </div>
+      <div>
+        <div style="color:#ffffff;font-weight:800;font-size:14px;line-height:1.2;">Sri Sri Sugar</div>
+        <div style="color:#94a3b8;font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL
+        </div>
+      </div>
+    </div>
+    <nav style="flex:1;padding:8px 0;">
+      <a class="nav-link" href="manager_dashboard.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">dashboard</span>Overview</a>
+      <a class="nav-link" href="manager_officers.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">group</span>Officers</a>
+      <a class="nav-link" href="manager_tasks.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">checklist</span>Tasks</a>
+      <a class="nav-link" href="manager_farmers.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">person_search</span>Farmers Registry</a>
+      <a class="nav-link" href="manager_performance.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">bar_chart</span>Performance</a>
+      <a class="nav-link" href="manager_reports.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">assessment</span>Reports Dashboard</a>
+      <a class="nav-link" href="manager_campaign_reports.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">query_stats</span>Campaign Reports</a>
+    </nav>
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding:8px 0;">
+      <a class="nav-link settings-link active" href="manager_settings.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">settings</span>Settings</a>
+      <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined"
+          style="font-size:20px;">logout</span>Logout</a>
+    </div>
+  </aside>
+
+  <div id="toast" class="toast"></div>
+
+  <div style="margin-left:220px;min-height:100vh;">
+    <header
+      style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
+      <span style="font-size:18px;font-weight:800;color:#7c2d12;">Settings</span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="badge" style="background:#dbeafe;color:#1e40af;">Manager</span>
+        <div
+          style="width:36px;height:36px;border-radius:99px;background:#ffedd5;color:#7c2d12;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;"
+          id="avatarCircle">M</div>
+        <span style="font-size:13px;font-weight:600;color:#374151;" id="headerName">—</span>
+      </div>
+    </header>
+
+    <div style="padding:24px;max-width:860px;display:flex;flex-direction:column;gap:20px;">
+
+      <!-- Profile Settings -->
+      <div class="card" style="overflow:hidden;">
+        <div class="section-head">
+          <div style="font-size:14px;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px;"><span
+              class="material-symbols-outlined" style="font-size:18px;color:#ea580c;">person</span> Profile Settings
+          </div>
+          <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Update your account details</div>
+        </div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
+          <div
+            style="display:flex;align-items:center;gap:16px;padding:16px;background:#fff7ed;border-radius:10px;border:1px solid #fed7aa;">
+            <div
+              style="width:60px;height:60px;border-radius:99px;background:#7c2d12;color:#fff;font-weight:800;font-size:24px;display:flex;align-items:center;justify-content:center;"
+              id="profileAvatar">M</div>
+            <div>
+              <div style="font-size:16px;font-weight:800;color:#111827;" id="profileName">Manager Admin</div>
+              <div style="font-size:12px;color:#6b7280;" id="profileRole">Manager · Sri Sri Sugar</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-field"><label class="flabel">Full Name</label><input type="text" id="settName"
+                value="Manager Admin"></div>
+            <div class="form-field"><label class="flabel">Username</label><input type="text" id="settUser"
+                value="manager" readonly style="background:#f3f4f6;color:#9ca3af;"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-field"><label class="flabel">Email</label><input type="email" id="settEmail"
+                value="manager@srisrisugar.com"></div>
+            <div class="form-field"><label class="flabel">Phone</label><input type="tel" id="settPhone"
+                value="9800000001"></div>
+          </div>
+          <button onclick="saveProfile()"
+            style="align-self:flex-start;background:#7c2d12;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><span
+              class="material-symbols-outlined" style="font-size:16px;">save</span>Save Profile</button>
+        </div>
+      </div>
+
+      <!-- Change Password -->
+      <div class="card" style="overflow:hidden;">
+        <div class="section-head">
+          <div style="font-size:14px;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px;"><span
+              class="material-symbols-outlined" style="font-size:18px;color:#ea580c;">lock</span> Change Password</div>
+        </div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
+          <div class="form-field"><label class="flabel">Current Password</label><input type="password" id="currPwd"
+              placeholder="Enter current password"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-field"><label class="flabel">New Password</label><input type="password" id="newPwd"
+                placeholder="New password"></div>
+            <div class="form-field"><label class="flabel">Confirm Password</label><input type="password" id="confPwd"
+                placeholder="Confirm new password"></div>
+          </div>
+          <button onclick="changePassword()"
+            style="align-self:flex-start;background:#fff7ed;color:#7c2d12;border:1.5px solid #fed7aa;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><span
+              class="material-symbols-outlined" style="font-size:16px;">key</span>Update Password</button>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="card" style="overflow:hidden;">
+        <div class="section-head">
+          <div style="font-size:14px;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px;"><span
+              class="material-symbols-outlined" style="font-size:18px;color:#ea580c;">notifications</span> Notification
+            Preferences</div>
+        </div>
+        <div id="notifRows">
+          <div class="setting-row" onclick="toggleNotif(this)">
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:#111827;">Task Assignment Alerts</div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Get notified when a task is assigned or updated
+              </div>
+            </div>
+            <div class="toggle-switch" style="background:#7c2d12;">
+              <div class="toggle-knob" style="transform:translateX(20px);"></div>
+            </div>
+          </div>
+          <div class="setting-row" onclick="toggleNotif(this)">
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:#111827;">Overdue Task Reminders</div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Remind when tasks are past their due date</div>
+            </div>
+            <div class="toggle-switch" style="background:#7c2d12;">
+              <div class="toggle-knob" style="transform:translateX(20px);"></div>
+            </div>
+          </div>
+          <div class="setting-row" onclick="toggleNotif(this)">
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:#111827;">Daily Performance Summary</div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Receive a daily digest of field activities</div>
+            </div>
+            <div class="toggle-switch" style="background:#d1d5db;">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
+          <div class="setting-row" onclick="toggleNotif(this)">
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:#111827;">Report Generation Alerts</div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Notify when a report is ready to download</div>
+            </div>
+            <div class="toggle-switch" style="background:#7c2d12;">
+              <div class="toggle-knob" style="transform:translateX(20px);"></div>
+            </div>
+          </div>
+          <div class="setting-row" onclick="toggleNotif(this)">
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:600;color:#111827;">Officer Login Alerts</div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Alert when a field officer logs in</div>
+            </div>
+            <div class="toggle-switch" style="background:#d1d5db;">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Preferences -->
+      <div class="card" style="overflow:hidden;">
+        <div class="section-head">
+          <div style="font-size:14px;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px;"><span
+              class="material-symbols-outlined" style="font-size:18px;color:#ea580c;">tune</span> System Preferences
+          </div>
+        </div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-field"><label class="flabel">Default Export Format</label>
+              <select id="expFmt">
+                <option>PDF</option>
+                <option>CSV</option>
+                <option>Excel (XLSX)</option>
+              </select>
+            </div>
+            <div class="form-field"><label class="flabel">Date Format</label>
+              <select id="dateFmt">
+                <option>DD MMM YYYY (21 May 2026)</option>
+                <option>DD/MM/YYYY (21/05/2026)</option>
+                <option>YYYY-MM-DD (2026-05-21)</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-field"><label class="flabel">Language</label>
+              <select>
+                <option>English</option>
+                <option>Marathi</option>
+                <option>Hindi</option>
+              </select>
+            </div>
+            <div class="form-field"><label class="flabel">Timezone</label>
+              <select>
+                <option>IST (UTC+5:30)</option>
+              </select>
+            </div>
+          </div>
+          <button onclick="savePreferences()"
+            style="align-self:flex-start;background:#7c2d12;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><span
+              class="material-symbols-outlined" style="font-size:16px;">save</span>Save Preferences</button>
+        </div>
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="card" style="overflow:hidden;border-color:#fecaca;">
+        <div class="section-head" style="background:#fff8f8;">
+          <div style="font-size:14px;font-weight:700;color:#b91c1c;display:flex;align-items:center;gap:8px;"><span
+              class="material-symbols-outlined" style="font-size:18px;">warning</span> Danger Zone</div>
+        </div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+          <div
+            style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#fff8f8;border-radius:10px;border:1px solid #fecaca;">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#374151;">Clear Session Cache</div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Clear all locally stored session data</div>
+            </div>
+            <button onclick="clearCache()"
+              style="background:#fee2e2;border:1.5px solid #fecaca;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#b91c1c;cursor:pointer;">Clear
+              Cache</button>
+          </div>
+          <div
+            style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#fff8f8;border-radius:10px;border:1px solid #fecaca;">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#374151;">Sign Out Everywhere</div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Log out of all active sessions</div>
+            </div>
+            <button onclick="signOutAll()"
+              style="background:#dc2626;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;">Sign
+              Out All</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
-  <nav style="flex:1;padding:8px 0;">
-    <a class="nav-link" href="manager_dashboard.html"><span class="material-symbols-outlined" style="font-size:20px;">dashboard</span>Overview</a>
-    <a class="nav-link" href="manager_officers.html"><span class="material-symbols-outlined" style="font-size:20px;">group</span>Officers</a>
-    <a class="nav-link" href="manager_tasks.html"><span class="material-symbols-outlined" style="font-size:20px;">checklist</span>Tasks</a>
-    <a class="nav-link" href="manager_performance.html"><span class="material-symbols-outlined" style="font-size:20px;">bar_chart</span>Performance</a>
-    <a class="nav-link" href="manager_reports.html"><span class="material-symbols-outlined" style="font-size:20px;">assessment</span>Reports</a>
-  </nav>
-  <div style="border-top:1px solid rgba(255,255,255,0.07);padding:8px 0;">
-    <a class="nav-link settings-link active" href="manager_settings.html"><span class="material-symbols-outlined" style="font-size:20px;">settings</span>Settings</a>
-    <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined" style="font-size:20px;">logout</span>Logout</a>
-  </div>
-</aside>
 
-<div id="toast" class="toast"></div>
+  <script>
+    function showToast(msg) {
+      const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 3000);
+    }
 
-<div style="margin-left:220px;min-height:100vh;">
-  <header style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
-    <span style="font-size:18px;font-weight:800;color:#003527;">Settings</span>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <span class="badge" style="background:#dbeafe;color:#1e40af;">Manager</span>
-      <div style="width:36px;height:36px;border-radius:99px;background:#d1fae5;color:#003527;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;" id="avatarCircle">M</div>
-      <span style="font-size:13px;font-weight:600;color:#374151;" id="headerName">—</span>
-    </div>
-  </header>
+    function toggleNotif(row) {
+      const sw = row.querySelector(".toggle-switch");
+      const knob = row.querySelector(".toggle-knob");
+      const isOn = sw.style.background === "#rgb(0, 53, 39)" || sw.style.background === "#7c2d12";
+      sw.style.background = isOn ? "#d1d5db" : "#7c2d12";
+      knob.style.transform = isOn ? "translateX(0)" : "translateX(20px)";
+    }
 
-  <div style="padding:24px;max-width:860px;display:flex;flex-direction:column;gap:20px;">
+    function saveProfile() {
+      const name = document.getElementById("settName").value;
+      const s = AgriAuth.getSession(); if (s) { s.name = name; AgriAuth.setSession(s); }
+      document.getElementById("profileAvatar").textContent = name.charAt(0).toUpperCase();
+      document.getElementById("profileName").textContent = name;
+      showToast("✓ Profile saved successfully");
+    }
 
-    <!-- Profile Settings -->
-    <div class="card" style="overflow:hidden;">
-      <div class="section-head">
-        <div style="font-size:14px;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px;"><span class="material-symbols-outlined" style="font-size:18px;color:#006c49;">person</span> Profile Settings</div>
-        <div style="font-size:11px;color:#9ca3af;margin-top:2px;">Update your account details</div>
-      </div>
-      <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
-        <div style="display:flex;align-items:center;gap:16px;padding:16px;background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0;">
-          <div style="width:60px;height:60px;border-radius:99px;background:#003527;color:#fff;font-weight:800;font-size:24px;display:flex;align-items:center;justify-content:center;" id="profileAvatar">M</div>
-          <div>
-            <div style="font-size:16px;font-weight:800;color:#111827;" id="profileName">Manager Admin</div>
-            <div style="font-size:12px;color:#6b7280;" id="profileRole">Manager · Sri Sri Sugar</div>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <div class="form-field"><label class="flabel">Full Name</label><input type="text" id="settName" value="Manager Admin"></div>
-          <div class="form-field"><label class="flabel">Username</label><input type="text" id="settUser" value="manager" readonly style="background:#f3f4f6;color:#9ca3af;"></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <div class="form-field"><label class="flabel">Email</label><input type="email" id="settEmail" value="manager@srisrisugar.com"></div>
-          <div class="form-field"><label class="flabel">Phone</label><input type="tel" id="settPhone" value="9800000001"></div>
-        </div>
-        <button onclick="saveProfile()" style="align-self:flex-start;background:#003527;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px;">save</span>Save Profile</button>
-      </div>
-    </div>
+    function changePassword() {
+      const curr = document.getElementById("currPwd").value;
+      const nw = document.getElementById("newPwd").value;
+      const conf = document.getElementById("confPwd").value;
+      if (!curr) { showToast("⚠ Enter current password"); return; }
+      if (nw.length < 6) { showToast("⚠ New password must be at least 6 characters"); return; }
+      if (nw !== conf) { showToast("⚠ Passwords do not match"); return; }
+      document.getElementById("currPwd").value = ""; document.getElementById("newPwd").value = ""; document.getElementById("confPwd").value = "";
+      showToast("✓ Password updated successfully");
+    }
 
-    <!-- Change Password -->
-    <div class="card" style="overflow:hidden;">
-      <div class="section-head">
-        <div style="font-size:14px;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px;"><span class="material-symbols-outlined" style="font-size:18px;color:#006c49;">lock</span> Change Password</div>
-      </div>
-      <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
-        <div class="form-field"><label class="flabel">Current Password</label><input type="password" id="currPwd" placeholder="Enter current password"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <div class="form-field"><label class="flabel">New Password</label><input type="password" id="newPwd" placeholder="New password"></div>
-          <div class="form-field"><label class="flabel">Confirm Password</label><input type="password" id="confPwd" placeholder="Confirm new password"></div>
-        </div>
-        <button onclick="changePassword()" style="align-self:flex-start;background:#f0fdf4;color:#003527;border:1.5px solid #bbf7d0;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px;">key</span>Update Password</button>
-      </div>
-    </div>
+    function savePreferences() { showToast("✓ Preferences saved"); }
 
-    <!-- Notifications -->
-    <div class="card" style="overflow:hidden;">
-      <div class="section-head">
-        <div style="font-size:14px;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px;"><span class="material-symbols-outlined" style="font-size:18px;color:#006c49;">notifications</span> Notification Preferences</div>
-      </div>
-      <div id="notifRows">
-        <div class="setting-row" onclick="toggleNotif(this)">
-          <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111827;">Task Assignment Alerts</div><div style="font-size:11px;color:#9ca3af;margin-top:2px;">Get notified when a task is assigned or updated</div></div>
-          <div class="toggle-switch" style="background:#003527;"><div class="toggle-knob" style="transform:translateX(20px);"></div></div>
-        </div>
-        <div class="setting-row" onclick="toggleNotif(this)">
-          <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111827;">Overdue Task Reminders</div><div style="font-size:11px;color:#9ca3af;margin-top:2px;">Remind when tasks are past their due date</div></div>
-          <div class="toggle-switch" style="background:#003527;"><div class="toggle-knob" style="transform:translateX(20px);"></div></div>
-        </div>
-        <div class="setting-row" onclick="toggleNotif(this)">
-          <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111827;">Daily Performance Summary</div><div style="font-size:11px;color:#9ca3af;margin-top:2px;">Receive a daily digest of field activities</div></div>
-          <div class="toggle-switch" style="background:#d1d5db;"><div class="toggle-knob"></div></div>
-        </div>
-        <div class="setting-row" onclick="toggleNotif(this)">
-          <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111827;">Report Generation Alerts</div><div style="font-size:11px;color:#9ca3af;margin-top:2px;">Notify when a report is ready to download</div></div>
-          <div class="toggle-switch" style="background:#003527;"><div class="toggle-knob" style="transform:translateX(20px);"></div></div>
-        </div>
-        <div class="setting-row" onclick="toggleNotif(this)">
-          <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#111827;">Officer Login Alerts</div><div style="font-size:11px;color:#9ca3af;margin-top:2px;">Alert when a field officer logs in</div></div>
-          <div class="toggle-switch" style="background:#d1d5db;"><div class="toggle-knob"></div></div>
-        </div>
-      </div>
-    </div>
+    function clearCache() {
+      if (confirm("Clear all session cache data?")) { localStorage.clear(); showToast("✓ Cache cleared"); }
+    }
 
-    <!-- System Preferences -->
-    <div class="card" style="overflow:hidden;">
-      <div class="section-head">
-        <div style="font-size:14px;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px;"><span class="material-symbols-outlined" style="font-size:18px;color:#006c49;">tune</span> System Preferences</div>
-      </div>
-      <div style="padding:20px;display:flex;flex-direction:column;gap:14px;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <div class="form-field"><label class="flabel">Default Export Format</label>
-            <select id="expFmt">
-              <option>PDF</option><option>CSV</option><option>Excel (XLSX)</option>
-            </select>
-          </div>
-          <div class="form-field"><label class="flabel">Date Format</label>
-            <select id="dateFmt">
-              <option>DD MMM YYYY (21 May 2026)</option>
-              <option>DD/MM/YYYY (21/05/2026)</option>
-              <option>YYYY-MM-DD (2026-05-21)</option>
-            </select>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <div class="form-field"><label class="flabel">Language</label>
-            <select><option>English</option><option>Marathi</option><option>Hindi</option></select>
-          </div>
-          <div class="form-field"><label class="flabel">Timezone</label>
-            <select><option>IST (UTC+5:30)</option></select>
-          </div>
-        </div>
-        <button onclick="savePreferences()" style="align-self:flex-start;background:#003527;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px;">save</span>Save Preferences</button>
-      </div>
-    </div>
+    function signOutAll() {
+      if (confirm("Sign out from all sessions?")) { AgriAuth.clearSession(); window.location.replace("/login.html"); }
+    }
 
-    <!-- Danger Zone -->
-    <div class="card" style="overflow:hidden;border-color:#fecaca;">
-      <div class="section-head" style="background:#fff8f8;">
-        <div style="font-size:14px;font-weight:700;color:#b91c1c;display:flex;align-items:center;gap:8px;"><span class="material-symbols-outlined" style="font-size:18px;">warning</span> Danger Zone</div>
-      </div>
-      <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#fff8f8;border-radius:10px;border:1px solid #fecaca;">
-          <div><div style="font-size:13px;font-weight:700;color:#374151;">Clear Session Cache</div><div style="font-size:11px;color:#9ca3af;margin-top:2px;">Clear all locally stored session data</div></div>
-          <button onclick="clearCache()" style="background:#fee2e2;border:1.5px solid #fecaca;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#b91c1c;cursor:pointer;">Clear Cache</button>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#fff8f8;border-radius:10px;border:1px solid #fecaca;">
-          <div><div style="font-size:13px;font-weight:700;color:#374151;">Sign Out Everywhere</div><div style="font-size:11px;color:#9ca3af;margin-top:2px;">Log out of all active sessions</div></div>
-          <button onclick="signOutAll()" style="background:#dc2626;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;">Sign Out All</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<script>
-function showToast(msg){
-  const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"),3000);
-}
-
-function toggleNotif(row){
-  const sw=row.querySelector(".toggle-switch");
-  const knob=row.querySelector(".toggle-knob");
-  const isOn=sw.style.background==="#rgb(0, 53, 39)"||sw.style.background==="#003527";
-  sw.style.background=isOn?"#d1d5db":"#003527";
-  knob.style.transform=isOn?"translateX(0)":"translateX(20px)";
-}
-
-function saveProfile(){
-  const name=document.getElementById("settName").value;
-  const s=AgriAuth.getSession();if(s){s.name=name;AgriAuth.setSession(s);}
-  document.getElementById("profileAvatar").textContent=name.charAt(0).toUpperCase();
-  document.getElementById("profileName").textContent=name;
-  showToast("✓ Profile saved successfully");
-}
-
-function changePassword(){
-  const curr=document.getElementById("currPwd").value;
-  const nw=document.getElementById("newPwd").value;
-  const conf=document.getElementById("confPwd").value;
-  if(!curr){showToast("⚠ Enter current password");return;}
-  if(nw.length<6){showToast("⚠ New password must be at least 6 characters");return;}
-  if(nw!==conf){showToast("⚠ Passwords do not match");return;}
-  document.getElementById("currPwd").value="";document.getElementById("newPwd").value="";document.getElementById("confPwd").value="";
-  showToast("✓ Password updated successfully");
-}
-
-function savePreferences(){showToast("✓ Preferences saved");}
-
-function clearCache(){
-  if(confirm("Clear all session cache data?")){localStorage.clear();showToast("✓ Cache cleared");}}
-
-function signOutAll(){
-  if(confirm("Sign out from all sessions?")){AgriAuth.clearSession();window.location.replace("/login.html");}}
-
-document.addEventListener("DOMContentLoaded",()=>{
-  const s=AgriAuth.getSession();
-  if(s){
-    const name=(s.name&&s.name!=="None")?s.name:s.username;
-    document.getElementById("avatarCircle").textContent=name.charAt(0).toUpperCase();
-    document.getElementById("headerName").textContent=name;
-    document.getElementById("profileAvatar").textContent=name.charAt(0).toUpperCase();
-    document.getElementById("profileName").textContent=name;
-    document.getElementById("settName").value=name;
-    document.getElementById("settUser").value=s.username||"manager";
-  }
-  document.getElementById("logoutBtn").addEventListener("click",e=>{e.preventDefault();if(confirm("Sign out?"))AgriAuth.clearSession(),window.location.replace("/login.html");});
-});
-</script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const s = AgriAuth.getSession();
+      if (s) {
+        const name = (s.name && s.name !== "None") ? s.name : s.username;
+        document.getElementById("avatarCircle").textContent = name.charAt(0).toUpperCase();
+        document.getElementById("headerName").textContent = name;
+        document.getElementById("profileAvatar").textContent = name.charAt(0).toUpperCase();
+        document.getElementById("profileName").textContent = name;
+        document.getElementById("settName").value = name;
+        document.getElementById("settUser").value = s.username || "manager";
+      }
+      document.getElementById("logoutBtn").addEventListener("click", e => { e.preventDefault(); if (confirm("Sign out?")) AgriAuth.clearSession(), window.location.replace("/login.html"); });
+    });
+  </script>
 </body>
+
 </html>

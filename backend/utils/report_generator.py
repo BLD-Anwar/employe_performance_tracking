@@ -3,6 +3,268 @@ import csv
 import json
 import datetime
 from database import db_cursor
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
+
+def build_excel_report(snapshot_data, meeting_rows, history_rows):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Task Performance Report"
+    
+    # Enable grid lines explicitly
+    ws.views.sheetView[0].showGridLines = True
+    
+    # Styles
+    font_family = "Segoe UI"
+    
+    # Colors
+    color_dark_green = "004D40"   # Header banner background
+    color_teal = "00796B"         # Section title background
+    color_zebra_1 = "FFFFFF"       # Zebra row 1
+    color_zebra_2 = "F0F7F6"       # Zebra row 2
+    color_border = "D3D3D3"        # Light gray borders
+    
+    # Fonts
+    font_title = Font(name=font_family, size=16, bold=True, color="FFFFFF")
+    font_section = Font(name=font_family, size=12, bold=True, color="FFFFFF")
+    font_header = Font(name=font_family, size=11, bold=True, color="FFFFFF")
+    font_label_bold = Font(name=font_family, size=10, bold=True)
+    font_data = Font(name=font_family, size=10)
+    font_italic = Font(name=font_family, size=10, italic=True)
+    
+    # Fills
+    fill_title = PatternFill(start_color=color_dark_green, end_color=color_dark_green, fill_type="solid")
+    fill_section = PatternFill(start_color=color_teal, end_color=color_teal, fill_type="solid")
+    fill_header = PatternFill(start_color=color_dark_green, end_color=color_dark_green, fill_type="solid")
+    fill_zebra_1 = PatternFill(start_color=color_zebra_1, end_color=color_zebra_1, fill_type="solid")
+    fill_zebra_2 = PatternFill(start_color=color_zebra_2, end_color=color_zebra_2, fill_type="solid")
+    
+    # Alignments
+    align_center = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    align_left = Alignment(horizontal="left", vertical="center", wrap_text=True)
+    align_right = Alignment(horizontal="right", vertical="center", wrap_text=True)
+    align_title = Alignment(horizontal="center", vertical="center")
+    
+    # Borders
+    border_thin = Side(border_style="thin", color=color_border)
+    border_data = Border(left=border_thin, right=border_thin, top=border_thin, bottom=border_thin)
+    
+    # Row Heights
+    ws.row_dimensions[1].height = 40
+    
+    # A. Title Banner (Merged A1 to D1)
+    ws.merge_cells("A1:D1")
+    cell_a1 = ws["A1"]
+    cell_a1.value = "SRI SRI SUGAR — TASK PERFORMANCE REPORT"
+    cell_a1.font = font_title
+    cell_a1.fill = fill_title
+    cell_a1.alignment = align_title
+    
+    # Apply styling to merged title cells
+    for col in range(1, 5):
+        ws.cell(row=1, column=col).fill = fill_title
+        
+    ws.append([]) # Row 2 (empty spacing)
+    ws.row_dimensions[2].height = 15
+    
+    # B. Metadata / Task Details
+    task = snapshot_data.get("task", {})
+    metrics = snapshot_data.get("metrics", {})
+    kpis = snapshot_data.get("kpis", {})
+    ranking = snapshot_data.get("ranking", {})
+    
+    metadata = [
+        ("Task ID", task.get("task_id", "")),
+        ("Task Name", task.get("task_name", "")),
+        ("Work Type", task.get("work_type", "")),
+        ("Schedule", task.get("schedule_type", "")),
+        ("Priority", task.get("priority", "")),
+        ("Assigned Officer", f"{task.get('officer_name', '')} ({task.get('officer_code', '')})"),
+        ("Start Date", task.get("start_date", "")),
+        ("End Date", task.get("end_date", "")),
+        ("Task Status", task.get("status", "")),
+        ("Completion Rate", f"{metrics.get('completion_rate', 0.0)}% ({metrics.get('completed_farmers', 0)}/{metrics.get('farmer_count', 0)} Farmers)"),
+        ("Meetings Coverage", f"{kpis.get('meetings_coverage_pct', 0.0)}%"),
+        ("Calculated Score", f"{kpis.get('calculated_score', 0.0)}% (Grade: {kpis.get('grade', 'N/A')})"),
+        ("Officer Rank", f"#{ranking.get('rank', 0)} of {ranking.get('total_officers', 0)}"),
+    ]
+    
+    current_row = 3
+    for label, val in metadata:
+        # Col A: Label
+        ws.cell(row=current_row, column=1, value=label).font = font_label_bold
+        ws.cell(row=current_row, column=1).alignment = align_right
+        ws.cell(row=current_row, column=1).border = border_data
+        
+        # Col B: Value (Merged B, C, D)
+        ws.merge_cells(start_row=current_row, start_column=2, end_row=current_row, end_column=4)
+        cell_val = ws.cell(row=current_row, column=2, value=val)
+        cell_val.font = font_data
+        cell_val.alignment = align_left
+        cell_val.border = border_data
+        
+        for col in range(2, 5):
+            ws.cell(row=current_row, column=col).border = border_data
+            
+        ws.row_dimensions[current_row].height = 20
+        current_row += 1
+        
+    ws.append([]) # Empty spacer row
+    current_row += 1
+    
+    # C. Farmer Meeting Details
+    num_cols_meeting = 22
+    col_letter_meeting_end = get_column_letter(num_cols_meeting)
+    
+    ws.merge_cells(f"A{current_row}:{col_letter_meeting_end}{current_row}")
+    cell_sec1 = ws.cell(row=current_row, column=1, value="=== FARMER MEETING DETAILS ===")
+    cell_sec1.font = font_section
+    cell_sec1.fill = fill_section
+    cell_sec1.alignment = align_title
+    
+    for col in range(1, num_cols_meeting + 1):
+        ws.cell(row=current_row, column=col).fill = fill_section
+        
+    ws.row_dimensions[current_row].height = 25
+    current_row += 1
+    
+    meeting_headers = [
+        "Farmer Code", "Farmer Name", "Village",
+        "KCC", "KCC Reason",
+        "Canara HNT", "Canara Reason",
+        "Sangola HNT", "Sangola Reason",
+        "Cane Registration", "Cane Reg Remark",
+        "Recovery", "Recovery Reason",
+        "Vehicle Agreement", "Vehicle Reason",
+        "Expected Tonnage", "Cane Development",
+        "Feedback", "Remark", "Meeting Date",
+        "Vehicle Working", "Vehicle Working Reason"
+    ]
+    
+    for col_idx, header_text in enumerate(meeting_headers, start=1):
+        c = ws.cell(row=current_row, column=col_idx, value=header_text)
+        c.font = font_header
+        c.fill = fill_header
+        c.alignment = align_center
+        c.border = border_data
+        
+    ws.row_dimensions[current_row].height = 28
+    current_row += 1
+    
+    def yn(val):
+        if val is None: return "—"
+        return "Yes" if val else "No"
+        
+    for r_idx, r in enumerate(meeting_rows):
+        row_data = [
+            r[0], r[1], r[2],
+            yn(r[3]), r[4] or "",
+            yn(r[5]), r[6] or "",
+            yn(r[7]), r[8] or "",
+            yn(r[9]), r[10] or "",
+            yn(r[11]), r[12] or "",
+            yn(r[13]), r[14] or "",
+            r[15] or 0, r[16] or "",
+            r[17] or "", r[18] or "", r[19] or "",
+            yn(r[20]), r[21] or ""
+        ]
+        
+        fill_row = fill_zebra_2 if r_idx % 2 == 1 else fill_zebra_1
+        
+        for col_idx, val in enumerate(row_data, start=1):
+            c = ws.cell(row=current_row, column=col_idx, value=val)
+            c.font = font_data
+            c.fill = fill_row
+            c.border = border_data
+            
+            if col_idx in [4, 6, 8, 10, 12, 14, 20]:
+                c.alignment = align_center
+            elif col_idx in [1, 16, 21]:
+                c.alignment = align_center
+            else:
+                c.alignment = align_left
+                
+        ws.row_dimensions[current_row].height = 20
+        current_row += 1
+        
+    ws.append([]) # Spacer row
+    current_row += 1
+    
+    # D. Task Activity Timeline / History
+    num_cols_history = 4
+    col_letter_history_end = get_column_letter(num_cols_history)
+    
+    ws.merge_cells(f"A{current_row}:{col_letter_history_end}{current_row}")
+    cell_sec2 = ws.cell(row=current_row, column=1, value="=== TASK ACTIVITY TIMELINE / HISTORY ===")
+    cell_sec2.font = font_section
+    cell_sec2.fill = fill_section
+    cell_sec2.alignment = align_title
+    
+    for col in range(1, num_cols_history + 1):
+        ws.cell(row=current_row, column=col).fill = fill_section
+        
+    ws.row_dimensions[current_row].height = 25
+    current_row += 1
+    
+    history_headers = ["Timestamp", "Action", "Remarks", "Officer / Manager"]
+    for col_idx, header_text in enumerate(history_headers, start=1):
+        c = ws.cell(row=current_row, column=col_idx, value=header_text)
+        c.font = font_header
+        c.fill = fill_header
+        c.alignment = align_center
+        c.border = border_data
+        
+    ws.row_dimensions[current_row].height = 28
+    current_row += 1
+    
+    if not history_rows:
+        ws.merge_cells(f"A{current_row}:{col_letter_history_end}{current_row}")
+        c = ws.cell(row=current_row, column=1, value="No lifecycle logs recorded for this task.")
+        c.font = font_italic
+        c.alignment = align_center
+        c.border = border_data
+        
+        for col in range(1, num_cols_history + 1):
+            ws.cell(row=current_row, column=col).border = border_data
+            
+        ws.row_dimensions[current_row].height = 20
+        current_row += 1
+    else:
+        for r_idx, hr in enumerate(history_rows):
+            row_data = [hr[0], hr[1], hr[2], (hr[3] or "").strip() or "System"]
+            fill_row = fill_zebra_2 if r_idx % 2 == 1 else fill_zebra_1
+            
+            for col_idx, val in enumerate(row_data, start=1):
+                c = ws.cell(row=current_row, column=col_idx, value=val)
+                c.font = font_data
+                c.fill = fill_row
+                c.border = border_data
+                
+                if col_idx == 1:
+                    c.alignment = align_center
+                else:
+                    c.alignment = align_left
+                    
+            ws.row_dimensions[current_row].height = 20
+            current_row += 1
+            
+    # E. Auto-adjust column widths
+    for col in ws.columns:
+        max_len = 0
+        col_letter = get_column_letter(col[0].column)
+        
+        for cell in col:
+            if cell.row in [1] or (cell.value and str(cell.value).startswith("===")):
+                continue
+            if cell.value:
+                val_str = str(cell.value)
+                max_len = max(max_len, len(val_str))
+                
+        ws.column_dimensions[col_letter].width = max(max_len + 3, 12)
+        
+    return wb
+
 
 # Base directory for storing static report files
 REPORTS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "reports")
@@ -200,7 +462,9 @@ def generate_task_report(task_id: int, manager_id: int = 1):
         village_count = len(unique_villages)
         completion_rate = round((completed_farmers / farmer_count * 100), 2) if farmer_count > 0 else 0.0
 
-        # 3. Meeting KPIs from TbL_TRN_Farmer_Meeting for this officer
+        # 3. Meeting KPIs — scoped to THIS task only (work_plan_id = task_id)
+        #    Previously this was WHERE employee_id = ? which pulled the officer's
+        #    entire lifetime history, inflating/mixing scores across tasks.
         cur.execute("""
             SELECT
                 COUNT(*) AS total_meetings,
@@ -211,8 +475,8 @@ def generate_task_report(task_id: int, manager_id: int = 1):
                 SUM(CASE WHEN recovery = 1 THEN 1 ELSE 0 END) AS recovery_yes,
                 SUM(CASE WHEN vehicle_agreement = 1 THEN 1 ELSE 0 END) AS vehicle_yes
             FROM TbL_TRN_Farmer_Meeting
-            WHERE employee_id = ?
-        """, officer_id)
+            WHERE employee_id = ? AND work_plan_id = ?
+        """, officer_id, task_id)
         mk = cur.fetchone()
 
         total_meetings = mk[0] or 0
@@ -232,10 +496,14 @@ def generate_task_report(task_id: int, manager_id: int = 1):
         )
         grade = compute_grade(calculated_score)
 
-        # 4. Missed Farmers — assigned farmers without any meeting
+        # 4. Missed Farmers — farmers assigned to THIS task with no meeting recorded for it
+        #    Previously this was WHERE employee_id = ? which marked a farmer as "met"
+        #    even if the meeting was for a completely different task.
         cur.execute("""
-            SELECT DISTINCT farmer_code FROM TbL_TRN_Farmer_Meeting WHERE employee_id = ?
-        """, officer_id)
+            SELECT DISTINCT farmer_code
+            FROM TbL_TRN_Farmer_Meeting
+            WHERE employee_id = ? AND work_plan_id = ?
+        """, officer_id, task_id)
         met_farmer_ids = set(r[0] for r in cur.fetchall())
         missed_farmers = []
         for f in farmers_list:
@@ -310,62 +578,60 @@ def generate_task_report(task_id: int, manager_id: int = 1):
     }
     snapshot_json = json.dumps(snapshot_data)
 
-    # 8. Create CSV file
+    # 8. Create Excel file
     now = datetime.datetime.now()
     year_str = now.strftime("%Y")
     month_str = now.strftime("%m")
-    relative_path = os.path.join(year_str, month_str, f"task_{task_id}_report.csv")
+    relative_path = os.path.join(year_str, month_str, f"task_{task_id}_report.xlsx")
     absolute_dir = os.path.join(REPORTS_DIR, year_str, month_str)
     os.makedirs(absolute_dir, exist_ok=True)
-    absolute_filepath = os.path.join(absolute_dir, f"task_{task_id}_report.csv")
+    absolute_filepath = os.path.join(absolute_dir, f"task_{task_id}_report.xlsx")
 
-    with open(absolute_filepath, mode="w", newline="", encoding="utf-8") as f_csv:
-        writer = csv.writer(f_csv)
-        writer.writerow(["=== SRI SRI SUGAR — TASK PERFORMANCE REPORT ==="])
-        writer.writerow([])
-        writer.writerow(["Task ID", task_id])
-        writer.writerow(["Task Name", task_name])
-        writer.writerow(["Work Type", work_type])
-        writer.writerow(["Schedule", schedule_type])
-        writer.writerow(["Priority", priority])
-        writer.writerow(["Assigned Officer", f"{officer_name} ({officer_code})"])
-        writer.writerow(["Start Date", start_date])
-        writer.writerow(["End Date", end_date])
-        writer.writerow(["Task Status", dynamic_status])
-        writer.writerow([])
-        writer.writerow(["=== PERFORMANCE SUMMARY ==="])
-        writer.writerow(["Performance Score", f"{calculated_score}%"])
-        writer.writerow(["Performance Grade", grade])
-        writer.writerow(["Officer Rank", f"#{rank_info['rank']} of {rank_info['total']}"])
-        if score_trend is not None:
-            trend_str = f"+{score_trend}%" if score_trend >= 0 else f"{score_trend}%"
-            writer.writerow(["Score Trend vs Previous", trend_str])
-        writer.writerow([])
-        writer.writerow(["=== KPI BREAKDOWN ==="])
-        writer.writerow(["KCC Compliance", f"{kcc_pct}%"])
-        writer.writerow(["Canara HNT", f"{canara_pct}%"])
-        writer.writerow(["Sangola HNT", f"{sangola_pct}%"])
-        writer.writerow(["Cane Registration", f"{cane_reg_pct}%"])
-        writer.writerow(["Recovery", f"{recovery_pct}%"])
-        writer.writerow(["Vehicle Agreement", f"{vehicle_pct}%"])
-        writer.writerow(["Farmer Meeting Coverage", f"{meetings_coverage_pct}%"])
-        writer.writerow([])
-        writer.writerow(["=== FARMER COMPLETION ==="])
-        writer.writerow(["Total Farmers", farmer_count])
-        writer.writerow(["Completed", completed_farmers])
-        writer.writerow(["Pending", pending_farmers])
-        writer.writerow(["Completion Rate", f"{completion_rate}%"])
-        writer.writerow([])
-        writer.writerow(["=== ASSIGNED FARMERS ==="])
-        writer.writerow(["Farmer Code", "Farmer Name", "Taluka", "Village", "Mobile", "Visit Status"])
-        for f in farmers_list:
-            writer.writerow([f["farmer_id"], f["name"], f["taluka"], f["village"], f["mobile"], f["status"]])
-        if missed_farmers:
-            writer.writerow([])
-            writer.writerow(["=== MISSED FARMERS (Not Visited) ==="])
-            writer.writerow(["Farmer Code", "Farmer Name", "Village"])
-            for mf in missed_farmers:
-                writer.writerow([mf["farmer_id"], mf["name"], mf["village"]])
+    meeting_rows = []
+    if officer_id:
+        with db_cursor() as cur:
+            cur.execute("""
+                SELECT
+                    tfm.farmer_id,
+                    ISNULL(m.NameE, 'Unknown') AS farmer_name,
+                    ISNULL(v.Village_NameE, '') AS village,
+                    fm.kcc, fm.kcc_reason,
+                    fm.canara_hnt, fm.canara_reason,
+                    fm.sangola_hnt, fm.sangola_reason,
+                    fm.cane_registration, fm.cane_registration_remark,
+                    fm.recovery, fm.recovery_reason,
+                    fm.vehicle_agreement, fm.vehicle_reason,
+                    fm.expected_tonnage,
+                    fm.cane_development,
+                    fm.feedback,
+                    fm.remark,
+                    CONVERT(VARCHAR, fm.created_at, 106) AS meeting_date,
+                    fm.is_working_vehicle, fm.vehicle_working_reason
+                FROM TASK_FARMER_MAPPING tfm
+                LEFT JOIN dbo.TBL_MST_MASTER m ON m.code = tfm.farmer_id
+                LEFT JOIN dbo.TBl_mst_village v ON v.Village_Code = m.Village_code
+                LEFT JOIN TbL_TRN_Farmer_Meeting fm ON fm.farmer_code = tfm.farmer_id
+                    AND fm.employee_id = ? AND fm.work_plan_id = ?
+                WHERE tfm.task_id = ?
+            """, officer_id, task_id, task_id)
+            meeting_rows = cur.fetchall()
+
+    with db_cursor() as cur:
+        cur.execute("""
+            SELECT 
+                CONVERT(VARCHAR, al.timestamp, 120) AS timestamp_str,
+                al.action,
+                al.remarks,
+                ISNULL(u.first_name,'') + ' ' + ISNULL(u.last_name,'') AS officer_name
+            FROM TASK_ACTIVITY_LOG al
+            LEFT JOIN dbo.auth_user u ON u.id = al.officer
+            WHERE al.task_id = ?
+            ORDER BY al.timestamp DESC
+        """, task_id)
+        history_rows = cur.fetchall()
+
+    wb = build_excel_report(snapshot_data, meeting_rows, history_rows)
+    wb.save(absolute_filepath)
 
     # 9. Insert into DB
     with db_cursor() as cur:

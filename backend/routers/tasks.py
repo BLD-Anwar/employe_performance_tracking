@@ -5,16 +5,17 @@ Tables: TASK_MASTER, TASK_LOCATION, TASK_FARMER_MAPPING, TASK_ACTIVITY_LOG,
         TBL_MST_DAILY_WORKTYPE (work types),
         TBl_mst_village, TBl_mst_taluka
 """
-from fastapi import APIRouter, HTTPException, Query, Header
+from fastapi import APIRouter, HTTPException, Query, Header, Depends
 from database import db_cursor
 from datetime import datetime, timedelta
 import calendar
 from pydantic import BaseModel
 from typing import List, Optional
+from auth import require_role
 
 VALID_SCHEDULE_TYPES = {"DAILY", "WEEKLY", "MONTHLY"}
 
-router = APIRouter(prefix="/api/tasks", tags=["tasks"])
+router = APIRouter(prefix="/api/tasks", tags=["tasks"], dependencies=[Depends(require_role("manager"))])
 
 
 class AssignTaskRequest(BaseModel):
@@ -70,6 +71,13 @@ def get_assignable_officers():
             WHERE u.is_active = 1
               AND ISNULL(ud.is_blocked, 0) = 0
               AND u.id IS NOT NULL
+              AND u.id NOT IN (
+                  SELECT assigned_officer
+                  FROM TASK_MASTER
+                  WHERE status NOT IN ('COMPLETED', 'CANCELLED')
+                    AND end_date >= CAST(GETDATE() AS DATE)
+                    AND assigned_officer IS NOT NULL
+              )
             ORDER BY full_name
         """)
         rows = cur.fetchall()
@@ -101,8 +109,12 @@ def get_farmers(
     sub_village: str = Query(default=""),
     search: str = Query(default=""),
     exclude_task_id: Optional[int] = Query(default=None),
+    registry: bool = Query(default=False),
 ):
-    """Farmer search from TBL_MST_MASTER, excluding active tasks."""
+    """Farmer search from TBL_MST_MASTER.
+    registry=True  → show ALL farmers (Farmer Registry page, no exclusion)
+    registry=False → exclude farmers already in active tasks (task assignment)
+    """
     where_parts = ["1=1"]
     params = []
 
@@ -120,11 +132,22 @@ def get_farmers(
         params.append(f"%{search}%")
         params.append(f"%{search}%")
 
-    exclude_clause = ""
+    # Build the active-task exclusion clause (skip when viewing the registry)
+    exclusion_clause = ""
     exclude_params = []
-    if exclude_task_id is not None:
-        exclude_clause = "AND tm.task_id != ?"
-        exclude_params = [exclude_task_id]
+    if not registry:
+        extra = ""
+        if exclude_task_id is not None:
+            extra = "AND tm.task_id != ?"
+            exclude_params = [exclude_task_id]
+        exclusion_clause = f"""
+          AND m.code NOT IN (
+              SELECT farmer_id
+              FROM TASK_FARMER_MAPPING tfm
+              JOIN TASK_MASTER tm ON tm.task_id = tfm.task_id
+              WHERE tm.status NOT IN ('COMPLETED', 'CANCELLED')
+              {extra}
+          )"""
 
     sql = f"""
         SELECT TOP 200
@@ -138,13 +161,7 @@ def get_farmers(
         LEFT JOIN dbo.TBl_mst_taluka  t ON t.Taluka_Code  = m.Talula_Code
         LEFT JOIN dbo.Tbl_mst_sub_village s ON s.Subvillage_code = m.Subvillage_code
         WHERE {' AND '.join(where_parts)}
-          AND m.code NOT IN (
-              SELECT farmer_id 
-              FROM TASK_FARMER_MAPPING tfm
-              JOIN TASK_MASTER tm ON tm.task_id = tfm.task_id
-              WHERE tm.status NOT IN ('COMPLETED', 'CANCELLED')
-              {exclude_clause}
-          )
+        {exclusion_clause}
         ORDER BY m.NameE
     """
     with db_cursor() as cur:
@@ -161,6 +178,67 @@ def get_farmers(
         }
         for r in rows
     ]
+
+
+@router.get("/farmers/count")
+def get_farmers_count(
+    village: str = Query(default=""),
+    taluka: str = Query(default=""),
+    sub_village: str = Query(default=""),
+    search: str = Query(default=""),
+    exclude_task_id: Optional[int] = Query(default=None),
+    registry: bool = Query(default=False),
+):
+    """Get the total count of matching farmers from TBL_MST_MASTER.
+    registry=True  → count ALL farmers (no active-task exclusion)
+    registry=False → exclude farmers already in active tasks
+    """
+    where_parts = ["1=1"]
+    params = []
+
+    if village:
+        where_parts.append("v.Village_NameE = ?")
+        params.append(village)
+    if taluka:
+        where_parts.append("t.Taluka_NameE = ?")
+        params.append(taluka)
+    if sub_village:
+        where_parts.append("s.Subvillage_NameE = ?")
+        params.append(sub_village)
+    if search:
+        where_parts.append("(m.NameE LIKE ? OR CAST(m.code AS VARCHAR(20)) LIKE ?)")
+        params.append(f"%{search}%")
+        params.append(f"%{search}%")
+
+    exclusion_clause = ""
+    exclude_params = []
+    if not registry:
+        extra = ""
+        if exclude_task_id is not None:
+            extra = "AND tm.task_id != ?"
+            exclude_params = [exclude_task_id]
+        exclusion_clause = f"""
+          AND m.code NOT IN (
+              SELECT farmer_id
+              FROM TASK_FARMER_MAPPING tfm
+              JOIN TASK_MASTER tm ON tm.task_id = tfm.task_id
+              WHERE tm.status NOT IN ('COMPLETED', 'CANCELLED')
+              {extra}
+          )"""
+
+    sql = f"""
+        SELECT COUNT(*)
+        FROM dbo.TBL_MST_MASTER m
+        LEFT JOIN dbo.TBl_mst_village v ON v.Village_Code = m.Village_code
+        LEFT JOIN dbo.TBl_mst_taluka  t ON t.Taluka_Code  = m.Talula_Code
+        LEFT JOIN dbo.Tbl_mst_sub_village s ON s.Subvillage_code = m.Subvillage_code
+        WHERE {' AND '.join(where_parts)}
+        {exclusion_clause}
+    """
+    with db_cursor() as cur:
+        cur.execute(sql, *params, *exclude_params)
+        row = cur.fetchone()
+    return {"count": row[0] if row else 0}
 
 
 @router.get("/talukas")
@@ -311,18 +389,10 @@ def assign_task(body: AssignTaskRequest):
         raise HTTPException(status_code=400, detail=f"Invalid schedule_type: {body.schedule_type}")
 
     # Validate date constraints per schedule type
+    if from_dt > to_dt:
+        raise HTTPException(status_code=400, detail="End date must be on or after start date")
     if stype == "DAILY" and from_dt.date() != to_dt.date():
         raise HTTPException(status_code=400, detail="Daily schedule: start and end date must be the same")
-    if stype == "WEEKLY":
-        diff = (to_dt.date() - from_dt.date()).days
-        if diff != 6:
-            raise HTTPException(status_code=400, detail="Weekly schedule: date range must be exactly 7 days (Mon–Sun)")
-    if stype == "MONTHLY":
-        if from_dt.day != 1:
-            raise HTTPException(status_code=400, detail="Monthly schedule: start date must be the 1st of the month")
-        last_day = calendar.monthrange(to_dt.year, to_dt.month)[1]
-        if to_dt.day != last_day or from_dt.month != to_dt.month or from_dt.year != to_dt.year:
-            raise HTTPException(status_code=400, detail="Monthly schedule: dates must cover the full calendar month")
 
     with db_cursor() as cur:
         cur.execute(
@@ -494,6 +564,40 @@ def update_task(task_id: int, body: EditTaskRequest):
         cur.execute("SELECT farmer_id FROM TASK_FARMER_MAPPING WHERE task_id = ?", task_id)
         old_farmers = {r[0] for r in cur.fetchall()}
 
+        # Validate that all assigned farmers belong to the new village if location changes
+        loc_changed = False
+        if not old_loc:
+            loc_changed = True
+        else:
+            if (old_loc[0] or "").strip() != (body.district or "").strip() or \
+               (old_loc[1] or "").strip() != (body.village or "").strip() or \
+               (old_loc[2] or "").strip() != (body.sub_village or "").strip():
+                loc_changed = True
+
+        if loc_changed and body.village and body.farmers:
+            placeholders = ",".join(["?"] * len(body.farmers))
+            cur.execute(f"""
+                SELECT m.code, m.NameE, ISNULL(v.Village_NameE, '') AS village_name
+                FROM dbo.TBL_MST_MASTER m
+                LEFT JOIN dbo.TBl_mst_village v ON v.Village_Code = m.Village_code
+                WHERE m.code IN ({placeholders})
+            """, *body.farmers)
+            farmers_locations = cur.fetchall()
+
+            mismatched_ids = []
+            for f_id, f_name, f_village in farmers_locations:
+                if f_village.strip() != body.village.strip():
+                    mismatched_ids.append(f_id)
+
+            if mismatched_ids:
+                raise HTTPException(
+                    status_code=400,
+                    detail={
+                        "message": f"{len(mismatched_ids)} farmers are not in the selected village. Please update the farmer list.",
+                        "mismatched_farmer_ids": mismatched_ids
+                    }
+                )
+
         logs = []
         
         work_type = (body.work_type_name or old_tm[1] or "").strip()
@@ -594,3 +698,34 @@ def get_task_history(task_id: int):
         }
         for r in rows
     ]
+
+
+@router.get("/farmers/{farmer_code}")
+def get_farmer_profile(farmer_code: int):
+    with db_cursor() as cur:
+        cur.execute("""
+            SELECT 
+                m.code,
+                m.NameE,
+                ISNULL(v.Village_NameE, '') AS village,
+                ISNULL(t.Taluka_NameE, '')  AS taluka,
+                ISNULL(s.Subvillage_NameE, '') AS sub_village,
+                ISNULL(m.MobileNumber, '') AS mobile
+            FROM dbo.TBL_MST_MASTER m
+            LEFT JOIN dbo.TBl_mst_village v ON v.Village_Code = m.Village_code
+            LEFT JOIN dbo.TBl_mst_taluka  t ON t.Taluka_Code  = m.Talula_Code
+            LEFT JOIN dbo.Tbl_mst_sub_village s ON s.Subvillage_code = m.Subvillage_code
+            WHERE m.code = ?
+        """, farmer_code)
+        row = cur.fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Farmer not found")
+    return {
+        "id": row[0],
+        "name": row[1],
+        "village": row[2],
+        "taluka": row[3],
+        "sub_village": row[4],
+        "mobile": row[5]
+    }
+

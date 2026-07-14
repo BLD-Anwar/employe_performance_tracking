@@ -5,6 +5,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AgriPulse — Settings</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style>
+    /* Tailwind CDN offline fallback — basic readable layout */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f8f9ff;
+      color: #0b1c30;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+    img { max-width: 100%; }
+    a { color: #ea580c; }
+    a:hover { text-decoration: underline; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    input[type="text"], input[type="password"], input[type="email"],
+    input[type="number"], select, textarea {
+      width: 100%;
+      border: 1px solid #bfc9c3;
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: #0b1c30;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      background-color: #7c2d12;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    button:hover { background-color: #9a3412; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid #e5e7eb; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: 700; }
+  </style>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 <script id="tailwind-config">
   tailwind.config = {
@@ -12,8 +53,8 @@
     theme: {
       extend: {
         colors: {
-          "primary": "#003527",
-          "secondary": "#006c49",
+          "primary": "#7c2d12",
+          "secondary": "#ea580c",
           "background": "#f4f6f8",
           "surface": "#ffffff",
         },
@@ -26,18 +67,36 @@
 <style>
   body { font-family: 'Inter', sans-serif; background-color: #f4f6f8; color: #0f172a; }
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-  input:focus, select:focus, textarea:focus { outline: none; box-shadow: 0 0 0 2px rgba(16,185,129,0.2); border-color: #10b981; }
+  input:focus, select:focus, textarea:focus { outline: none; box-shadow: 0 0 0 2px rgba(16,185,129,0.2); border-color: #f97316; }
 
-  .agri-sidebar { background: linear-gradient(180deg, #002b1f 0%, #001f16 100%); box-shadow: inset -1px 0 0 rgba(255,255,255,0.03), 4px 0 24px rgba(0,0,0,0.15); }
-  .nav-link { color: rgba(255,255,255,0.7); transition: all 0.2s ease; }
-  .nav-link:hover { background: rgba(255,255,255,0.06); color: #ffffff; transform: translateX(2px); }
-  .nav-link.active { background: linear-gradient(90deg, rgba(16,185,129,0.15), rgba(16,185,129,0.02)); color: #34d399; border-left: 3px solid #10b981; }
-  .nav-link.active .material-symbols-outlined { color: #10b981; }
+  .agri-sidebar {
+        background: #0f172a;
+        box-shadow:
+          inset -1px 0 0 rgba(255, 255, 255, 0.03),
+          4px 0 24px rgba(0, 0, 0, 0.15);
+      }
+  .nav-link {
+        color: #94a3b8;
+        transition: all 0.2s ease;
+      }
+  .nav-link:hover {
+        background: #1e293b;
+        color: #ffffff;
+        transform: translateX(2px);
+      }
+  .nav-link.active {
+        background: #ea580c;
+        color: #ffffff;
+        border-left: 3px solid #ea580c;
+      }
+  .nav-link.active .material-symbols-outlined {
+        color: #ffffff;
+      }
 
   .premium-card { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05); border-radius: 1rem; }
 
   .toggle-track { width: 40px; height: 22px; background: #e2e8f0; border-radius: 999px; position: relative; cursor: pointer; transition: background 0.2s; }
-  .toggle-track.on { background: #006c49; }
+  .toggle-track.on { background: #ea580c; }
   .toggle-thumb { width: 18px; height: 18px; background: white; border-radius: 999px; position: absolute; top: 2px; left: 2px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
   .toggle-track.on .toggle-thumb { transform: translateX(18px); }
 </style>
@@ -51,12 +110,16 @@
 <!-- Side Navigation -->
 <aside class="agri-sidebar w-[240px] flex flex-col py-6 shrink-0 fixed h-screen z-50 text-white">
   <div class="px-6 mb-8 flex items-center gap-3">
-    <div class="w-10 h-10 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center rounded-xl shadow-lg shrink-0">
-      <span class="material-symbols-outlined text-2xl text-emerald-400">agriculture</span>
-    </div>
+    <div
+          class="w-10 h-10 bg-[#ea580c] flex items-center justify-center rounded-xl shadow-lg shrink-0"
+        >
+          <span class="material-symbols-outlined text-2xl text-white"
+            >agriculture</span
+          >
+        </div>
     <div>
       <h1 class="text-sm font-black tracking-wider leading-none uppercase text-white">Sri Sri Sugar</h1>
-      <p class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest mt-1">Operations Portal</p>
+      <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Operations Portal</p>
     </div>
   </div>
   <nav class="flex-grow space-y-1">
@@ -82,9 +145,9 @@
     <div class="flex items-center gap-3">
       <div class="text-right">
         <p class="text-xs font-black text-slate-800 leading-none" id="headerUserName">Loading...</p>
-        <p class="text-[9px] text-emerald-600 font-bold uppercase tracking-wider mt-1" id="headerUserRole">Field Officer</p>
+        <p class="text-[9px] text-orange-600 font-bold uppercase tracking-wider mt-1" id="headerUserRole">Field Officer</p>
       </div>
-      <div class="w-9 h-9 rounded-xl bg-[#003527] text-emerald-300 font-bold text-xs flex items-center justify-center shadow" id="avatarCircle">A</div>
+      <div class="w-9 h-9 rounded-xl bg-[#7c2d12] text-orange-300 font-bold text-xs flex items-center justify-center shadow" id="avatarCircle">A</div>
     </div>
   </header>
 
@@ -102,7 +165,7 @@
         <!-- Account Info (read-only from session) -->
         <div class="premium-card overflow-hidden">
           <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
-            <span class="material-symbols-outlined text-[#003527] text-lg">manage_accounts</span>
+            <span class="material-symbols-outlined text-[#7c2d12] text-lg">manage_accounts</span>
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">My Account Information</h3>
           </div>
           <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
@@ -128,13 +191,13 @@
         <!-- Operations Preferences -->
         <div class="premium-card overflow-hidden">
           <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
-            <span class="material-symbols-outlined text-[#003527] text-lg">tune</span>
+            <span class="material-symbols-outlined text-[#7c2d12] text-lg">tune</span>
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Operations Preferences</h3>
           </div>
           <form class="p-6 space-y-5 text-xs" onsubmit="saveSettings(event)">
             <div class="space-y-1">
               <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Default Operations District</label>
-              <select class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-semibold focus:ring-1 focus:ring-emerald-600" id="settingDistrict">
+              <select class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-semibold focus:ring-1 focus:ring-orange-600" id="settingDistrict">
                 <option>Sangli Region (Atpadi / Tasgaon)</option>
                 <option>Sangola Sector (South)</option>
                 <option>Kolhapur Sugar Belt</option>
@@ -143,7 +206,7 @@
             </div>
             <div class="space-y-1">
               <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400">GPS Telemetry Sync Interval</label>
-              <select class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-semibold focus:ring-1 focus:ring-emerald-600">
+              <select class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-slate-700 font-semibold focus:ring-1 focus:ring-orange-600">
                 <option>Real-Time DGPS Sync (Recommended)</option>
                 <option>Every 15 Minutes</option>
                 <option>Hourly Sync</option>
@@ -194,7 +257,7 @@
               </div>
             </div>
 
-            <button type="submit" class="w-full bg-[#003527] hover:bg-[#002d21] text-emerald-300 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow active:scale-[0.98] uppercase tracking-wider transition-all">
+            <button type="submit" class="w-full bg-[#7c2d12] hover:bg-[#4a1505] text-orange-300 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow active:scale-[0.98] uppercase tracking-wider transition-all">
               <span class="material-symbols-outlined text-sm">save</span>
               Save Preferences
             </button>
@@ -204,11 +267,11 @@
         <!-- Security -->
         <div class="premium-card overflow-hidden">
           <div class="px-6 py-4 border-b bg-slate-50 flex items-center gap-2">
-            <span class="material-symbols-outlined text-[#003527] text-lg">lock</span>
+            <span class="material-symbols-outlined text-[#7c2d12] text-lg">lock</span>
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Security & Password</h3>
           </div>
           <div class="p-6 space-y-4 text-xs">
-            <p class="text-slate-500 leading-relaxed">Password changes are managed by the IT department. Contact <a href="mailto:software@srisrisugar.com" class="text-[#006c49] font-bold hover:underline">software@srisrisugar.com</a> to reset your credentials.</p>
+            <p class="text-slate-500 leading-relaxed">Password changes are managed by the IT department. Contact <a href="mailto:software@srisrisugar.com" class="text-[#ea580c] font-bold hover:underline">software@srisrisugar.com</a> to reset your credentials.</p>
             <button type="button" class="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg text-slate-600 font-bold hover:bg-slate-50 transition-all" onclick="alert('Password reset request sent to IT.\n\nContact: software@srisrisugar.com\nPhone: +91 233 247 9002')">
               <span class="material-symbols-outlined text-base">key</span>
               Request Password Reset
@@ -222,9 +285,9 @@
       <div class="col-span-12 lg:col-span-4 space-y-6">
 
         <div class="premium-card p-6 text-center">
-          <div class="w-16 h-16 mx-auto rounded-2xl bg-[#003527] text-emerald-300 font-black text-xl flex items-center justify-center shadow-lg mb-4" id="profileAvatar">A</div>
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-[#7c2d12] text-orange-300 font-black text-xl flex items-center justify-center shadow-lg mb-4" id="profileAvatar">A</div>
           <h3 class="text-base font-black text-slate-800" id="profileName">Loading...</h3>
-          <p class="text-xs text-[#006c49] font-bold uppercase tracking-wider mt-1" id="profileRole">Field Operations</p>
+          <p class="text-xs text-[#ea580c] font-bold uppercase tracking-wider mt-1" id="profileRole">Field Operations</p>
 
           <div class="border-t border-slate-100 mt-4 pt-4 space-y-3 text-xs text-left">
             <div class="flex justify-between items-center">
@@ -237,7 +300,7 @@
             </div>
             <div class="flex justify-between items-center">
               <span class="text-slate-400 font-medium">Session</span>
-              <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide">Active Secure</span>
+              <span class="bg-orange-50 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wide">Active Secure</span>
             </div>
             <div class="flex justify-between items-center">
               <span class="text-slate-400 font-medium">Joined</span>
@@ -250,15 +313,15 @@
         <div class="premium-card p-5 space-y-3">
           <h4 class="text-[10px] font-black text-slate-800 uppercase tracking-widest border-b pb-2">Quick Actions</h4>
           <a href="dashboard.html" class="flex items-center gap-3 p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition-all text-xs font-bold text-slate-700 group">
-            <span class="material-symbols-outlined text-[#006c49] text-lg">dashboard</span>
+            <span class="material-symbols-outlined text-[#ea580c] text-lg">dashboard</span>
             Go to My Dashboard
           </a>
           <a href="reports.html" class="flex items-center gap-3 p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition-all text-xs font-bold text-slate-700">
-            <span class="material-symbols-outlined text-[#006c49] text-lg">download</span>
+            <span class="material-symbols-outlined text-[#ea580c] text-lg">download</span>
             Download My Reports
           </a>
           <a href="support.html" class="flex items-center gap-3 p-2.5 rounded-xl border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition-all text-xs font-bold text-slate-700">
-            <span class="material-symbols-outlined text-[#006c49] text-lg">contact_support</span>
+            <span class="material-symbols-outlined text-[#ea580c] text-lg">contact_support</span>
             Open Support Ticket
           </a>
           <button id="signOutBtn" class="w-full flex items-center gap-3 p-2.5 rounded-xl border border-red-100 hover:bg-red-50 transition-all text-xs font-bold text-red-600 mt-2">

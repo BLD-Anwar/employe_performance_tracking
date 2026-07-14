@@ -10,10 +10,9 @@ const AgriAuth = {
   /** Backend origin — relative when served from FastAPI, absolute for file:// or different port */
   apiOrigin() {
     if (location.protocol === "file:") return "http://127.0.0.1:8000";
-    const host = location.hostname;
     const port = location.port;
-    if ((host === "localhost" || host === "127.0.0.1") && port && port !== "8000") {
-      return "http://127.0.0.1:8000";
+    if (port && port !== "8000") {
+      return `${location.protocol}//${location.hostname}:8000`;
     }
     return "";
   },
@@ -30,10 +29,12 @@ const AgriAuth = {
         const s = JSON.parse(raw);
         if (s && s.role === "officer") {
           return {
+            id: s.id,
             userId: s.id,
             username: s.username,
             name: s.name,
-            role: s.role
+            role: s.role,
+            token: s.token || s.access_token
           };
         }
       }

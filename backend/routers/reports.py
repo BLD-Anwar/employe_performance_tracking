@@ -2,12 +2,16 @@
 routers/reports.py  –  Activity log and CSV export
 Tables: dbo.activities, dbo.auth_user, dbo.purpose_of_work
 """
-import csv, io, math, os
-from fastapi import APIRouter, Query, HTTPException
+import csv, io, math, os, logging
+from typing import Optional
+from fastapi import APIRouter, Query, HTTPException, Depends
 from fastapi.responses import StreamingResponse, FileResponse
 from database import db_cursor
+from auth import require_role
 
-router = APIRouter(prefix="/api/reports", tags=["reports"])
+log = logging.getLogger(__name__)
+
+router = APIRouter(prefix="/api/reports", tags=["reports"], dependencies=[Depends(require_role("manager"))])
 def _build_where(search, work_type, officer, date_from, date_to):
     parts = ["1=1"]
     params = []
@@ -19,8 +23,8 @@ def _build_where(search, work_type, officer, date_from, date_to):
         parts.append("tm.work_type = ?")
         params.append(work_type)
     if officer:
-        parts.append("(ISNULL(u.first_name,'') + ' ' + ISNULL(u.last_name,'')) = ?")
-        params.append(officer)
+        parts.append("(ISNULL(u.first_name,'') + ' ' + ISNULL(u.last_name,'')) LIKE ?")
+        params.append(f"%{officer}%")
     if date_from:
         parts.append("CAST(m.created_at AS DATE) >= ?")
         params.append(date_from)
@@ -166,18 +170,29 @@ def get_work_types_for_filter():
 
 
 @router.get("/summary")
-def get_summary():
+def get_summary(year: Optional[int] = Query(default=None), month: Optional[int] = Query(default=None)):
     """High-level summary stats for the reports page."""
+    where_parts = ["1=1"]
+    params = []
+    if year:
+        where_parts.append("YEAR(m.created_at) = ?")
+        params.append(year)
+    if month:
+        where_parts.append("MONTH(m.created_at) = ?")
+        params.append(month)
+
+    sql = f"""
+        SELECT
+            COUNT(m.meeting_id)                    AS total,
+            COUNT(DISTINCT m.employee_id)          AS officers,
+            COUNT(DISTINCT f.Village_code)         AS villages,
+            COUNT(DISTINCT CAST(m.created_at AS DATE)) AS active_days
+        FROM TbL_TRN_Farmer_Meeting m
+        LEFT JOIN dbo.TBL_MST_MASTER f ON f.code = m.farmer_code
+        WHERE {' AND '.join(where_parts)}
+    """
     with db_cursor() as cur:
-        cur.execute("""
-            SELECT
-                COUNT(m.meeting_id)                    AS total,
-                COUNT(DISTINCT m.employee_id)          AS officers,
-                COUNT(DISTINCT f.Village_code)         AS villages,
-                COUNT(DISTINCT CAST(m.created_at AS DATE)) AS active_days
-            FROM TbL_TRN_Farmer_Meeting m
-            LEFT JOIN dbo.TBL_MST_MASTER f ON f.code = m.farmer_code
-        """)
+        cur.execute(sql, *params)
         r = cur.fetchone()
     return {
         "total_activities": r[0] or 0,
@@ -197,7 +212,8 @@ def generate_task_report_endpoint(task_id: int = Query(...), manager_id: int = Q
             raise HTTPException(status_code=404, detail=f"Task {task_id} not found")
         return {"success": True, "report_id": report_id, "message": f"Report generated for task {task_id}"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        log.error("Report generation failed: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Report generation failed. Please try again.")
 
 
 @router.post("/generate-all")
@@ -208,26 +224,34 @@ def generate_all_reports(manager_id: int = Query(default=1)):
         check_and_generate_eligible_reports(manager_id)
         return {"success": True, "message": "Eligible reports generated"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        log.error("Report generation failed: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Report generation failed. Please try again.")
 
 
 @router.get("/archive")
 def get_report_archive():
-    """List all generated task reports with grades, rankings, KPIs."""
+    """List ALL tasks with report data where available.
+    Tasks without a generated report (e.g. IN_PROGRESS) still appear
+    with live status and farmer count from TASK_MASTER directly.
+    """
     with db_cursor() as cur:
         cur.execute("""
-            SELECT 
+            SELECT
                 rm.report_id,
-                rm.task_id,
-                rm.report_type,
-                CONVERT(VARCHAR, rm.generated_date, 106) AS generated_date,
-                rm.status,
+                tm.task_id,
+                ISNULL(rm.report_type, tm.schedule_type),
+                ISNULL(CONVERT(VARCHAR, rm.generated_date, 106), CONVERT(VARCHAR, tm.created_at, 106)) AS generated_date,
+                ISNULL(rm.status, 'PENDING'),
                 rm.file_path,
-                ISNULL(rd.farmer_count, 0),
-                ISNULL(rd.village_count, 0),
+                ISNULL(rd.farmer_count,   (SELECT COUNT(*) FROM TASK_FARMER_MAPPING WHERE task_id = tm.task_id)),
+                ISNULL(rd.village_count,  0),
                 ISNULL(rd.completion_rate, 0),
-                ISNULL(rd.task_status, ''),
-                ISNULL(u.first_name,'') + ' ' + ISNULL(u.last_name,''),
+                CASE
+                    WHEN tm.end_date < CAST(GETDATE() AS DATE)
+                         AND tm.status NOT IN ('COMPLETED','CANCELLED') THEN 'OVERDUE'
+                    ELSE tm.status
+                END AS task_status,
+                ISNULL(u.first_name,'') + ' ' + ISNULL(u.last_name,'') AS officer_name,
                 tm.task_name,
                 rd.performance_grade,
                 rd.calculated_score,
@@ -245,11 +269,12 @@ def get_report_archive():
                 rd.missed_farmers_json,
                 ISNULL(tm.schedule_type, 'WEEKLY'),
                 rd.officer_id
-            FROM REPORT_MASTER rm
+            FROM TASK_MASTER tm
+            LEFT JOIN REPORT_MASTER rm ON rm.task_id = tm.task_id
             LEFT JOIN REPORT_DETAILS rd ON rd.report_id = rm.report_id
-            LEFT JOIN TASK_MASTER tm ON tm.task_id = rm.task_id
-            LEFT JOIN dbo.auth_user u ON u.id = rd.officer_id
-            ORDER BY rm.generated_date DESC
+            LEFT JOIN dbo.auth_user u ON u.id = tm.assigned_officer
+            WHERE tm.status NOT IN ('CANCELLED')
+            ORDER BY tm.created_at DESC
         """)
         rows = cur.fetchall()
 
@@ -435,83 +460,34 @@ def download_report_file(report_id: int = Query(...)):
         reports_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "reports")
         full_path = os.path.join(reports_dir, file_path.replace('/', os.sep))
         if os.path.isfile(full_path):
-            return FileResponse(full_path, media_type="text/csv", filename=os.path.basename(full_path))
+            ext = os.path.splitext(full_path)[1].lower()
+            if ext == ".xlsx":
+                media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            else:
+                media_type = "text/csv"
+            return FileResponse(full_path, media_type=media_type, filename=os.path.basename(full_path))
 
-    # File not on disk — generate CSV on-the-fly from snapshot
+    # File not on disk — generate Excel on-the-fly from snapshot
     with db_cursor() as cur:
         cur.execute("SELECT generated_snapshot_json FROM REPORT_DETAILS WHERE report_id = ?", report_id)
         det_row = cur.fetchone()
         
     if not det_row or not det_row[0]:
-        raise HTTPException(status_code=404, detail="Report snapshot not found to generate CSV")
+        raise HTTPException(status_code=404, detail="Report snapshot not found to generate Excel")
         
     import json
     snap = json.loads(det_row[0])
-    task = snap.get("task", {})
-    metrics = snap.get("metrics", {})
-    kpis = snap.get("kpis", {})
-    rank = snap.get("ranking", {})
-    trend = snap.get("trend", {})
-    farmers = snap.get("farmers", [])
-    missed = snap.get("missed_farmers", [])
-
-    output = io.StringIO()
-    writer = csv.writer(output)
-    writer.writerow(["=== SRI SRI SUGAR — TASK PERFORMANCE REPORT ==="])
-    writer.writerow([])
-    writer.writerow(["Task ID", task.get("task_id", task_id)])
-    writer.writerow(["Task Name", task.get("task_name", "")])
-    writer.writerow(["Work Type", task.get("work_type", "")])
-    writer.writerow(["Schedule", task.get("schedule_type", "")])
-    writer.writerow(["Priority", task.get("priority", "")])
-    writer.writerow(["Assigned Officer", f"{task.get('officer_name', '')} ({task.get('officer_code', '')})"])
-    writer.writerow(["Start Date", task.get("start_date", "")])
-    writer.writerow(["End Date", task.get("end_date", "")])
-    writer.writerow(["Task Status", task.get("status", "")])
-    writer.writerow([])
-    writer.writerow(["=== PERFORMANCE SUMMARY ==="])
-    writer.writerow(["Performance Score", f"{kpis.get('calculated_score', 0)}%"])
-    writer.writerow(["Performance Grade", kpis.get("grade", "F")])
-    writer.writerow(["Officer Rank", f"#{rank.get('rank', 0)} of {rank.get('total_officers', 0)}"])
-    trend_val = trend.get("change")
-    if trend_val is not None:
-        trend_str = f"+{trend_val}%" if trend_val >= 0 else f"{trend_val}%"
-        writer.writerow(["Score Trend vs Previous", trend_str])
-    writer.writerow([])
-    writer.writerow(["=== KPI BREAKDOWN ==="])
-    writer.writerow(["KCC Compliance", f"{kpis.get('kcc_pct', 0)}%"])
-    writer.writerow(["Canara HNT", f"{kpis.get('canara_pct', 0)}%"])
-    writer.writerow(["Sangola HNT", f"{kpis.get('sangola_pct', 0)}%"])
-    writer.writerow(["Cane Registration", f"{kpis.get('cane_reg_pct', 0)}%"])
-    writer.writerow(["Recovery", f"{kpis.get('recovery_pct', 0)}%"])
-    writer.writerow(["Vehicle Agreement", f"{kpis.get('vehicle_pct', 0)}%"])
-    writer.writerow(["Farmer Meeting Coverage", f"{kpis.get('meetings_coverage_pct', 0)}%"])
-    writer.writerow([])
-    writer.writerow(["=== FARMER COMPLETION ==="])
-    writer.writerow(["Total Farmers", metrics.get("farmer_count", 0)])
-    writer.writerow(["Completed", metrics.get("completed_farmers", 0)])
-    writer.writerow(["Pending", metrics.get("pending_farmers", 0)])
-    writer.writerow(["Completion Rate", f"{metrics.get('completion_rate', 0)}%"])
-    writer.writerow([])
-    writer.writerow(["=== ASSIGNED FARMERS ==="])
-    writer.writerow(["Farmer Code", "Farmer Name", "Taluka", "Village", "Mobile", "Visit Status"])
-    for f in farmers:
-        writer.writerow([f.get("farmer_id"), f.get("name"), f.get("taluka", ""), f.get("village", ""), f.get("mobile", ""), f.get("status")])
-    if missed:
-        writer.writerow([])
-        writer.writerow(["=== MISSED FARMERS (Not Visited) ==="])
-        writer.writerow(["Farmer Code", "Farmer Name", "Village"])
-        for mf in missed:
-            writer.writerow([mf.get("farmer_id"), mf.get("name"), mf.get("village", "")])
-
-    # Also add meeting details (yes/no fields) for each farmer
+    
+    from utils.report_generator import build_excel_report
+    
     officer_id = None
     with db_cursor() as cur:
         cur.execute("SELECT assigned_officer FROM TASK_MASTER WHERE task_id = ?", task_id)
         trow = cur.fetchone()
         if trow:
             officer_id = trow[0]
-
+            
+    meeting_rows = []
     if officer_id:
         with db_cursor() as cur:
             cur.execute("""
@@ -535,47 +511,35 @@ def download_report_file(report_id: int = Query(...)):
                 LEFT JOIN dbo.TBL_MST_MASTER m ON m.code = tfm.farmer_id
                 LEFT JOIN dbo.TBl_mst_village v ON v.Village_Code = m.Village_code
                 LEFT JOIN TbL_TRN_Farmer_Meeting fm ON fm.farmer_code = tfm.farmer_id
-                    AND fm.employee_id = ?
+                    AND fm.employee_id = ? AND fm.work_plan_id = ?
                 WHERE tfm.task_id = ?
-            """, officer_id, task_id)
+            """, officer_id, task_id, task_id)
             meeting_rows = cur.fetchall()
-
-        writer.writerow([])
-        writer.writerow(["=== FARMER MEETING DETAILS ==="])
-        writer.writerow([
-            "Farmer Code", "Farmer Name", "Village",
-            "KCC", "KCC Reason",
-            "Canara HNT", "Canara Reason",
-            "Sangola HNT", "Sangola Reason",
-            "Cane Registration", "Cane Reg Remark",
-            "Recovery", "Recovery Reason",
-            "Vehicle Agreement", "Vehicle Reason",
-            "Expected Tonnage", "Cane Development",
-            "Feedback", "Remark", "Meeting Date",
-            "Vehicle Working", "Vehicle Working Reason"
-        ])
-        for r in meeting_rows:
-            def yn(val):
-                if val is None: return "—"
-                return "Yes" if val else "No"
-            writer.writerow([
-                r[0], r[1], r[2],
-                yn(r[3]), r[4] or "",
-                yn(r[5]), r[6] or "",
-                yn(r[7]), r[8] or "",
-                yn(r[9]), r[10] or "",
-                yn(r[11]), r[12] or "",
-                yn(r[13]), r[14] or "",
-                r[15] or 0, r[16] or "",
-                r[17] or "", r[18] or "", r[19] or "",
-                yn(r[20]), r[21] or ""
-            ])
-
-    output.seek(0)
-    filename = f"task_{task_id}_report.csv"
+            
+    with db_cursor() as cur:
+        cur.execute("""
+            SELECT 
+                CONVERT(VARCHAR, al.timestamp, 120) AS timestamp_str,
+                al.action,
+                al.remarks,
+                ISNULL(u.first_name,'') + ' ' + ISNULL(u.last_name,'') AS officer_name
+            FROM TASK_ACTIVITY_LOG al
+            LEFT JOIN dbo.auth_user u ON u.id = al.officer
+            WHERE al.task_id = ?
+            ORDER BY al.timestamp DESC
+        """, task_id)
+        history_rows = cur.fetchall()
+        
+    wb = build_excel_report(snap, meeting_rows, history_rows)
+    
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    
+    filename = f"task_{task_id}_report.xlsx"
     return StreamingResponse(
-        iter([output.getvalue()]),
-        media_type="text/csv",
+        buffer,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
 
@@ -631,7 +595,7 @@ def get_farmer_meetings(task_id: int):
         """, task_id)
         farmers = cur.fetchall()
 
-        # Get all meetings for this officer
+        # Get meetings specific to THIS task (scoped by work_plan_id, not just officer)
         cur.execute("""
             SELECT
                 fm.farmer_code,
@@ -648,9 +612,9 @@ def get_farmer_meetings(task_id: int):
                 CONVERT(VARCHAR, fm.created_at, 106) AS meeting_date,
                 fm.is_working_vehicle, fm.vehicle_working_reason
             FROM TbL_TRN_Farmer_Meeting fm
-            WHERE fm.employee_id = ?
+            WHERE fm.work_plan_id = ?
             ORDER BY fm.created_at DESC
-        """, officer_id)
+        """, task_id)
         meetings = cur.fetchall()
 
     # Build a lookup: farmer_code -> latest meeting
@@ -709,4 +673,43 @@ def get_farmer_meetings(task_id: int):
         results.append(entry)
 
     return results
+
+
+@router.get("/campaign-analytics")
+def get_campaign_analytics():
+    with db_cursor() as cur:
+        cur.execute("""
+            SELECT 
+                ISNULL(v.Village_NameE, 'Unknown') AS village,
+                COUNT(m.meeting_id) AS total_meetings,
+                SUM(CASE WHEN m.kcc = 1 THEN 1 ELSE 0 END) AS kcc_yes,
+                SUM(CASE WHEN m.canara_hnt = 1 THEN 1 ELSE 0 END) AS canara_hnt_yes,
+                SUM(CASE WHEN m.sangola_hnt = 1 THEN 1 ELSE 0 END) AS sangola_hnt_yes,
+                SUM(CASE WHEN m.cane_registration = 1 THEN 1 ELSE 0 END) AS cane_reg_yes,
+                SUM(CASE WHEN m.recovery = 1 THEN 1 ELSE 0 END) AS recovery_yes,
+                SUM(CASE WHEN m.vehicle_agreement = 1 THEN 1 ELSE 0 END) AS vehicle_yes,
+                SUM(ISNULL(m.expected_tonnage, 0)) AS total_tonnage
+            FROM TbL_TRN_Farmer_Meeting m
+            LEFT JOIN dbo.TBL_MST_MASTER f ON f.code = m.farmer_code
+            LEFT JOIN dbo.TBl_mst_village v ON v.Village_Code = f.Village_code
+            GROUP BY v.Village_NameE
+            ORDER BY total_tonnage DESC
+        """)
+        rows = cur.fetchall()
+        
+    return [
+        {
+            "village": r[0],
+            "total_meetings": r[1],
+            "kcc_yes": r[2] or 0,
+            "canara_hnt_yes": r[3] or 0,
+            "sangola_hnt_yes": r[4] or 0,
+            "cane_reg_yes": r[5] or 0,
+            "recovery_yes": r[6] or 0,
+            "vehicle_yes": r[7] or 0,
+            "total_tonnage": float(r[8]) if r[8] is not None else 0.0
+        }
+        for r in rows
+    ]
+
 

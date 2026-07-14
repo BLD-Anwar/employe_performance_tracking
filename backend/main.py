@@ -2,13 +2,15 @@ import traceback
 import sys
 import os
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse, FileResponse
 
 # Ensure backend directory is in sys.path so nested relative-like imports work
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from auth import verify_token
 
 from database import (
     build_phase1_connection_string,
@@ -18,17 +20,17 @@ from database import (
 )
 
 # Import all routers
-from routers.meta        import router as meta_router
-from routers.auth        import router as auth_router
-from routers.dashboard   import router as dashboard_router
-from routers.officers    import router as officers_router
-from routers.tasks       import router as tasks_router
-from routers.performance import router as performance_router
-from routers.reports     import router as reports_router
-from routers.settings    import router as settings_router
-from routers.employee    import router as employee_router
-from routers.meeting     import router as meeting_router
-from routers.hr          import router as hr_router
+from routers.meta            import router as meta_router
+from routers.auth            import router as auth_router
+from routers.dashboard       import router as dashboard_router
+from routers.officers        import router as officers_router
+from routers.tasks           import router as tasks_router
+from routers.performance     import router as performance_router
+from routers.reports         import router as reports_router
+from routers.settings        import router as settings_router
+from routers.employee        import router as employee_router
+from routers.meeting         import router as meeting_router
+from routers.farmer_tracking import router as farmer_tracking_router
 
 def _startup_log_db_config():
     try:
@@ -45,11 +47,27 @@ app = FastAPI(title="AgriPulse Unified API", version="3.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=[
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def add_no_cache_headers(request, call_next):
+    response = await call_next(request)
+    path = request.url.path
+    if path.endswith(".html") or "/manager/" in path or "/employee/" in path:
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
 
 
 @app.on_event("startup")
@@ -64,56 +82,49 @@ def health():
 
 
 @app.get("/test-db")
-def test_db():
+def test_db(credentials: dict = Depends(verify_token)):
+    if credentials.get("role") != "manager":
+        raise HTTPException(status_code=403, detail="Forbidden: Manager access required")
     try:
         fetch_test_1()
         return {"status": "connected"}
     except Exception as e:
-        details = {
-            "error_type": type(e).__name__,
-            "error_message": str(e),
-            "full_exception": traceback.format_exc(),
-        }
-        try:
-            import pyodbc
-            if isinstance(e, pyodbc.Error):
-                details["pyodbc_args"] = [str(arg) for arg in getattr(e, "args", ())]
-        except Exception:
-            pass
-        return details
+        print("[test-db-error] Database connection failed:")
+        traceback.print_exc()
+        return {"status": "error", "detail": "Database connection failed"}
 
 
-@app.get("/debug/db")
-def debug_db():
-    try:
-        parts = build_phase1_connection_string()
-        return {
-            "server": parts["server"],
-            "database": parts["database"],
-            "driver": parts["driver"],
-            "env_loaded": True,
-        }
-    except Exception:
-        return {
-            "server": None,
-            "database": None,
-            "driver": None,
-            "env_loaded": False,
-        }
-
-
-@app.get("/debug/odbc")
-def debug_odbc():
-    return {"drivers": odbc_drivers()}
-
-
-@app.get("/debug/env")
-def debug_env():
-    return {
-        "PHASE1_DB_SERVER": os.getenv("PHASE1_DB_SERVER"),
-        "PHASE1_DB_NAME": os.getenv("PHASE1_DB_NAME"),
-        "PHASE1_DB_TRUSTED": os.getenv("PHASE1_DB_TRUSTED"),
-    }
+# @app.get("/debug/db")
+# def debug_db():
+#     try:
+#         parts = build_phase1_connection_string()
+#         return {
+#             "server": parts["server"],
+#             "database": parts["database"],
+#             "driver": parts["driver"],
+#             "env_loaded": True,
+#         }
+#     except Exception:
+#         return {
+#             "server": None,
+#             "database": None,
+#             "driver": None,
+#             "env_loaded": False,
+#         }
+# 
+# 
+# @app.get("/debug/odbc")
+# def debug_odbc():
+#     return {"drivers": odbc_drivers()}
+# 
+# 
+# @app.get("/debug/env")
+# def debug_env():
+#     return {
+#         "PHASE1_DB_SERVER": os.getenv("PHASE1_DB_SERVER"),
+#         "PHASE1_DB_NAME": os.getenv("PHASE1_DB_NAME"),
+#         "PHASE1_DB_TRUSTED": os.getenv("PHASE1_DB_TRUSTED"),
+#     }
 
 
 # Include all routers
@@ -127,7 +138,7 @@ app.include_router(reports_router)
 app.include_router(settings_router)
 app.include_router(employee_router)
 app.include_router(meeting_router)
-app.include_router(hr_router)
+app.include_router(farmer_tracking_router)
 
 
 # ── Serve frontend static files ─────────────────────────────────────────────
@@ -154,16 +165,18 @@ if os.path.exists(FRONTEND_DIR):
     if os.path.exists(employee_dir):
         app.mount("/employee", StaticFiles(directory=employee_dir, html=True), name="employee")
 
-    # Mount HR pages
-    hr_dir = os.path.join(FRONTEND_DIR, "hr")
-    if not os.path.exists(hr_dir):
-        os.makedirs(hr_dir, exist_ok=True)
-    app.mount("/hr", StaticFiles(directory=hr_dir, html=True), name="hr")
-
     # Root → Unified login page
     @app.get("/")
     def root():
         return RedirectResponse(url="/login.html")
+
+    @app.get("/manager")
+    def manager_root():
+        return RedirectResponse(url="/manager/login.html")
+
+    @app.get("/employee")
+    def employee_root():
+        return RedirectResponse(url="/employee/login.html")
 
     @app.get("/login")
     @app.get("/login.html")

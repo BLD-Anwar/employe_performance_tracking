@@ -1,252 +1,464 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgriPulse — Sign In</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-<script id="tailwind-config">
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          "primary": "#003527",
-          "secondary": "#006c49",
-          "background": "#f8f9ff",
-          "surface": "#ffffff",
-          "outline": "#707974",
-          "outline-variant": "#bfc9c3",
-          "on-surface": "#0b1c30",
-          "on-surface-variant": "#404944",
-        }
-      }
-    }
-  }
-</script>
-<style>
-  body { font-family: 'Inter', sans-serif; }
-  .login-gradient {
-    background: linear-gradient(135deg, rgba(0, 53, 39, 0.95) 0%, rgba(0, 33, 23, 0.85) 100%);
-  }
-  input:focus {
-    outline: none;
-    border-color: #006c49;
-    box-shadow: 0 0 0 3px rgba(0, 108, 73, 0.12);
-  }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-6px); }
-    75% { transform: translateX(6px); }
-  }
-  .shake { animation: shake 0.3s ease-in-out; }
-</style>
-</head>
-<body class="min-h-screen bg-background text-on-surface flex items-center justify-center overflow-hidden">
-
-<main class="flex h-screen w-full">
-  <!-- Left Side: Visual Narrative (Older UI/UX Design) -->
-  <section class="hidden lg:flex flex-1 relative overflow-hidden bg-primary">
-    <img alt="Aerial view of farm fields" class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out"
-         src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80"
-         style="transform: scale(1.05);">
-    <div class="absolute inset-0 login-gradient flex flex-col justify-end p-12">
-      <div class="max-w-md text-white mb-8">
-        <h1 class="text-4xl font-bold mb-4 leading-tight">
-          Precision Growth.<br>Data-Driven Results.
-        </h1>
-        <p class="text-sm opacity-80 mb-6">
-          Empowering agricultural leaders with real-time telemetry and advanced performance analytics to optimize yield and sustainability.
-        </p>
-        <div class="flex items-center gap-3">
-          <div class="h-1.5 w-12 bg-emerald-400 rounded-full"></div>
-          <span class="text-xs uppercase font-bold tracking-widest text-emerald-300">Sri Sri Sugar Co.</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Right Side: Authentication Canvas -->
-  <section class="flex-1 flex flex-col justify-center items-center p-8 bg-surface">
-    <div class="w-full max-w-[400px] space-y-8">
-      <!-- Brand Anchor -->
-      <div class="flex items-center gap-3">
-        <div class="w-12 h-12 bg-[#003527] text-white flex items-center justify-center rounded-xl shadow-lg shadow-emerald-950/20">
-          <span class="material-symbols-outlined text-3xl">agriculture</span>
-        </div>
-        <div>
-          <h2 class="text-2xl font-bold text-[#003527] tracking-tight">Sri Sri Sugar</h2>
-          <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-700/80">Management System</p>
-        </div>
-      </div>
-
-      <!-- Header -->
-      <div>
-        <h3 class="text-xl font-bold text-on-surface mb-1">Welcome back!</h3>
-        <p class="text-sm text-on-surface-variant">
-          Please enter your credentials to access the performance dashboard.
-        </p>
-      </div>
-
-      <!-- Error banner -->
-      <div id="loginError" class="hidden p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-semibold flex items-center gap-2" role="alert">
-        <span class="material-symbols-outlined text-base">error</span>
-        <span id="errorMessage">Authentication failed</span>
-      </div>
-
-      <!-- Form -->
-      <form class="space-y-4" id="loginForm" novalidate autocomplete="on">
-        <div class="space-y-1">
-          <label class="block text-[11px] font-bold uppercase tracking-wide text-on-surface-variant" for="username">Username / Employee ID</label>
-          <div class="relative group">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-[#006c49] transition-colors text-[20px]">person</span>
-            <input class="w-full bg-slate-50 border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-sm text-on-surface focus:bg-white transition-all"
-                   id="username" name="username" placeholder="Enter your ID or username" required type="text" autocomplete="username">
-          </div>
-        </div>
-
-        <div class="space-y-1">
-          <label class="block text-[11px] font-bold uppercase tracking-wide text-on-surface-variant" for="password">Password</label>
-          <div class="relative group">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-[#006c49] transition-colors text-[20px]">lock</span>
-            <input class="w-full bg-slate-50 border border-outline-variant rounded-lg py-2.5 pl-10 pr-10 text-sm text-on-surface focus:bg-white transition-all"
-                   id="password" name="password" placeholder="••••••••" required type="password" autocomplete="current-password">
-            <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors" onclick="togglePassword()">
-              <span class="material-symbols-outlined text-[20px]" id="eyeIcon">visibility</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="flex items-center justify-between py-1 text-xs">
-          <label class="flex items-center gap-2 cursor-pointer group">
-            <input class="peer h-4.5 w-4.5 rounded border-outline-variant text-[#006c49] focus:ring-[#006c49] transition-all cursor-pointer" type="checkbox" id="rememberMe" name="rememberMe">
-            <span class="text-on-surface-variant group-hover:text-on-surface transition-colors font-medium">Remember Me</span>
-          </label>
-          <a class="text-[#006c49] font-bold hover:underline transition-all" href="#" onclick="alert('Password resets are handled by IT.\nContact: software@srisrisugar.com')">Forgot Password?</a>
-        </div>
-
-        <button type="submit" id="submitBtn" class="w-full bg-[#003527] hover:bg-[#004d39] text-white font-bold py-2.5 rounded-lg hover:shadow-lg transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 group">
-          <span>Sign In</span>
-          <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-        </button>
-      </form>
-
-      <!-- Support Footer -->
-      <footer class="pt-6 border-t border-outline-variant/30 flex justify-between items-center text-xs text-on-surface-variant">
-        <p>
-          Having trouble? <a class="text-[#006c49] font-bold hover:underline" href="mailto:software@srisrisugar.com">Contact Support</a>
-        </p>
-        <div class="flex gap-3 text-outline">
-          <button type="button" class="material-symbols-outlined text-[20px] cursor-pointer hover:text-on-surface transition-colors bg-transparent border-0" title="Help" onclick="alert('Enter your employee ID and password as registered in Sri Sri Sugar Directory.')">help</button>
-        </div>
-      </footer>
-    </div>
-  </section>
-</main>
-
-<script>
-  function togglePassword() {
-    const p = document.getElementById('password');
-    const icon = document.getElementById('eyeIcon');
-    if (p.type === 'password') {
-      p.type = 'text';
-      icon.textContent = 'visibility_off';
-    } else {
-      p.type = 'password';
-      icon.textContent = 'visibility';
-    }
-  }
-
-  function apiOrigin() {
-    if (location.protocol === "file:") return "http://127.0.0.1:8000";
-    const host = location.hostname;
-    const port = location.port;
-    if ((host === "localhost" || host === "127.0.0.1") && port && port !== "8000") {
-      return "http://127.0.0.1:8000";
-    }
-    return "";
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    // Clear sessions first
-    localStorage.removeItem("agri_session");
-    sessionStorage.removeItem("agri_session");
-
-    const form = document.getElementById("loginForm");
-    const submitBtn = document.getElementById("submitBtn");
-    const errorBanner = document.getElementById("loginError");
-    const errorMsg = document.getElementById("errorMessage");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      errorBanner.classList.add("hidden");
-
-      const usernameVal = document.getElementById("username").value.trim();
-      const passwordVal = document.getElementById("password").value;
-      const remember = document.getElementById("rememberMe").checked;
-
-      if (!usernameVal || !passwordVal) return;
-
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = `<span>Verifying...</span> <svg class="animate-spin h-5 w-5 text-white inline-block ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
-
-      try {
-        const url = `${apiOrigin()}/api/auth/login`;
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: usernameVal, password: passwordVal })
-        });
-
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          throw new Error(data.detail || "Invalid username or password.");
-        }
-
-        const session = await res.json();
-        
-        // Save session using unified key
-        const sessionStr = JSON.stringify(session);
-        if (remember) {
-          localStorage.setItem("agri_session", sessionStr);
-        } else {
-          sessionStorage.setItem("agri_session", sessionStr);
-        }
-
-        submitBtn.className = "w-full bg-emerald-500 text-white font-bold py-2.5 rounded-lg flex items-center justify-center gap-2";
-        submitBtn.innerHTML = `<span>Access Granted</span> <span class="material-symbols-outlined text-lg">check_circle</span>`;
-
-        // Redirect based on role
-        setTimeout(() => {
-          if (session.role === "hr") {
-            window.location.replace("/hr/hr_dashboard.html");
-          } else if (session.role === "manager") {
-            window.location.replace("/manager/manager_officers.html");
-          } else {
-            window.location.replace("/employee/dashboard.html");
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriPulse — Sign In</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet">
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#7c2d12",
+            "secondary": "#ea580c",
+            "background": "#f8f9ff",
+            "surface": "#ffffff",
+            "outline": "#707974",
+            "outline-variant": "#bfc9c3",
+            "on-surface": "#0b1c30",
+            "on-surface-variant": "#404944",
           }
-        }, 600);
-
-      } catch (err) {
-        submitBtn.disabled = false;
-        submitBtn.className = "w-full bg-[#003527] hover:bg-[#004d39] text-white font-bold py-2.5 rounded-lg hover:shadow-lg transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 group";
-        submitBtn.innerHTML = `<span>Sign In</span> <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>`;
-        
-        errorMsg.textContent = err.message;
-        errorBanner.classList.remove("hidden");
-        errorBanner.classList.add("shake");
-        setTimeout(() => errorBanner.classList.remove("shake"), 400);
+        }
       }
-    });
+    }
+  </script>
+  <style>
+    /* Fallback styles in case Tailwind CDN fails to load or is slow */
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f8f9ff;
+      color: #0b1c30;
+      font-family: 'Inter', sans-serif;
+    }
+    main {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+    }
+    section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 32px;
+      box-sizing: border-box;
+    }
+    section.hidden {
+      display: none;
+    }
+    @media (min-width: 1024px) {
+      section.hidden {
+        display: flex;
+      }
+    }
+    .w-full {
+      width: 100%;
+    }
+    .max-w-\[400px\] {
+      max-width: 400px;
+    }
+    .space-y-8 > * + * {
+      margin-top: 32px;
+    }
+    .space-y-4 > * + * {
+      margin-top: 16px;
+    }
+    .space-y-1 > * + * {
+      margin-top: 4px;
+    }
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #404944;
+      margin-bottom: 4px;
+    }
+    .relative {
+      position: relative;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      box-sizing: border-box;
+      background-color: #f8fafc;
+      border: 1px solid #bfc9c3;
+      border-radius: 8px;
+      padding: 10px 12px 10px 40px;
+      font-size: 14px;
+      color: #0b1c30;
+      transition: all 0.2s;
+    }
+    input[type="text"]:focus, input[type="password"]:focus {
+      outline: none;
+      border-color: #ea580c;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(0, 108, 73, 0.12);
+    }
+    button[type="submit"] {
+      width: 100%;
+      background-color: #7c2d12;
+      color: #ffffff;
+      font-weight: 700;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    button[type="submit"]:hover {
+      background-color: #9a3412;
+    }
+    .text-2xl {
+      font-size: 24px;
+    }
+    .text-xl {
+      font-size: 20px;
+    }
+    .text-sm {
+      font-size: 14px;
+    }
+    .text-xs {
+      font-size: 12px;
+    }
+    .font-bold {
+      font-weight: 700;
+    }
+    .text-\[\#7c2d12\] {
+      color: #7c2d12;
+    }
+    .text-on-surface-variant {
+      color: #404944;
+    }
+    .text-outline {
+      color: #707974;
+    }
+    .absolute {
+      position: absolute;
+    }
+    .left-3 {
+      left: 12px;
+    }
+    .right-3 {
+      right: 12px;
+    }
+    .top-1\/2 {
+      top: 50%;
+    }
+    .-translate-y-1\/2 {
+      transform: translateY(-50%);
+    }
+    .flex {
+      display: flex;
+    }
+    .items-center {
+      align-items: center;
+    }
+    .justify-between {
+      justify-content: space-between;
+    }
+    .gap-3 {
+      gap: 12px;
+    }
+    .gap-2 {
+      gap: 8px;
+    }
+    .text-orange-700\/80 {
+      color: rgba(194, 65, 12, 0.8);
+    }
+    .text-\[\#ea580c\] {
+      color: #ea580c;
+    }
+    a {
+      text-decoration: none;
+      color: #ea580c;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
 
-    document.addEventListener("mousemove", (e) => {
-      const img = document.querySelector("section img");
-      if (!img) return;
-      const moveX = (e.clientX - window.innerWidth / 2) * 0.005;
-      const moveY = (e.clientY - window.innerHeight / 2) * 0.005;
-      img.style.transform = `scale(1.05) translate(${moveX}px, ${moveY}px)`;
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .login-gradient {
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 100%);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #ea580c;
+      box-shadow: 0 0 0 3px rgba(0, 108, 73, 0.12);
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-6px);
+      }
+
+      75% {
+        transform: translateX(6px);
+      }
+    }
+
+    .shake {
+      animation: shake 0.3s ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen w-full bg-background text-on-surface m-0 p-0 overflow-hidden">
+
+  <main class="flex min-h-screen w-full max-w-none m-0">
+    <!-- Left Side: Visual Narrative (Older UI/UX Design) -->
+    <section class="hidden lg:flex lg:w-[55%] shrink-0 relative overflow-hidden bg-primary">
+      <img alt="Aerial view of farm fields"
+        class="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out"
+        src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80"
+        style="transform: scale(1.05);">
+      <div class="absolute inset-0 login-gradient flex flex-col justify-end p-12">
+        <div class="max-w-md text-white mb-8">
+          <h1 class="text-4xl font-bold mb-4 leading-tight">
+            Precision Growth.<br>Data-Driven Results.
+          </h1>
+          <p class="text-sm opacity-80 mb-6">
+            Empowering agricultural leaders with real-time telemetry and advanced performance analytics to optimize
+            yield and sustainability.
+          </p>
+          <div class="flex items-center gap-3">
+            <div class="h-1.5 w-12 bg-orange-400 rounded-full"></div>
+            <span class="text-xs uppercase font-bold tracking-widest text-orange-300">Sri Sri Sugar Co.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Side: Authentication Canvas -->
+    <section class="w-full lg:w-[45%] shrink-0 flex flex-col justify-center items-center p-8 bg-surface">
+      <div class="w-full max-w-[400px] space-y-8">
+        <!-- Brand Anchor -->
+        <div class="flex items-center gap-3">
+          <div
+            class="w-12 h-12 bg-[#7c2d12] text-white flex items-center justify-center rounded-xl shadow-lg shadow-orange-950/20">
+            <span class="material-symbols-outlined text-3xl">agriculture</span>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-[#7c2d12] tracking-tight">Sri Sri Sugar</h2>
+            <p class="text-[10px] font-bold uppercase tracking-wider text-orange-700/80">Management System</p>
+          </div>
+        </div>
+
+        <!-- Header -->
+        <div>
+          <h3 class="text-xl font-bold text-on-surface mb-1">Welcome back!</h3>
+          <p class="text-sm text-on-surface-variant">
+            Please enter your credentials to access the performance dashboard.
+          </p>
+        </div>
+
+        <!-- Error banner -->
+        <div id="loginError"
+          class="hidden p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-semibold flex items-center gap-2"
+          role="alert">
+          <span class="material-symbols-outlined text-base">error</span>
+          <span id="errorMessage">Authentication failed</span>
+        </div>
+
+        <!-- Form -->
+        <form class="space-y-4" id="loginForm" novalidate autocomplete="on">
+          <div class="space-y-1">
+            <label class="block text-[11px] font-bold uppercase tracking-wide text-on-surface-variant"
+              for="username">Username / Employee ID</label>
+            <div class="relative group">
+              <span
+                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-[#ea580c] transition-colors text-[20px]">person</span>
+              <input
+                class="w-full bg-slate-50 border border-outline-variant rounded-lg py-2.5 pl-10 pr-4 text-sm text-on-surface focus:bg-white transition-all"
+                id="username" name="username" placeholder="Enter your ID or username" required type="text"
+                autocomplete="username">
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="block text-[11px] font-bold uppercase tracking-wide text-on-surface-variant"
+              for="password">Password</label>
+            <div class="relative group">
+              <span
+                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-[#ea580c] transition-colors text-[20px]">lock</span>
+              <input
+                class="w-full bg-slate-50 border border-outline-variant rounded-lg py-2.5 pl-10 pr-10 text-sm text-on-surface focus:bg-white transition-all"
+                id="password" name="password" placeholder="••••••••" required type="password"
+                autocomplete="current-password">
+              <button type="button"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface transition-colors"
+                onclick="togglePassword()">
+                <span class="material-symbols-outlined text-[20px]" id="eyeIcon">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between py-1 text-xs">
+            <label class="flex items-center gap-2 cursor-pointer group">
+              <input
+                class="peer h-4.5 w-4.5 rounded border-outline-variant text-[#ea580c] focus:ring-[#ea580c] transition-all cursor-pointer"
+                type="checkbox" id="rememberMe" name="rememberMe">
+              <span class="text-on-surface-variant group-hover:text-on-surface transition-colors font-medium">Remember
+                Me</span>
+            </label>
+            <a class="text-[#ea580c] font-bold hover:underline transition-all" href="#"
+              onclick="alert('Password resets are handled by IT.\nContact: software@srisrisugar.com')">Forgot
+              Password?</a>
+          </div>
+
+          <button type="submit" id="submitBtn"
+            class="w-full bg-[#7c2d12] hover:bg-[#9a3412] text-white font-bold py-2.5 rounded-lg hover:shadow-lg transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 group">
+            <span>Sign In</span>
+            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          </button>
+        </form>
+
+        <!-- Support Footer -->
+        <footer
+          class="pt-6 border-t border-outline-variant/30 flex justify-between items-center text-xs text-on-surface-variant">
+          <p>
+            Having trouble? <a class="text-[#ea580c] font-bold hover:underline"
+              href="mailto:software@srisrisugar.com">Contact Support</a>
+          </p>
+          <div class="flex gap-3 text-outline">
+            <button type="button"
+              class="material-symbols-outlined text-[20px] cursor-pointer hover:text-on-surface transition-colors bg-transparent border-0"
+              title="Help"
+              onclick="alert('Enter your employee ID and password as registered in Sri Sri Sugar Directory.')">help</button>
+          </div>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function togglePassword() {
+      const p = document.getElementById('password');
+      const icon = document.getElementById('eyeIcon');
+      if (p.type === 'password') {
+        p.type = 'text';
+        icon.textContent = 'visibility_off';
+      } else {
+        p.type = 'password';
+        icon.textContent = 'visibility';
+      }
+    }
+
+    function apiOrigin() {
+      if (location.protocol === "file:") return "http://127.0.0.1:8000";
+      const host = location.hostname;
+      const port = location.port;
+      if ((host === "localhost" || host === "127.0.0.1") && port && port !== "8000") {
+        return "http://127.0.0.1:8000";
+      }
+      return "";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Clear sessions first
+      localStorage.removeItem("agri_session");
+      sessionStorage.removeItem("agri_session");
+
+      const form = document.getElementById("loginForm");
+      const submitBtn = document.getElementById("submitBtn");
+      const errorBanner = document.getElementById("loginError");
+      const errorMsg = document.getElementById("errorMessage");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errorBanner.classList.add("hidden");
+
+        const usernameVal = document.getElementById("username").value.trim();
+        const passwordVal = document.getElementById("password").value;
+        const remember = document.getElementById("rememberMe").checked;
+
+        if (!usernameVal || !passwordVal) return;
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span>Verifying...</span> <svg class="animate-spin h-5 w-5 text-white inline-block ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
+        try {
+          const url = `${apiOrigin()}/api/auth/login`;
+          const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: usernameVal, password: passwordVal })
+          });
+
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(data.detail || "Invalid username or password.");
+          }
+
+          const session = await res.json();
+
+          // Save session using unified key
+          const sessionStr = JSON.stringify(session);
+          if (remember) {
+            localStorage.setItem("agri_session", sessionStr);
+          } else {
+            sessionStorage.setItem("agri_session", sessionStr);
+          }
+
+          submitBtn.className = "w-full bg-orange-500 text-white font-bold py-2.5 rounded-lg flex items-center justify-center gap-2";
+          submitBtn.innerHTML = `<span>Access Granted</span> <span class="material-symbols-outlined text-lg">check_circle</span>`;
+
+          // Redirect based on role
+          setTimeout(() => {
+            if (session.role === "manager") {
+              window.location.replace("/manager/manager_officers.html");
+            } else {
+              window.location.replace("/employee/dashboard.html");
+            }
+          }, 600);
+
+        } catch (err) {
+          submitBtn.disabled = false;
+          submitBtn.className = "w-full bg-[#7c2d12] hover:bg-[#9a3412] text-white font-bold py-2.5 rounded-lg hover:shadow-lg transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2 group";
+          submitBtn.innerHTML = `<span>Sign In</span> <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>`;
+
+          errorMsg.textContent = err.message;
+          errorBanner.classList.remove("hidden");
+          errorBanner.classList.add("shake");
+          setTimeout(() => errorBanner.classList.remove("shake"), 400);
+        }
+      });
+
+      document.addEventListener("mousemove", (e) => {
+        const img = document.querySelector("section img");
+        if (!img) return;
+        const moveX = (e.clientX - window.innerWidth / 2) * 0.005;
+        const moveY = (e.clientY - window.innerHeight / 2) * 0.005;
+        img.style.transform = `scale(1.05) translate(${moveX}px, ${moveY}px)`;
+      });
     });
-  });
-</script>
+  </script>
 </body>
+
+</html>
+</body>
+
 </html>

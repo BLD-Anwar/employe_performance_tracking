@@ -1,0 +1,48 @@
+=== SRI SRI SUGAR — TASK PERFORMANCE REPORT ===
+
+Task ID,4
+Task Name,recovery
+Work Type,Recovery
+Schedule,WEEKLY
+Priority,Low
+Assigned Officer,Abhishek Desai (abhishek17)
+Start Date,2026-06-12
+End Date,2026-06-19
+Task Status,OVERDUE
+
+=== FARMER MEETING DETAILS ===
+Farmer Code,Farmer Name,Village,KCC,KCC Reason,Canara HNT,Canara Reason,Sangola HNT,Sangola Reason,Cane Registration,Cane Reg Remark,Recovery,Recovery Reason,Vehicle Agreement,Vehicle Reason,Expected Tonnage,Cane Development,Feedback,Remark,Meeting Date,Vehicle Working,Vehicle Working Reason
+35,Atul Saheb Gawade,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+53,Anna Baba Pagar,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+364,Arya Parth Yelikar,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+389,Bapu Abhishek Dorge,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+452,Ankur Mhankali Phadtare,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+521,Avni Vinay Salandri,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+1052,Avni Ravi Siddhav,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+1112,Avinash Sudhir Shendage,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+1168,Arjun Viraj Pawar,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+1221,Anika Manish Varak,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+1340,Amoli Parth Gole,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+1464,Appa Shivaji Vadde,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+1889,Arya Gulabrao Vanjari,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+2139,Avni Tejas Unde,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+2169,Baba Umesh Ingale,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+2553,Arun Arjun Sable,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+2598,Ankur Naman Shirke,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+2762,Asmita Soham Vibhute,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+2777,Ayush Harsh Phapale,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+2875,Aanya Sushil Desai,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+3019,Atul Appa Sakate,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+3058,Anna Mukesh Pandhare,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+3571,Amoli Laxman Zunjarrwad,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+3579,Anil Siddharth Shingade,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+3616,Anvi Mukesh Bhosale,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+4155,Atharv Shrirang Panhale,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+4250,Asha Ramchandra Palsule,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+4615,Aditya Tanaji Dhanore,Bondale,—,,—,,—,,—,,—,,—,,0,,,,,—,
+
+=== TASK ACTIVITY TIMELINE / HISTORY ===
+Timestamp,Action,Remarks,Officer / Manager
+2026-06-12 22:00:16,TASK_FARMER_ADDED,"Added farmer IDs: 1889, 35, 389, 521, 2762, 3019, 2139, 364, 2553, 1168, 2777, 1112, 2169, 4250, 4155, 1052",System Admin
+2026-06-12 21:56:54,ASSIGNED,Task assigned by manager,System Admin
+

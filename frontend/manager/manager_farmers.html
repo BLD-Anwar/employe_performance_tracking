@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriPulse — Farmer Registry</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Tailwind CDN offline fallback — basic readable layout */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f8f9ff;
+      color: #0b1c30;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+    img { max-width: 100%; }
+    a { color: #ea580c; }
+    a:hover { text-decoration: underline; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    input[type="text"], input[type="password"], input[type="email"],
+    input[type="number"], select, textarea {
+      width: 100%;
+      border: 1px solid #bfc9c3;
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: #0b1c30;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      background-color: #7c2d12;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    button:hover { background-color: #9a3412; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid #e5e7eb; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: 700; }
+  </style>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f6f8;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+
+    .sidebar {
+      background: #0f172a;
+      width: 220px;
+      min-width: 220px;
+      flex-shrink: 0;
+      min-height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      margin: 2px 8px;
+      border-radius: 8px;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .nav-link:hover {
+      background: #1e293b;
+      color: #ffffff;
+    }
+
+    .nav-link.active {
+      background: #ea580c;
+      color: #ffffff;
+    }
+
+    .nav-link.active .material-symbols-outlined {
+      color: #ffffff;
+    }
+
+    .nav-link.logout {
+      color: rgba(252, 165, 165, 0.7);
+    }
+
+    .nav-link.logout:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+    }
+
+    .nav-link.settings-link {
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .tbl-row:hover {
+      background: #f9fafb;
+    }
+
+    .active-farmer-row {
+      background: #fff7ed !important;
+      border-left: 4px solid #7c2d12;
+    }
+  </style>
+  <script src="../assets/js/manager-auth-store.js"></script>
+  <script>
+    AgriAuth.ensureManagerSession();
+  </script>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
+      <div
+        style="width:36px;height:36px;background:#ea580c;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="color:#ffffff;font-size:20px;">agriculture</span>
+      </div>
+      <div>
+        <div style="color:#ffffff;font-weight:800;font-size:14px;line-height:1.2;">Sri Sri Sugar</div>
+        <div style="color:#94a3b8;font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL
+        </div>
+      </div>
+    </div>
+    <nav style="flex:1;padding:8px 0;">
+      <a class="nav-link" href="manager_dashboard.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">dashboard</span>Overview</a>
+      <a class="nav-link" href="manager_officers.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">group</span>Officers</a>
+      <a class="nav-link" href="manager_tasks.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">checklist</span>Tasks</a>
+      <a class="nav-link active" href="manager_farmers.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">person_search</span>Farmers Registry</a>
+      <a class="nav-link" href="manager_performance.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">bar_chart</span>Performance</a>
+      <a class="nav-link" href="manager_reports.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">assessment</span>Reports Dashboard</a>
+      <a class="nav-link" href="manager_campaign_reports.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">query_stats</span>Campaign Reports</a>
+    </nav>
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding:8px 0;">
+      <a class="nav-link settings-link" href="manager_settings.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">settings</span>Settings</a>
+      <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined"
+          style="font-size:20px;">logout</span>Logout</a>
+    </div>
+  </aside>
+
+  <div id="toast" class="toast"></div>
+
+  <div style="margin-left:220px;min-height:100vh;">
+    <header
+      style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
+      <div>
+        <span style="font-size:18px;font-weight:800;color:#7c2d12;">Farmers Registry Directory</span>
+        <span style="font-size:12px;color:#6b7280;margin-left:10px;">Search and inspect individual farmer
+          profiles</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div
+          style="width:36px;height:36px;border-radius:99px;background:#ffedd5;color:#7c2d12;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;"
+          id="avatarCircle">M</div>
+        <span style="font-size:13px;font-weight:600;color:#374151;" id="headerName">—</span>
+      </div>
+    </header>
+
+    <!-- SECTION 1: Farmer Visit Tracking Panel (NEW) -->
+    <div id="visitTrackingSection" style="padding: 24px 24px 0 24px;" class="flex flex-col gap-6">
+      
+      <!-- 1a: Header & Range Toggles -->
+      <div class="card p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-xl font-extrabold text-orange-900 flex items-center gap-2">
+            <span class="material-symbols-outlined text-orange-700">analytics</span>
+            Farmer Visit Tracking
+          </h2>
+          <p id="rangeLabel" class="text-xs text-slate-500 mt-1 font-medium">Showing attendance: Loading...</p>
+        </div>
+        <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <button id="btnDay" onclick="setRange('day')" class="px-4 py-2 text-xs font-semibold rounded-lg transition-all text-slate-600 hover:text-slate-900">Today</button>
+          <button id="btnWeek" onclick="setRange('week')" class="px-4 py-2 text-xs font-semibold rounded-lg transition-all text-slate-600 hover:text-slate-900">This Week</button>
+          <button id="btnMonth" onclick="setRange('month')" class="px-4 py-2 text-xs font-semibold rounded-lg transition-all text-slate-600 hover:text-slate-900">This Month</button>
+        </div>
+      </div>
+
+      <!-- 1b: Three Summary Stat Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Total Card -->
+        <div class="card p-6 flex items-center justify-between shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+          <div>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Farmers</p>
+            <h3 id="statTotalFarmers" class="text-3xl font-extrabold text-slate-800 mt-2">—</h3>
+            <p class="text-xs text-slate-400 mt-1">Registered in database</p>
+          </div>
+          <div class="flex items-center justify-center bg-slate-50 border border-slate-100 rounded-full w-14 h-14">
+            <span class="material-symbols-outlined text-slate-500 text-3xl">groups</span>
+          </div>
+        </div>
+
+        <!-- Attended Card -->
+        <div class="card p-6 flex items-center justify-between shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+          <div>
+            <p class="text-xs font-bold text-orange-600 uppercase tracking-wider">Attended</p>
+            <h3 id="statAttendedFarmers" class="text-3xl font-extrabold text-orange-800 mt-2">—</h3>
+            <p id="statAttendedPct" class="text-xs font-semibold text-orange-600 mt-1">— Attendance</p>
+          </div>
+          <div class="relative w-16 h-16" id="attendedRingContainer">
+            <!-- SVG Progress Ring populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Remaining Card -->
+        <div class="card p-6 flex items-center justify-between shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+          <div>
+            <p class="text-xs font-bold text-amber-600 uppercase tracking-wider">Remaining</p>
+            <h3 id="statRemainingFarmers" class="text-3xl font-extrabold text-amber-800 mt-2">—</h3>
+            <p id="statRemainingPct" class="text-xs font-semibold text-amber-600 mt-1">— Remaining to meet</p>
+          </div>
+          <div class="relative w-16 h-16" id="remainingRingContainer">
+            <!-- SVG Progress Ring populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 1c: Geographic Accordion -->
+      <div class="card shadow-sm overflow-hidden">
+        <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+          <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wider">Geographic Breakdown</h3>
+          <span class="text-xs text-slate-400 font-medium">Click on Taluka/Village rows to drill down</span>
+        </div>
+        <div id="accordionContainer" class="divide-y divide-slate-100">
+          <div class="p-6 text-center text-slate-400 text-sm">
+            <span class="material-symbols-outlined animate-spin block mb-2" style="font-size:24px;">sync</span>
+            Loading breakdown data...
+          </div>
+        </div>
+      </div>
+
+      <!-- 1d: Inline Farmer list panel -->
+      <div id="farmerInlinePanel" class="card shadow-md overflow-hidden hidden transition-all duration-300">
+        <div class="px-6 py-4 bg-slate-800 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h3 id="inlinePanelTitle" class="text-base font-extrabold tracking-tight">Velapur Village Farmers</h3>
+            <p id="inlinePanelSubtitle" class="text-xs text-slate-300 mt-1 font-medium">Showing attended farmers</p>
+          </div>
+          <div class="flex items-center gap-3 w-full sm:w-auto">
+            <button onclick="exportInlineCSV()" class="bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm transition-all">
+              <span class="material-symbols-outlined text-sm font-bold">download</span>
+              Export CSV
+            </button>
+            <button onclick="closeInlinePanel()" class="text-slate-400 hover:text-white transition-colors">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter tabs & Search inline -->
+        <div class="px-6 py-3 bg-slate-100 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+          <div class="flex items-center bg-white p-1 rounded-xl border border-slate-200 self-start">
+            <button id="inlineTabAttended" onclick="setInlineStatus('attended')" class="px-4 py-1.5 text-xs font-semibold rounded-lg transition-all text-slate-600">Attended</button>
+            <button id="inlineTabRemaining" onclick="setInlineStatus('remaining')" class="px-4 py-1.5 text-xs font-semibold rounded-lg transition-all text-slate-600">Remaining</button>
+          </div>
+          <div class="relative flex-1 max-w-md">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-sm">search</span>
+            <input type="text" id="inlineSearchInput" placeholder="Filter this list by name/code..." oninput="onInlineSearchChange()" class="w-full pl-9 pr-4 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-slate-400">
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="overflow-x-auto max-h-[400px] overflow-y-auto">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
+              <tr>
+                <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Farmer Code / Name</th>
+                <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Location</th>
+                <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Mobile</th>
+                <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Visits</th>
+                <th class="px-6 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider">Last Visit Date</th>
+              </tr>
+            </thead>
+            <tbody id="inlineFarmerListBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Divider -->
+    <div style="padding: 16px 24px 0 24px;">
+      <div class="border-t-2 border-dashed border-slate-200 pt-4 flex items-center gap-2">
+        <span class="material-symbols-outlined text-slate-400">search</span>
+        <span class="text-sm font-extrabold text-slate-500 uppercase tracking-wider">Individual Farmer Search & Profile</span>
+      </div>
+    </div>
+
+    <div style="padding:16px 24px 24px 24px;display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:flex-start;">
+
+      <!-- Left: Search and List -->
+      <div class="card overflow-hidden">
+        <!-- Filters -->
+        <div
+          style="padding:16px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span
+              style="font-size:12px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:0.05em;">Registry
+              Search</span>
+            <span id="totalFarmerCount"
+              style="font-size:11px;font-weight:700;color:#0d9488;background:#fff7ed;padding:2px 8px;border-radius:6px;border:1px solid #fed7aa;">Loading...</span>
+          </div>
+          <div style="position:relative;width:100%;">
+            <span class="material-symbols-outlined"
+              style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#9ca3af;font-size:18px;">search</span>
+            <input type="text" id="farmerSearchInput" placeholder="Search by farmer name or code..."
+              oninput="onSearchChange()"
+              style="width:100%;padding:9px 12px 9px 36px;border:1.5px solid #d1d5db;border-radius:8px;font-size:13px;box-sizing:border-box;">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+            <select id="talukaFilter" onchange="onTalukaChange()"
+              style="font-size:12px;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;">
+              <option value="">All Talukas</option>
+            </select>
+            <select id="villageFilter" onchange="onVillageChange()" disabled
+              style="font-size:12px;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;">
+              <option value="">Select Village...</option>
+            </select>
+            <select id="subVillageFilter" onchange="onSubVillageChange()" disabled
+              style="font-size:12px;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;">
+              <option value="">Select Sub-village...</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Farmer Table -->
+        <div style="overflow-x:auto;max-height:550px;overflow-y:auto;">
+          <table style="width:100%;border-collapse:collapse;text-align:left;">
+            <thead style="background:#f9fafb;position:sticky;top:0;z-index:10;border-bottom:1px solid #e5e7eb;">
+              <tr>
+                <th
+                  style="padding:10px 16px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                  Farmer</th>
+                <th
+                  style="padding:10px 16px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                  Village</th>
+                <th
+                  style="padding:10px 16px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                  Contact</th>
+                <th style="padding:10px 16px;font-size:11px;font-weight:700;color:#6b7280;text-align:right;">Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody id="farmerListBody">
+              <tr>
+                <td colspan="4" style="padding:32px;text-align:center;color:#9ca3af;">Use filters above or type to
+                  search farmers...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right: 360 Profile and History Ledger -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <!-- Profile Card -->
+        <div class="card p-6" id="farmerProfileCard" style="display:none;">
+          <div
+            style="display:flex;justify-content:space-between;align-items:start;border-bottom:1px solid #e5e7eb;padding-bottom:12px;margin-bottom:14px;">
+            <div>
+              <h3 style="font-size:16px;font-weight:800;color:#7c2d12;" id="profFarmerName">Ramesh Patil</h3>
+              <p style="font-size:11px;color:#9ca3af;margin-top:2px;">Farmer Code: <span class="font-mono"
+                  id="profFarmerCode">1003</span></p>
+            </div>
+            <span class="badge" style="background:#ffedd5;color:#7c2d12;">Registered Active</span>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px;margin-bottom:14px;">
+            <div>
+              <p style="font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;">Mobile Number</p>
+              <p style="font-weight:700;color:#374151;margin-top:2px;" id="profFarmerMobile">9876543210</p>
+            </div>
+            <div>
+              <p style="font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;">Land Holding (Acres)</p>
+              <p style="font-weight:700;color:#374151;margin-top:2px;" id="profFarmerLand">4.5 Acres</p>
+            </div>
+            <div>
+              <p style="font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;">Zone / Village</p>
+              <p style="font-weight:700;color:#374151;margin-top:2px;" id="profFarmerLocation">Velapur, Solapur</p>
+            </div>
+            <div>
+              <p style="font-size:9px;color:#9ca3af;font-weight:700;text-transform:uppercase;">Sugarcane Variety</p>
+              <p style="font-weight:700;color:#ea580c;margin-top:2px;" id="profFarmerCane">Co-86032 (Early)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Historical Visits Ledger -->
+        <div class="card p-6" id="farmerHistoryCard"
+          style="display:none;flex:grow;display:flex;flex-direction:column;max-height:400px;overflow:hidden;">
+          <h4
+            style="font-size:12px;font-weight:700;color:#111827;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+            <span class="material-symbols-outlined" style="font-size:18px;color:#7c2d12;">history_edu</span>
+            Historical Visits Ledger
+          </h4>
+          <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;" id="visitHistoryLedger">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Placeholder -->
+        <div class="card p-8 text-center" id="crmPlaceholder" style="color:#9ca3af;">
+          <span class="material-symbols-outlined"
+            style="font-size:56px;opacity:0.3;display:block;margin-bottom:10px;">contact_page</span>
+          <div style="font-size:14px;font-weight:700;color:#475569;">No Farmer Selected</div>
+          <p style="font-size:12px;margin-top:6px;">Select a farmer from the directory on the left to inspect their
+            profile and historical check-in details.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- SECTION 1: Visit Tracking JS ---
+    let currentRange = 'week';
+    let summaryData = null;
+    let activeGeoFilter = { taluka: "", village: "", sub_village: "", label: "" };
+    let activeInlineStatus = "attended";
+    let inlineFarmersRaw = [];
+
+    function escapeJs(s) {
+      if (!s) return "";
+      return s.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    }
+
+    function updateRangeButtons() {
+      const ranges = ['day', 'week', 'month'];
+      ranges.forEach(r => {
+        const btn = document.getElementById('btn' + r.charAt(0).toUpperCase() + r.slice(1));
+        if (r === currentRange) {
+          btn.className = "px-4 py-2 text-xs font-bold rounded-lg bg-orange-700 text-white shadow-sm transition-all";
+        } else {
+          btn.className = "px-4 py-2 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all hover:bg-slate-200";
+        }
+      });
+    }
+
+    function setRange(r) {
+      if (currentRange === r) return;
+      currentRange = r;
+      loadTracking();
+    }
+
+    function getRingSVG(pct, colorClass) {
+      let strokeColor = "#f97316"; // orange-500
+      if (colorClass === "amber") strokeColor = "#f59e0b";
+      if (colorClass === "blue") strokeColor = "#3b82f6";
+      
+      return `
+        <div class="relative w-16 h-16 flex items-center justify-center">
+          <svg viewBox="0 0 36 36" class="w-16 h-16">
+            <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#f1f5f9" stroke-width="2.8"/>
+            <circle cx="18" cy="18" r="15.9155" fill="none" stroke="${strokeColor}" stroke-width="2.8"
+              stroke-dasharray="${pct} ${100 - pct}"
+              stroke-dashoffset="25"
+              stroke-linecap="round"
+              transform="rotate(-90 18 18)"/>
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center text-xs font-extrabold text-slate-700">
+            ${pct}%
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadTracking() {
+      const container = document.getElementById("accordionContainer");
+      updateRangeButtons();
+      
+      try {
+        const res = await apiFetch(`/farmer-tracking/summary?range=${currentRange}`);
+        if (!res.ok) throw new Error("Failed to load tracking data");
+        
+        summaryData = await res.json();
+        
+        document.getElementById("rangeLabel").textContent = `Showing attendance: ${summaryData.range_label}`;
+        
+        document.getElementById("statTotalFarmers").textContent = summaryData.total_farmers.toLocaleString();
+        document.getElementById("statAttendedFarmers").textContent = summaryData.attended.toLocaleString();
+        document.getElementById("statRemainingFarmers").textContent = summaryData.remaining.toLocaleString();
+        
+        document.getElementById("statAttendedPct").textContent = `${summaryData.attendance_pct}% Attendance`;
+        const remainingPct = summaryData.total_farmers ? Math.round((summaryData.remaining / summaryData.total_farmers * 100) * 10) / 10 : 0.0;
+        document.getElementById("statRemainingPct").textContent = `${remainingPct}% Remaining to meet`;
+        
+        document.getElementById("attendedRingContainer").innerHTML = getRingSVG(summaryData.attendance_pct, "orange");
+        document.getElementById("remainingRingContainer").innerHTML = getRingSVG(remainingPct, "amber");
+        
+        renderAccordion(summaryData.by_district);
+        
+        if (!document.getElementById("farmerInlinePanel").classList.contains("hidden")) {
+          await loadInlineFarmers();
+        }
+      } catch (err) {
+        console.error("Tracking load failed", err);
+        container.innerHTML = `<div class="p-6 text-center text-red-500 text-sm">Error loading visit tracking summary. Please try again.</div>`;
+      }
+    }
+
+    function renderAccordion(byDistrict) {
+      const container = document.getElementById("accordionContainer");
+      if (!byDistrict || byDistrict.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-slate-500 text-sm">No geographic breakdown data available.</div>`;
+        return;
+      }
+
+      container.innerHTML = byDistrict.map((taluka, tIdx) => {
+        const talukaId = `taluka-${tIdx}`;
+        const talukaPct = taluka.attendance_pct;
+        
+        const villagesHtml = taluka.villages.map((village, vIdx) => {
+          const villageId = `${talukaId}-village-${vIdx}`;
+          const villagePct = village.attendance_pct;
+          
+          const subVillagesHtml = village.sub_villages.map((sv, svIdx) => {
+            const svId = `${villageId}-sv-${svIdx}`;
+            const svPct = sv.attendance_pct;
+            
+            return `
+              <div class="pl-16 pr-6 py-2.5 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                  <span class="text-xs font-semibold text-slate-600">${escapeHtml(sv.name)}</span>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-4 w-full sm:w-auto">
+                  <div class="flex items-center gap-2 w-48 sm:w-56">
+                    <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                      <div class="bg-orange-400 h-full rounded-full" style="width: ${svPct}%"></div>
+                    </div>
+                    <span class="text-[10px] font-bold text-slate-600 min-w-[75px] text-right">${sv.attended}/${sv.total} (${svPct}%)</span>
+                  </div>
+                  
+                  <button onclick="event.stopPropagation(); viewFarmers('${escapeJs(taluka.name)}', '${escapeJs(village.name)}', '${escapeJs(sv.name)}', '${escapeJs(sv.name)}')" 
+                    class="px-2.5 py-1 text-[10px] font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded shadow-xs hover:border-slate-300 transition-all flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs">visibility</span>
+                    View Farmers
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join("");
+          
+          return `
+            <div class="border-t border-slate-100">
+              <div onclick="toggleAccordion('${villageId}')" class="pl-8 pr-6 py-3 hover:bg-slate-50 cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 transition-colors">
+                <div class="flex items-center gap-2">
+                  <span id="icon-${villageId}" class="material-symbols-outlined text-slate-400 text-sm select-none transition-transform">chevron_right</span>
+                  <span class="text-xs font-bold text-slate-700">${escapeHtml(village.name)}</span>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-4 w-full sm:w-auto">
+                  <div class="flex items-center gap-2 w-48 sm:w-56">
+                    <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                      <div class="bg-orange-500 h-full rounded-full" style="width: ${villagePct}%"></div>
+                    </div>
+                    <span class="text-xs font-bold text-slate-700 min-w-[75px] text-right">${village.attended}/${village.total} (${villagePct}%)</span>
+                  </div>
+                  
+                  <button onclick="event.stopPropagation(); viewFarmers('${escapeJs(taluka.name)}', '${escapeJs(village.name)}', '', '${escapeJs(village.name)}')" 
+                    class="px-2.5 py-1 text-[10px] font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded shadow-xs hover:border-slate-300 transition-all flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs">visibility</span>
+                    View Farmers
+                  </button>
+                </div>
+              </div>
+              
+              <div id="body-${villageId}" class="hidden flex flex-col bg-slate-50/20">
+                ${subVillagesHtml || '<div class="pl-16 pr-6 py-2 text-xs text-slate-400 italic">No sub-villages found</div>'}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        return `
+          <div class="border-b border-slate-100">
+            <div onclick="toggleAccordion('${talukaId}')" class="px-6 py-4 hover:bg-slate-50 cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-colors">
+              <div class="flex items-center gap-2.5">
+                <span id="icon-${talukaId}" class="material-symbols-outlined text-slate-500 text-lg select-none transition-transform">chevron_right</span>
+                <span class="text-sm font-extrabold text-slate-800">${escapeHtml(taluka.name)}</span>
+              </div>
+              
+              <div class="flex flex-wrap items-center gap-4 w-full sm:w-auto">
+                <div class="flex items-center gap-2.5 w-48 sm:w-64">
+                  <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                    <div class="bg-orange-600 h-full rounded-full" style="width: ${talukaPct}%"></div>
+                  </div>
+                  <span class="text-xs font-extrabold text-slate-700 min-w-[85px] text-right">${taluka.attended}/${taluka.total} (${talukaPct}%)</span>
+                </div>
+                
+                <button onclick="event.stopPropagation(); exportTalukaCSV('${escapeJs(taluka.name)}')" 
+                  class="px-3 py-1.5 text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg shadow-sm hover:border-slate-300 transition-all flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm">download</span>
+                  Export CSV
+                </button>
+              </div>
+            </div>
+            
+            <div id="body-${talukaId}" class="hidden flex flex-col pl-4 border-l-2 border-slate-100">
+              ${villagesHtml || '<div class="pl-8 pr-6 py-3 text-xs text-slate-400 italic">No villages found</div>'}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function toggleAccordion(id) {
+      const body = document.getElementById("body-" + id);
+      const icon = document.getElementById("icon-" + id);
+      if (!body) return;
+      
+      if (body.classList.contains("hidden")) {
+        body.classList.remove("hidden");
+        if (icon) icon.style.transform = "rotate(90deg)";
+      } else {
+        body.classList.add("hidden");
+        if (icon) icon.style.transform = "rotate(0deg)";
+      }
+    }
+
+    async function viewFarmers(taluka, village, sub_village, label) {
+      activeGeoFilter = { taluka, village, sub_village, label };
+      
+      const panel = document.getElementById("farmerInlinePanel");
+      panel.classList.remove("hidden");
+      
+      document.getElementById("inlinePanelTitle").textContent = `${label} Farmers`;
+      document.getElementById("inlineSearchInput").value = "";
+      
+      await loadInlineFarmers();
+      
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function updateInlineTabs() {
+      const tabs = ['attended', 'remaining'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('inlineTab' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (t === activeInlineStatus) {
+          btn.className = "px-4 py-1.5 text-xs font-bold rounded-lg bg-slate-800 text-white transition-all shadow-sm";
+        } else {
+          btn.className = "px-4 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-800 transition-all hover:bg-slate-200";
+        }
+      });
+    }
+
+    async function loadInlineFarmers() {
+      const tbody = document.getElementById("inlineFarmerListBody");
+      tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 text-sm">
+        <span class="material-symbols-outlined animate-spin block mb-2" style="font-size:24px;">sync</span>
+        Loading farmers...
+      </td></tr>`;
+      
+      updateInlineTabs();
+      
+      try {
+        const params = new URLSearchParams();
+        params.set("range", currentRange);
+        if (activeGeoFilter.taluka) params.set("taluka", activeGeoFilter.taluka);
+        if (activeGeoFilter.village) params.set("village", activeGeoFilter.village);
+        if (activeGeoFilter.sub_village) params.set("sub_village", activeGeoFilter.sub_village);
+        
+        const res = await apiFetch(`/farmer-tracking/farmers?${params.toString()}`);
+        if (!res.ok) throw new Error("Failed to load inline farmer list");
+        
+        inlineFarmersRaw = await res.json();
+        filterAndRenderInlineFarmers();
+        
+      } catch (err) {
+        console.error(err);
+        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-red-500 text-sm">Error loading farmer list.</td></tr>`;
+      }
+    }
+
+    function setInlineStatus(status) {
+      if (activeInlineStatus === status) return;
+      activeInlineStatus = status;
+      updateInlineTabs();
+      filterAndRenderInlineFarmers();
+    }
+
+    function onInlineSearchChange() {
+      filterAndRenderInlineFarmers();
+    }
+
+    function filterAndRenderInlineFarmers() {
+      const tbody = document.getElementById("inlineFarmerListBody");
+      const searchVal = document.getElementById("inlineSearchInput").value.trim().toLowerCase();
+      
+      let filtered = inlineFarmersRaw.filter(f => {
+        if (activeInlineStatus === "attended" && f.visit_count === 0) return false;
+        if (activeInlineStatus === "remaining" && f.visit_count > 0) return false;
+        
+        if (searchVal) {
+          const idStr = String(f.id);
+          const nameStr = String(f.name).toLowerCase();
+          if (!idStr.includes(searchVal) && !nameStr.includes(searchVal)) {
+            return false;
+          }
+        }
+        return true;
+      });
+      
+      document.getElementById("inlinePanelSubtitle").textContent = `Showing ${filtered.length} ${activeInlineStatus} farmers`;
+      
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-400 text-sm">No farmers found.</td></tr>`;
+        return;
+      }
+      
+      tbody.innerHTML = filtered.map(f => {
+        const visitsVal = f.visit_count > 0 ? f.visit_count : "—";
+        const dateVal = f.last_visit_date || "—";
+        
+        let locStr = f.village;
+        if (f.sub_village && f.sub_village !== f.village) {
+          locStr += ` (${f.sub_village})`;
+        }
+        
+        return `
+          <tr class="tbl-row hover:bg-slate-50 border-t border-slate-100 cursor-pointer" onclick="inspectFromInline(${f.id})">
+            <td class="px-6 py-3">
+              <div class="font-bold text-slate-800 text-sm">${escapeHtml(f.name)}</div>
+              <div class="text-[10px] text-slate-400 font-mono">Code: ${f.id}</div>
+            </td>
+            <td class="px-6 py-3 text-xs text-slate-600">${escapeHtml(locStr)}</td>
+            <td class="px-6 py-3 text-xs text-slate-500">${escapeHtml(f.mobile || '—')}</td>
+            <td class="px-6 py-3 text-xs text-slate-700 font-bold">${visitsVal}</td>
+            <td class="px-6 py-3 text-xs text-slate-500">${dateVal}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function inspectFromInline(farmerId) {
+      selectFarmer(farmerId);
+      
+      const searchRow = document.getElementById("farmer-row-" + farmerId);
+      if (searchRow) {
+        searchRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        document.getElementById("farmerProfileCard").scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function closeInlinePanel() {
+      document.getElementById("farmerInlinePanel").classList.add("hidden");
+    }
+
+    async function exportTalukaCSV(talukaName) {
+      const params = new URLSearchParams();
+      params.set("range", currentRange);
+      params.set("taluka", talukaName);
+      await triggerCSVDownload(params);
+    }
+
+    async function exportInlineCSV() {
+      const params = new URLSearchParams();
+      params.set("range", currentRange);
+      if (activeGeoFilter.taluka) params.set("taluka", activeGeoFilter.taluka);
+      if (activeGeoFilter.village) params.set("village", activeGeoFilter.village);
+      if (activeGeoFilter.sub_village) params.set("sub_village", activeGeoFilter.sub_village);
+      params.set("status", activeInlineStatus);
+      
+      const searchVal = document.getElementById("inlineSearchInput").value.trim();
+      if (searchVal) {
+        params.set("search", searchVal);
+      }
+      
+      await triggerCSVDownload(params);
+    }
+
+    async function triggerCSVDownload(params) {
+      try {
+        showToast("Preparing CSV download...");
+        const res = await apiFetch(`/farmer-tracking/export?${params.toString()}`);
+        if (!res.ok) throw new Error("Export request failed");
+        
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        
+        const disposition = res.headers.get("content-disposition");
+        let filename = "farmers_export.csv";
+        if (disposition && disposition.indexOf("attachment") !== -1) {
+          const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+          const matches = filenameRegex.exec(disposition);
+          if (matches != null && matches[1]) { 
+            filename = matches[1].replace(/['"]/g, "");
+          }
+        }
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        showToast("CSV downloaded successfully.");
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to export CSV. Please try again.");
+      }
+    }
+
+    // --- SECTION 2: Existing Search JS ---
+    let selectedFarmerId = null;
+    let farmers = [];
+
+    function escapeHtml(s) {
+      if (!s) return "";
+      return s.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    async function apiFetch(path, options = {}) {
+      const p = path.startsWith("/api") ? path : `/api${path.startsWith("/") ? path : "/" + path}`;
+      return await AgriAuth.apiFetch(p, options);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 3000);
+    }
+
+    async function loadInitialFilters() {
+      try {
+        const res = await apiFetch("/tasks/talukas");
+        if (res.ok) {
+          const talukas = await res.json();
+          const tSel = document.getElementById("talukaFilter");
+          talukas.forEach(t => {
+            const opt = document.createElement("option");
+            opt.value = t;
+            opt.textContent = t;
+            tSel.appendChild(opt);
+          });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function onTalukaChange() {
+      const taluka = document.getElementById("talukaFilter").value;
+      const vSel = document.getElementById("villageFilter");
+      const svSel = document.getElementById("subVillageFilter");
+
+      vSel.innerHTML = '<option value="">Select Village...</option>';
+      vSel.disabled = true;
+      svSel.innerHTML = '<option value="">Select Sub-village...</option>';
+      svSel.disabled = true;
+
+      if (!taluka) {
+        await loadFarmers();
+        return;
+      }
+
+      try {
+        const res = await apiFetch(`/tasks/villages?taluka=${encodeURIComponent(taluka)}`);
+        if (res.ok) {
+          const villages = await res.json();
+          vSel.disabled = false;
+          villages.forEach(v => {
+            const opt = document.createElement("option");
+            opt.value = v;
+            opt.textContent = v;
+            vSel.appendChild(opt);
+          });
+        }
+        await loadFarmers();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function onVillageChange() {
+      const village = document.getElementById("villageFilter").value;
+      const svSel = document.getElementById("subVillageFilter");
+
+      svSel.innerHTML = '<option value="">Select Sub-village...</option>';
+      svSel.disabled = true;
+
+      if (!village) {
+        await loadFarmers();
+        return;
+      }
+
+      try {
+        const res = await apiFetch(`/tasks/sub-villages?village=${encodeURIComponent(village)}`);
+        if (res.ok) {
+          const subVillages = await res.json();
+          svSel.disabled = false;
+          subVillages.forEach(sv => {
+            const opt = document.createElement("option");
+            opt.value = sv;
+            opt.textContent = sv;
+            svSel.appendChild(opt);
+          });
+        }
+        await loadFarmers();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function onSubVillageChange() {
+      await loadFarmers();
+    }
+
+    let searchTimeout = null;
+    function onSearchChange() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(loadFarmers, 300); // Debounce 300ms
+    }
+
+    async function loadFarmers() {
+      const search = document.getElementById("farmerSearchInput").value.trim();
+      const taluka = document.getElementById("talukaFilter").value;
+      const village = document.getElementById("villageFilter").value;
+      const sub_village = document.getElementById("subVillageFilter").value;
+      const tbody = document.getElementById("farmerListBody");
+
+      const params = new URLSearchParams();
+      if (search) params.set("search", search);
+      if (taluka) params.set("taluka", taluka);
+      if (village) params.set("village", village);
+      if (sub_village) params.set("sub_village", sub_village);
+
+      tbody.innerHTML = `<tr><td colspan="4" style="padding:24px;text-align:center;color:#9ca3af;"><span class="material-symbols-outlined animate-spin" style="font-size:24px;display:block;margin-bottom:6px;">sync</span>Searching registry...</td></tr>`;
+      document.getElementById("totalFarmerCount").textContent = "Loading...";
+
+      try {
+        apiFetch(`/tasks/farmers/count?${params.toString()}&registry=true`)
+          .then(res => res.ok ? res.json() : { count: 0 })
+          .then(data => {
+            document.getElementById("totalFarmerCount").textContent = `${(data.count || 0).toLocaleString()} Farmers`;
+          })
+          .catch(err => {
+            console.error("Count fetch failed", err);
+            document.getElementById("totalFarmerCount").textContent = "—";
+          });
+
+        const res = await apiFetch(`/tasks/farmers?${params.toString()}&registry=true`);
+        if (!res.ok) throw new Error("Search failed");
+        farmers = await res.json();
+
+        if (!farmers.length) {
+          tbody.innerHTML = `<tr><td colspan="4" style="padding:24px;text-align:center;color:#9ca3af;">No farmers found matching filters.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = farmers.map(f => `
+        <tr class="tbl-row ${selectedFarmerId === f.id ? 'active-farmer-row' : ''}" style="border-top:1px solid #f3f4f6;cursor:pointer;" onclick="selectFarmer(${f.id})" id="farmer-row-${f.id}">
+          <td style="padding:10px 16px;">
+            <div style="font-weight:700;color:#111827;">${f.name}</div>
+            <div style="font-size:10px;color:#9ca3af;font-family:monospace;">Code: ${f.id}</div>
+          </td>
+          <td style="padding:10px 16px;font-size:12px;color:#4b5563;">${f.village}</td>
+          <td style="padding:10px 16px;font-size:12px;color:#6b7280;">${f.mobile || '—'}</td>
+          <td style="padding:10px 16px;text-align:right;">
+            <button onclick="event.stopPropagation(); selectFarmer(${f.id})" style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;color:#7c2d12;cursor:pointer;">Inspect</button>
+          </td>
+        </tr>
+      `).join("");
+      } catch (err) {
+        console.error(err);
+        tbody.innerHTML = `<tr><td colspan="4" style="padding:24px;text-align:center;color:#dc2626;">Error loading data.</td></tr>`;
+      }
+    }
+
+    async function selectFarmer(farmerCode) {
+      if (selectedFarmerId) {
+        const prevRow = document.getElementById(`farmer-row-${selectedFarmerId}`);
+        if (prevRow) prevRow.classList.remove("active-farmer-row");
+      }
+
+      selectedFarmerId = farmerCode;
+      const row = document.getElementById(`farmer-row-${farmerCode}`);
+      if (row) row.classList.add("active-farmer-row");
+
+      document.getElementById("crmPlaceholder").style.display = "none";
+      document.getElementById("farmerProfileCard").style.display = "block";
+
+      const ledger = document.getElementById("visitHistoryLedger");
+      document.getElementById("farmerHistoryCard").style.display = "flex";
+      ledger.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:24px 0;font-size:12px;">Loading visit ledger...</div>';
+
+      try {
+        const pRes = await apiFetch(`/tasks/farmers/${farmerCode}`);
+        if (!pRes.ok) throw new Error("Failed to load profile");
+        const profile = await pRes.json();
+
+        document.getElementById("profFarmerName").textContent = profile.name;
+        document.getElementById("profFarmerCode").textContent = profile.id;
+        document.getElementById("profFarmerMobile").textContent = profile.mobile || 'No contact details';
+        document.getElementById("profFarmerLocation").textContent = `${profile.village}, ${profile.taluka}`;
+
+        // Land and cane variety: use database values if available, else show N/A
+        document.getElementById("profFarmerLand").textContent = profile.land_acres ? `${profile.land_acres} Acres` : 'N/A';
+        document.getElementById("profFarmerCane").textContent = profile.cane_variety || 'N/A';
+
+        const hRes = await apiFetch(`/meetings?farmer_code=${farmerCode}`);
+        if (!hRes.ok) throw new Error("Failed to load history");
+        const visits = await hRes.json();
+
+        if (!visits.length) {
+          ledger.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:24px 0;font-size:12px;">No historical visits logged for this farmer.</div>';
+          return;
+        }
+
+        ledger.innerHTML = visits.map(v => {
+          const yn = val => val === true ? "Yes" : (val === false ? "No" : "—");
+          return `
+          <div style="background:#fafafa;border:1px solid #e5e7eb;border-radius:10px;padding:12px;font-size:12px;line-height:1.4;display:flex;flex-direction:column;gap:4px;">
+            <div style="display:flex;justify-content:space-between;align-items:start;font-weight:700;">
+              <span style="color:#7c2d12;">Visit on Plan #${v.work_plan_id || 'System'}</span>
+              <span style="color:#9ca3af;font-size:10px;font-weight:normal;">${v.created_date}</span>
+            </div>
+            <div style="font-size:11px;color:#4b5563;">
+              <strong>Officer:</strong> ${escapeHtml(v.officer_name)}<br>
+              <strong>KCC Completed:</strong> ${yn(v.kcc)} · <strong>Cane Registered:</strong> ${yn(v.cane_registration)}<br>
+              <strong>Expected Tonnage:</strong> ${v.expected_tonnage ? v.expected_tonnage.toLocaleString() + ' kg' : '0 kg'}
+            </div>
+            ${v.remark ? `<div style="font-size:11px;color:#6b7280;border-top:1px solid #e5e7eb;margin-top:4px;padding-top:4px;"><strong>Remark:</strong> "${escapeHtml(v.remark)}"</div>` : ''}
+          </div>
+        `;
+        }).join("");
+
+      } catch (err) {
+        console.error(err);
+        ledger.innerHTML = '<div style="text-align:center;color:#dc2626;padding:24px 0;font-size:12px;">Error loading database details.</div>';
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const session = AgriAuth.getSession();
+      if (session) {
+        const name = (session.name && session.name !== "None") ? session.name : session.username;
+        document.getElementById("avatarCircle").textContent = name.charAt(0).toUpperCase();
+        document.getElementById("headerName").textContent = name;
+      }
+
+      document.getElementById("logoutBtn").addEventListener("click", e => {
+        e.preventDefault();
+        if (confirm("Sign out?")) {
+          AgriAuth.clearSession();
+          window.location.replace("/login.html");
+        }
+      });
+
+      loadInitialFilters();
+      loadFarmers();
+      loadTracking();
+    });
+  </script>
+</body>
+
+</html>

@@ -1,361 +1,640 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgriPulse — Performance</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap" rel="stylesheet">
-<style>
-  body{font-family:'Inter',sans-serif;background:#f4f6f8;}
-  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;}
-  .sidebar{background:linear-gradient(180deg,#0f1f18 0%,#0a150f 100%);width:220px;min-height:100vh;position:fixed;left:0;top:0;z-index:50;display:flex;flex-direction:column;}
-  .nav-link{display:flex;align-items:center;gap:12px;padding:10px 16px;margin:2px 8px;border-radius:8px;color:rgba(209,250,229,0.65);font-size:13px;font-weight:600;text-decoration:none;transition:all 0.15s;}
-  .nav-link:hover{background:rgba(255,255,255,0.07);color:#fff;}
-  .nav-link.active{background:rgba(74,222,128,0.18);color:#86efac;}
-  .nav-link.active .material-symbols-outlined{color:#4ade80;}
-  .nav-link.logout{color:rgba(252,165,165,0.7);}
-  .nav-link.logout:hover{background:rgba(239,68,68,0.1);color:#fca5a5;}
-  .nav-link.settings-link{color:rgba(209,250,229,0.65);}
-  .card{background:#fff;border-radius:14px;border:1px solid #e5e7eb;}
-  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;}
-  .bar-track{height:10px;background:#f3f4f6;border-radius:99px;overflow:hidden;}
-  .bar-fill{height:100%;background:#006c49;border-radius:99px;transition:width 0.8s ease;}
-  .tbl-row:hover{background:#f9fafb;cursor:pointer;}
-  body input, body select, body textarea {
-    font-family: 'Inter', sans-serif !important;
-    font-size: 13px !important;
-  }
-  input,select{border:1.5px solid #d1d5db;border-radius:8px;padding:8px 12px;color:#111827;background:#fff;}
-  input:focus,select:focus{outline:none;border-color:#006c49;box-shadow:0 0 0 3px rgba(0,108,73,0.08);}
-  body select{
-    appearance: none !important;
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E") !important;
-    background-position: right 10px center !important;
-    background-repeat: no-repeat !important;
-    background-size: 1.25rem !important;
-    padding-right: 32px !important;
-    cursor: pointer !important;
-  }
-  .rank-medal{width:28px;height:28px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;}
-  .spark-bar{display:inline-block;width:4px;border-radius:2px;background:#003527;margin-right:1px;vertical-align:bottom;}
-</style>
-<script src="/assets/js/manager-auth-store.js"></script>
-<script src="/assets/js/api.js"></script>
-<script>
-  AgriAuth.ensureManagerSession();
-</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriPulse — Performance</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Tailwind CDN offline fallback — basic readable layout */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f8f9ff;
+      color: #0b1c30;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+    img { max-width: 100%; }
+    a { color: #ea580c; }
+    a:hover { text-decoration: underline; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    input[type="text"], input[type="password"], input[type="email"],
+    input[type="number"], select, textarea {
+      width: 100%;
+      border: 1px solid #bfc9c3;
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: #0b1c30;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      background-color: #7c2d12;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    button:hover { background-color: #9a3412; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid #e5e7eb; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: 700; }
+  </style>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f6f8;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+
+    .sidebar {
+      background: #0f172a;
+      width: 220px;
+      min-width: 220px;
+      flex-shrink: 0;
+      min-height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      margin: 2px 8px;
+      border-radius: 8px;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .nav-link:hover {
+      background: #1e293b;
+      color: #ffffff;
+    }
+
+    .nav-link.active {
+      background: #ea580c;
+      color: #ffffff;
+    }
+
+    .nav-link.active .material-symbols-outlined {
+      color: #ffffff;
+    }
+
+    .nav-link.logout {
+      color: rgba(252, 165, 165, 0.7);
+    }
+
+    .nav-link.logout:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+    }
+
+    .nav-link.settings-link {
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .bar-track {
+      height: 10px;
+      background: #f3f4f6;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: #ea580c;
+      border-radius: 99px;
+      transition: width 0.8s ease;
+    }
+
+    .tbl-row:hover {
+      background: #f9fafb;
+      cursor: pointer;
+    }
+
+    body input,
+    body select,
+    body textarea {
+      font-family: 'Inter', sans-serif !important;
+      font-size: 13px !important;
+    }
+
+    input,
+    select {
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #111827;
+      background: #fff;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #ea580c;
+      box-shadow: 0 0 0 3px rgba(0, 108, 73, 0.08);
+    }
+
+    body select {
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E") !important;
+      background-position: right 10px center !important;
+      background-repeat: no-repeat !important;
+      background-size: 1.25rem !important;
+      padding-right: 32px !important;
+      cursor: pointer !important;
+    }
+
+    .rank-medal {
+      width: 28px;
+      height: 28px;
+      border-radius: 99px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .spark-bar {
+      display: inline-block;
+      width: 4px;
+      border-radius: 2px;
+      background: #7c2d12;
+      margin-right: 1px;
+      vertical-align: bottom;
+    }
+  </style>
+  <script src="/assets/js/manager-auth-store.js"></script>
+  <script src="/assets/js/api.js"></script>
+  <script>
+    AgriAuth.ensureManagerSession();
+  </script>
 </head>
+
 <body>
-<aside class="sidebar">
-  <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
-    <div style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="color:#4ade80;font-size:20px;">agriculture</span></div>
-    <div><div style="color:#f0fdf4;font-weight:800;font-size:14px;">Sri Sri Sugar</div><div style="color:rgba(209,250,229,0.5);font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL</div></div>
-  </div>
-  <nav style="flex:1;padding:8px 0;">
-    <a class="nav-link" href="manager_dashboard.html"><span class="material-symbols-outlined" style="font-size:20px;">dashboard</span>Overview</a>
-    <a class="nav-link" href="manager_officers.html"><span class="material-symbols-outlined" style="font-size:20px;">group</span>Officers</a>
-    <a class="nav-link" href="manager_tasks.html"><span class="material-symbols-outlined" style="font-size:20px;">checklist</span>Tasks</a>
-    <a class="nav-link active" href="manager_performance.html"><span class="material-symbols-outlined" style="font-size:20px;">bar_chart</span>Performance</a>
-    <a class="nav-link" href="manager_reports.html"><span class="material-symbols-outlined" style="font-size:20px;">assessment</span>Reports</a>
-  </nav>
-  <div style="border-top:1px solid rgba(255,255,255,0.07);padding:8px 0;">
-    <a class="nav-link settings-link" href="manager_settings.html"><span class="material-symbols-outlined" style="font-size:20px;">settings</span>Settings</a>
-    <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined" style="font-size:20px;">logout</span>Logout</a>
-  </div>
-</aside>
-
-<div style="margin-left:220px;min-height:100vh;">
-  <header style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
-    <div>
-      <span style="font-size:18px;font-weight:800;color:#003527;">Performance Analytics</span>
-      <span style="font-size:12px;color:#6b7280;margin-left:10px;" id="perfDateRange">Live data from database</span>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <select id="periodSel" onchange="filterPeriod()" style="font-size:12px;padding:7px 10px;">
-        <option value="all">All Period</option>
-        <option value="may">May 2026</option>
-        <option value="apr">April 2026</option>
-      </select>
-      <button onclick="exportCSV()" style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#003527;cursor:pointer;display:flex;align-items:center;gap:6px;"><span class="material-symbols-outlined" style="font-size:16px;">download</span>Export CSV</button>
-      <div style="width:36px;height:36px;border-radius:99px;background:#d1fae5;color:#003527;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;" id="avatarCircle">M</div>
-      <span style="font-size:13px;font-weight:600;color:#374151;" id="headerName">—</span>
-    </div>
-  </header>
-
-  <div style="padding:24px;display:flex;flex-direction:column;gap:20
-    <!-- KPI cards -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
-      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #003527;">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">Total Activities</div>
-        <div style="font-size:28px;font-weight:800;color:#003527;" id="kpiTotalActivities">—</div>
-        <div style="font-size:11px;color:#059669;margin-top:4px;font-weight:600;" id="kpiTotalActivitiesSub">All time logged</div>
+  <aside class="sidebar">
+    <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
+      <div
+        style="width:36px;height:36px;background:#ea580c;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="color:#ffffff;font-size:20px;">agriculture</span>
       </div>
-      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #059669;">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">Avg / Officer / Day</div>
-        <div style="font-size:28px;font-weight:800;color:#059669;" id="kpiAvgOfficerDay">—</div>
-        <div style="font-size:11px;color:#6b7280;margin-top:4px;" id="kpiAvgOfficerDaySub">Across active officers</div>
-      </div>
-      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #d97706;">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">Peak Week</div>
-        <div style="font-size:28px;font-weight:800;color:#d97706;" id="kpiPeakWeek">—</div>
-        <div style="font-size:11px;color:#6b7280;margin-top:4px;" id="kpiPeakWeekSub">From weekly trend</div>
-      </div>
-      <div style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #0d9488;">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">Villages Covered</div>
-        <div style="font-size:28px;font-weight:800;color:#0d9488;" id="kpiVillagesCovered">—</div>
-        <div style="font-size:11px;color:#6b7280;margin-top:4px;" id="kpiVillagesCoveredSub">From report logs</div>
-      </div>
-    </div>
-
-    <!-- Top performer callout -->
-    <div style="background:linear-gradient(135deg,#fef9c3,#fef3c7);border:1px solid #fde68a;border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:14px;">
-      <div style="font-size:32px;">🏆</div>
       <div>
-        <div style="font-size:15px;font-weight:800;color:#92400e;" id="topPerformerTitle">Top Performer: —</div>
-        <div style="font-size:13px;color:#92400e;margin-top:2px;" id="topPerformerText">Loading top performer...</div>
+        <div style="color:#ffffff;font-weight:800;font-size:14px;line-height:1.2;">Sri Sri Sugar</div>
+        <div style="color:#94a3b8;font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL
+        </div>
       </div>
-      <a href="manager_officers.html" style="margin-left:auto;background:#003527;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;">View Profile →</a>
     </div>
+    <nav style="flex:1;padding:8px 0;">
+      <a class="nav-link" href="manager_dashboard.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">dashboard</span>Overview</a>
+      <a class="nav-link" href="manager_officers.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">group</span>Officers</a>
+      <a class="nav-link" href="manager_tasks.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">checklist</span>Tasks</a>
+      <a class="nav-link" href="manager_farmers.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">person_search</span>Farmers Registry</a>
+      <a class="nav-link active" href="manager_performance.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">bar_chart</span>Performance</a>
+      <a class="nav-link" href="manager_reports.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">assessment</span>Reports Dashboard</a>
+      <a class="nav-link" href="manager_campaign_reports.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">query_stats</span>Campaign Reports</a>
+    </nav>
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding:8px 0;">
+      <a class="nav-link settings-link" href="manager_settings.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">settings</span>Settings</a>
+      <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined"
+          style="font-size:20px;">logout</span>Logout</a>
+    </div>
+  </aside>
 
-    <!-- Officer table + worktype breakdown -->
-    <div style="display:grid;grid-template-columns:1fr 300px;gap:20px;">
-      <div class="card" style="overflow:hidden;">
-        <div style="padding:14px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;">
+  <div style="margin-left:220px;min-height:100vh;">
+    <header
+      style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
+      <div>
+        <span style="font-size:18px;font-weight:800;color:#7c2d12;">Performance Analytics</span>
+        <span style="font-size:12px;color:#6b7280;margin-left:10px;" id="perfDateRange">Live data from database</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <select id="periodSel" onchange="filterPeriod()" style="font-size:12px;padding:7px 10px;">
+          <option value="all">All Period</option>
+          <option value="may">May 2026</option>
+          <option value="apr">April 2026</option>
+        </select>
+        <button onclick="exportCSV()"
+          style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#7c2d12;cursor:pointer;display:flex;align-items:center;gap:6px;"><span
+            class="material-symbols-outlined" style="font-size:16px;">download</span>Export CSV</button>
+        <div
+          style="width:36px;height:36px;border-radius:99px;background:#ffedd5;color:#7c2d12;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;"
+          id="avatarCircle">M</div>
+        <span style="font-size:13px;font-weight:600;color:#374151;" id="headerName">—</span>
+      </div>
+    </header>
+
+    <div style="padding:24px;display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:flex-start;">
+      <!-- Left Column: Metrics & Charts -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <!-- Top performer callout -->
+        <div
+          style="background:linear-gradient(135deg,#fef9c3,#fef3c7);border:1px solid #fde68a;border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:14px;">
+          <div style="font-size:32px;">🏆</div>
           <div>
-            <div style="font-size:15px;font-weight:700;color:#111827;">Officer Performance Ranking</div>
-            <div style="font-size:11px;color:#6b7280;margin-top:2px;">Ranked by total activities · Click to view profile</div>
+            <div style="font-size:15px;font-weight:800;color:#92400e;" id="topPerformerTitle">Top Performer: —</div>
+            <div style="font-size:13px;color:#92400e;margin-top:2px;" id="topPerformerText">Loading top performer...
+            </div>
           </div>
-          <input type="text" placeholder="Search officer..." id="perfSearch" oninput="filterTable()" style="width:180px;font-size:12px;padding:7px 10px;">
+          <a href="manager_officers.html"
+            style="margin-left:auto;background:#7c2d12;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;">View
+            Profile →</a>
         </div>
-        <div style="overflow-x:auto;">
-          <table style="width:100%;border-collapse:collapse;" id="perfTable">
-            <thead style="background:#f9fafb;">
-              <tr>
-                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Rank</th>
-                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Officer</th>
-                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Activities</th>
-                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Share</th>
-                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Top Work</th>
-                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Last Active</th>
-                <th style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">Trend</th>
-              </tr>
-            </thead>
-            <tbody id="perfBody"></tbody>
-          </table>
+
+        <!-- Officer table + worktype breakdown -->
+        <div style="display:grid;grid-template-columns:1fr 300px;gap:20px;">
+          <div class="card" style="overflow:hidden;">
+            <div
+              style="padding:14px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;">
+              <div>
+                <div style="font-size:15px;font-weight:700;color:#111827;">Officer Performance Ranking</div>
+                <div style="font-size:11px;color:#6b7280;margin-top:2px;">Ranked by total activities · Click to view
+                  profile</div>
+              </div>
+              <input type="text" placeholder="Search officer..." id="perfSearch" oninput="filterTable()"
+                style="width:180px;font-size:12px;padding:7px 10px;">
+            </div>
+            <div style="overflow-x:auto;">
+              <table style="width:100%;border-collapse:collapse;" id="perfTable">
+                <thead style="background:#f9fafb;">
+                  <tr>
+                    <th
+                      style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                      Rank</th>
+                    <th
+                      style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                      Officer</th>
+                    <th
+                      style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                      Activities</th>
+                    <th
+                      style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                      Share</th>
+                    <th
+                      style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                      Top Work</th>
+                    <th
+                      style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                      Last Active</th>
+                    <th
+                      style="padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;">
+                      Trend</th>
+                  </tr>
+                </thead>
+                <tbody id="perfBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Work type breakdown -->
+          <div class="card" style="padding:20px;">
+            <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:16px;">Work Type Distribution</div>
+            <div style="display:flex;flex-direction:column;gap:14px;" id="workTypeContainer">
+              <div style="font-size:12px;color:#9ca3af;text-align:center;padding:16px;">Loading work types...</div>
+            </div>
+            <div
+              style="margin-top:16px;padding:12px;background:#fff7ed;border-radius:8px;font-size:11px;color:#7c2d12;font-weight:600;"
+              id="workTypeTotal">Total: — activities</div>
+          </div>
+        </div>
+
+        <!-- Village + Weekly side-by-side -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div class="card" style="padding:20px;">
+            <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:16px;">Top 8 Villages by Activity
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;" id="villageList">
+              <div style="font-size:12px;color:#9ca3af;text-align:center;padding:16px;">Loading villages...</div>
+            </div>
+          </div>
+          <div class="card" style="padding:20px;">
+            <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:16px;">Weekly Activity Trend</div>
+            <div style="display:flex;align-items:flex-end;gap:6px;height:120px;margin-bottom:8px;"
+              id="weeklyTrendContainer">
+              <div style="font-size:12px;color:#9ca3af;text-align:center;width:100%;padding:16px;">Loading weekly
+                trend...</div>
+            </div>
+            <div
+              style="background:#fff7ed;border-radius:8px;padding:10px 14px;font-size:12px;color:#7c2d12;font-weight:600;"
+              id="weeklyTrendSubtext">Average: — activities/week</div>
+          </div>
         </div>
       </div>
 
-      <!-- Work type breakdown -->
-      <div class="card" style="padding:20px;">
-        <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:16px;">Work Type Distribution</div>
-        <div style="display:flex;flex-direction:column;gap:14px;" id="workTypeContainer">
-          <div style="font-size:12px;color:#9ca3af;text-align:center;padding:16px;">Loading work types...</div>
+      <!-- Right Column: KPI Cards stacked vertically -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div
+          style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #7c2d12;">
+          <div
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">
+            Total Activities</div>
+          <div style="font-size:28px;font-weight:800;color:#7c2d12;" id="kpiTotalActivities">—</div>
+          <div style="font-size:11px;color:#ea580c;margin-top:4px;font-weight:600;" id="kpiTotalActivitiesSub">All time
+            logged</div>
         </div>
-        <div style="margin-top:16px;padding:12px;background:#f0fdf4;border-radius:8px;font-size:11px;color:#003527;font-weight:600;" id="workTypeTotal">Total: — activities</div>
+        <div
+          style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #ea580c;">
+          <div
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">
+            Avg / Officer / Day</div>
+          <div style="font-size:28px;font-weight:800;color:#ea580c;" id="kpiAvgOfficerDay">—</div>
+          <div style="font-size:11px;color:#6b7280;margin-top:4px;" id="kpiAvgOfficerDaySub">Across active officers
+          </div>
+        </div>
+        <div
+          style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #d97706;">
+          <div
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">
+            Peak Week</div>
+          <div style="font-size:28px;font-weight:800;color:#d97706;" id="kpiPeakWeek">—</div>
+          <div style="font-size:11px;color:#6b7280;margin-top:4px;" id="kpiPeakWeekSub">From weekly trend</div>
+        </div>
+        <div
+          style="background:#fff;border-radius:12px;border:1px solid #e5e7eb;padding:16px;border-left:4px solid #0d9488;">
+          <div
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">
+            Villages Covered</div>
+          <div style="font-size:28px;font-weight:800;color:#0d9488;" id="kpiVillagesCovered">—</div>
+          <div style="font-size:11px;color:#6b7280;margin-top:4px;" id="kpiVillagesCoveredSub">From report logs</div>
+        </div>
       </div>
     </div>
-
-    <!-- Village + Weekly side-by-side -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-      <div class="card" style="padding:20px;">
-        <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:16px;">Top 8 Villages by Activity</div>
-        <div style="display:flex;flex-direction:column;gap:12px;" id="villageList">
-          <div style="font-size:12px;color:#9ca3af;text-align:center;padding:16px;">Loading villages...</div>
-        </div>
-      </div>
-      <div class="card" style="padding:20px;">
-        <div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:16px;">Weekly Activity Trend</div>
-        <div style="display:flex;align-items:flex-end;gap:6px;height:120px;margin-bottom:8px;" id="weeklyTrendContainer">
-          <div style="font-size:12px;color:#9ca3af;text-align:center;width:100%;padding:16px;">Loading weekly trend...</div>
-        </div>
-        <div style="background:#f0fdf4;border-radius:8px;padding:10px 14px;font-size:12px;color:#003527;font-weight:600;" id="weeklyTrendSubtext">Average: — activities/week</div>
-      </div>
-    </div>
-
   </div>
-</div>
 
-<script>
-let perfData = [];
-let villages = [];
-let weeklyData = [];
-let workTypes = [];
+  <script>
+    let perfData = [];
+    let villages = [];
+    let weeklyData = [];
+    let workTypes = [];
 
-function sparkline(data){
-  if (!data || !data.length) return "";
-  const max=Math.max(...data);
-  return data.map(v=>`<span class="spark-bar" style="height:${Math.round(v/(max || 1)*18)+2}px;background:${v===max?'#4ade80':'#003527'};opacity:${0.4+v/(max || 1)*0.6};"></span>`).join("");
-}
+    function sparkline(data) {
+      if (!data || !data.length) return "";
+      const max = Math.max(...data);
+      return data.map(v => `<span class="spark-bar" style="height:${Math.round(v / (max || 1) * 18) + 2}px;background:${v === max ? '#ea580c' : '#7c2d12'};opacity:${0.4 + v / (max || 1) * 0.6};"></span>`).join("");
+    }
 
-function renderTable(q=""){
-  const body=document.getElementById("perfBody");
-  const medals=["🥇","🥈","🥉"];
-  const filtered = perfData.filter(o=>!q||o.name.toLowerCase().includes(q.toLowerCase()));
-  if(!filtered.length){
-    body.innerHTML=`<tr><td colspan="7" style="padding:32px;text-align:center;color:#9ca3af;font-size:13px;">No officers found matching search.</td></tr>`;
-    return;
-  }
-  body.innerHTML=filtered.map(o=>`
-    <tr class="tbl-row" style="border-top:1px solid #f3f4f6;background:${o.rank===1?'#f0fdf4':'#fff'};" onclick="window.location.href='manager_officers.html'">
+    function renderTable(q = "") {
+      const body = document.getElementById("perfBody");
+      const medals = ["🥇", "🥈", "🥉"];
+      const filtered = perfData.filter(o => !q || o.name.toLowerCase().includes(q.toLowerCase()));
+      if (!filtered.length) {
+        body.innerHTML = `<tr><td colspan="7" style="padding:32px;text-align:center;color:#9ca3af;font-size:13px;">No officers found matching search.</td></tr>`;
+        return;
+      }
+      body.innerHTML = filtered.map(o => `
+    <tr class="tbl-row" style="border-top:1px solid #f3f4f6;background:${o.rank === 1 ? '#fff7ed' : '#fff'};" onclick="window.location.href='manager_officers.html'">
       <td style="padding:12px 16px;">
-        <div class="rank-medal" style="background:${o.rank<=3?'#003527':'#e5e7eb'};color:${o.rank<=3?'#fff':'#6b7280'};">
-          ${o.rank<=3?medals[o.rank-1]:o.rank}
+        <div class="rank-medal" style="background:${o.rank <= 3 ? '#7c2d12' : '#e5e7eb'};color:${o.rank <= 3 ? '#fff' : '#6b7280'};">
+          ${o.rank <= 3 ? medals[o.rank - 1] : o.rank}
         </div>
       </td>
       <td style="padding:12px 16px;">
         <div style="font-size:13px;font-weight:700;color:#111827;">${o.name}</div>
         <div style="font-size:11px;color:#9ca3af;">Field Officer</div>
       </td>
-      <td style="padding:12px 16px;font-size:16px;font-weight:800;color:${o.rank===1?'#003527':'#6b7280'};">${o.activities.toLocaleString()}</td>
+      <td style="padding:12px 16px;font-size:16px;font-weight:800;color:${o.rank === 1 ? '#7c2d12' : '#6b7280'};">${o.activities.toLocaleString()}</td>
       <td style="padding:12px 16px;">
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="font-size:12px;font-weight:700;color:#374151;min-width:36px;">${o.pct}%</span>
-          <div class="bar-track" style="width:80px;"><div class="bar-fill" style="width:0%;background:${o.rank===1?'#003527':'#059669'};" data-w="${o.pct*2.9}%"></div></div>
+          <div class="bar-track" style="width:80px;"><div class="bar-fill" style="width:0%;background:${o.rank === 1 ? '#7c2d12' : '#ea580c'};" data-w="${o.pct * 2.9}%"></div></div>
         </div>
       </td>
-      <td style="padding:12px 16px;"><span class="badge" style="background:#d1fae5;color:#003527;font-size:10px;">${o.top}</span></td>
+      <td style="padding:12px 16px;"><span class="badge" style="background:#ffedd5;color:#7c2d12;font-size:10px;">${o.top}</span></td>
       <td style="padding:12px 16px;font-size:12px;color:#6b7280;">${o.last}</td>
       <td style="padding:12px 16px;line-height:1;">${sparkline(o.trend)}</td>
     </tr>
   `).join("");
-  setTimeout(()=>document.querySelectorAll("#perfBody .bar-fill[data-w]").forEach(b=>b.style.width=b.dataset.w),120);
-}
-
-function filterTable(){renderTable(document.getElementById("perfSearch").value);}
-function filterPeriod(){
-  loadAllPerformanceData();
-}
-
-function exportCSV(){
-  const rows=[["Rank","Officer","Activities","Share","Top Work","Last Active"],...perfData.map(o=>[o.rank,o.name,o.activities,o.pct+"%",o.top,o.last])];
-  const csv=rows.map(r=>r.join(",")).join("\n");
-  const a=document.createElement("a");a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(csv);a.download="performance_report.csv";a.click();
-}
-
-async function loadAllPerformanceData() {
-  try {
-    // 1. Fetch ranking
-    perfData = await AgriAPI.getPerformanceRanking();
-    
-    // top, last, and trend are now returned by the API — no hardcoded overrides needed
-
-    renderTable();
-
-    // 2. Fetch summary stats
-    const summary = await AgriAPI.getReportSummary();
-    document.getElementById("kpiTotalActivities").textContent = (summary.total_activities || 0).toLocaleString();
-    
-    const activeOff = summary.active_officers || perfData.length || 1;
-    const activeDays = summary.active_days || 1;
-    const avgPerDay = ((summary.total_activities || 0) / (activeOff * activeDays)).toFixed(1);
-    document.getElementById("kpiAvgOfficerDay").textContent = avgPerDay;
-    document.getElementById("kpiAvgOfficerDaySub").textContent = `Across ${activeOff} active officers`;
-    
-    document.getElementById("kpiVillagesCovered").textContent = summary.villages_covered || 0;
-    document.getElementById("kpiVillagesCoveredSub").textContent = `Active in ${activeDays} days`;
-
-    // 3. Top Performer
-    if (perfData.length > 0) {
-      const topOff = perfData[0];
-      document.getElementById("topPerformerTitle").textContent = `Top Performer: ${topOff.name}`;
-      document.getElementById("topPerformerText").innerHTML = `Handled <strong>${topOff.activities.toLocaleString()} activities — ${topOff.pct}% of all ${summary.total_activities.toLocaleString()} recorded</strong>. Highest individual contribution.`;
-    } else {
-      document.getElementById("topPerformerTitle").textContent = "Top Performer: —";
-      document.getElementById("topPerformerText").textContent = "No performance data recorded yet.";
+      setTimeout(() => document.querySelectorAll("#perfBody .bar-fill[data-w]").forEach(b => b.style.width = b.dataset.w), 120);
     }
 
-    // 4. Villages
-    villages = await AgriAPI.getPerformanceTopVillages();
-    if (villages && villages.length) {
-      const maxV = villages[0].count || 1;
-      document.getElementById("villageList").innerHTML = villages.slice(0, 8).map((v, i) => `
+    function filterTable() { renderTable(document.getElementById("perfSearch").value); }
+    function filterPeriod() {
+      loadAllPerformanceData();
+    }
+
+    function exportCSV() {
+      const rows = [["Rank", "Officer", "Activities", "Share", "Top Work", "Last Active"], ...perfData.map(o => [o.rank, o.name, o.activities, o.pct + "%", o.top, o.last])];
+      const csv = rows.map(r => r.join(",")).join("\n");
+      const a = document.createElement("a"); a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv); a.download = "performance_report.csv"; a.click();
+    }
+
+    async function loadPeriods() {
+      try {
+        const res = await AgriAuth.apiFetch("/api/performance/periods");
+        if (res.ok) {
+          const periods = await res.json();
+          const sel = document.getElementById("periodSel");
+          sel.innerHTML = '<option value="all">All Period</option>';
+          periods.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = `${p.year}-${p.month}`;
+            opt.textContent = p.label;
+            sel.appendChild(opt);
+          });
+          if (periods.length > 0) {
+            sel.value = `${periods[0].year}-${periods[0].month}`;
+          }
+        }
+      } catch (err) {
+        console.error("loadPeriods error:", err);
+      }
+    }
+
+    async function loadAllPerformanceData() {
+      const period = document.getElementById("periodSel").value;
+      const params = {};
+      if (period && period !== "all") {
+        const [year, month] = period.split("-");
+        params.year = year;
+        params.month = month;
+      }
+
+      try {
+        // 1. Fetch ranking
+        perfData = await AgriAPI.getPerformanceRanking(params);
+
+        // top, last, and trend are now returned by the API — no hardcoded overrides needed
+
+        renderTable();
+
+        // 2. Fetch summary stats
+        const summary = await AgriAPI.getReportSummary(params);
+        document.getElementById("kpiTotalActivities").textContent = (summary.total_activities || 0).toLocaleString();
+
+        const activeOff = summary.active_officers || perfData.length || 1;
+        const activeDays = summary.active_days || 1;
+        const avgPerDay = ((summary.total_activities || 0) / (activeOff * activeDays)).toFixed(1);
+        document.getElementById("kpiAvgOfficerDay").textContent = avgPerDay;
+        document.getElementById("kpiAvgOfficerDaySub").textContent = `Across ${activeOff} active officers`;
+
+        document.getElementById("kpiVillagesCovered").textContent = summary.villages_covered || 0;
+        document.getElementById("kpiVillagesCoveredSub").textContent = `Active in ${activeDays} days`;
+
+        // 3. Top Performer
+        if (perfData.length > 0 && perfData[0].activities > 0) {
+          const topOff = perfData[0];
+          document.getElementById("topPerformerTitle").textContent = `Top Performer: ${topOff.name}`;
+          document.getElementById("topPerformerText").innerHTML = `Handled <strong>${topOff.activities.toLocaleString()} activities — ${topOff.pct}% of all ${summary.total_activities.toLocaleString()} recorded</strong>. Highest individual contribution.`;
+        } else {
+          document.getElementById("topPerformerTitle").textContent = "Top Performer: —";
+          document.getElementById("topPerformerText").textContent = "No performance data recorded for this period.";
+        }
+
+        // 4. Villages
+        villages = await AgriAPI.getPerformanceTopVillages(params);
+        if (villages && villages.length) {
+          const maxV = villages[0].count || 1;
+          document.getElementById("villageList").innerHTML = villages.slice(0, 8).map((v, i) => `
         <div>
           <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-            <span style="font-size:12px;font-weight:600;color:#111827;">${i+1}. ${v.village}</span>
-            <span style="font-size:12px;font-weight:700;color:#003527;">${v.count}</span>
+            <span style="font-size:12px;font-weight:600;color:#111827;">${i + 1}. ${v.village}</span>
+            <span style="font-size:12px;font-weight:700;color:#7c2d12;">${v.count}</span>
           </div>
-          <div class="bar-track"><div class="bar-fill" style="width:0%;background:#059669;" data-w="${Math.round(v.count/maxV*100)}%"></div></div>
+          <div class="bar-track"><div class="bar-fill" style="width:0%;background:#ea580c;" data-w="${Math.round(v.count / maxV * 100)}%"></div></div>
         </div>`).join("");
-    } else {
-      document.getElementById("villageList").innerHTML = '<div style="font-size:12px;color:#9ca3af;text-align:center;padding:16px;">No village activity logged</div>';
-    }
+        } else {
+          document.getElementById("villageList").innerHTML = '<div style="font-size:12px;color:#9ca3af;text-align:center;padding:16px;">No village activity logged in this period</div>';
+        }
 
-    // 5. Work Types
-    workTypes = await AgriAPI.getPerformanceWorkTypes();
-    if (workTypes && workTypes.length) {
-      const totalW = workTypes.reduce((s, w) => s + w.count, 0);
-      const colors = ["#003527", "#059669", "#0d9488", "#d97706", "#d97706", "#6b7280", "#6b7280", "#6b7280"];
-      document.getElementById("workTypeContainer").innerHTML = workTypes.map((w, i) => {
-        const color = colors[i % colors.length];
-        return `
+        // 5. Work Types
+        workTypes = await AgriAPI.getPerformanceWorkTypes(params);
+        if (workTypes && workTypes.length) {
+          const totalW = workTypes.reduce((s, w) => s + w.count, 0);
+          const colors = ["#7c2d12", "#ea580c", "#0d9488", "#d97706", "#d97706", "#6b7280", "#6b7280", "#6b7280"];
+          document.getElementById("workTypeContainer").innerHTML = workTypes.map((w, i) => {
+            const color = colors[i % colors.length];
+            return `
           <div>
             <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
               <span style="font-size:12px;font-weight:600;color:#111827;">${w.label}</span>
-              <span style="font-size:12px;font-weight:700;color:#003527;">${w.count} <span style="color:#9ca3af;font-weight:400;">(${w.pct}%)</span></span>
+              <span style="font-size:12px;font-weight:700;color:#7c2d12;">${w.count} <span style="color:#9ca3af;font-weight:400;">(${w.pct}%)</span></span>
             </div>
             <div class="bar-track"><div class="bar-fill" style="width:0%;background:${color};" data-w="${w.pct}%"></div></div>
           </div>
         `;
-      }).join("");
-      document.getElementById("workTypeTotal").textContent = `Total: ${totalW.toLocaleString()} activities across ${workTypes.length} work types`;
-    } else {
-      document.getElementById("workTypeContainer").innerHTML = '<div style="font-size:12px;color:#9ca3af;text-align:center;padding:16px;">No work types configured</div>';
-    }
+          }).join("");
+          document.getElementById("workTypeTotal").textContent = `Total: ${totalW.toLocaleString()} activities across ${workTypes.length} work types`;
+        } else {
+          document.getElementById("workTypeContainer").innerHTML = '<div style="font-size:12px;color:#9ca3af;text-align:center;padding:16px;">No work types configured</div>';
+          document.getElementById("workTypeTotal").textContent = "Total: 0 activities";
+        }
 
-    // 6. Weekly Trend
-    weeklyData = await AgriAPI.getPerformanceWeekly();
-    if (weeklyData && weeklyData.length) {
-      const maxW = Math.max(...weeklyData.map(w => w.count), 1);
-      const peakWeek = weeklyData.find(w => w.is_peak);
-      if (peakWeek) {
-        document.getElementById("kpiPeakWeek").textContent = peakWeek.count.toLocaleString();
-        document.getElementById("kpiPeakWeekSub").textContent = `${peakWeek.week_label} Peak Activity`;
-      } else {
-        document.getElementById("kpiPeakWeek").textContent = "—";
-        document.getElementById("kpiPeakWeekSub").textContent = "No peak recorded";
-      }
+        // 6. Weekly Trend
+        weeklyData = await AgriAPI.getPerformanceWeekly(params);
+        if (weeklyData && weeklyData.length) {
+          const maxW = Math.max(...weeklyData.map(w => w.count), 1);
+          const peakWeek = weeklyData.find(w => w.is_peak);
+          if (peakWeek) {
+            document.getElementById("kpiPeakWeek").textContent = peakWeek.count.toLocaleString();
+            document.getElementById("kpiPeakWeekSub").textContent = `${peakWeek.week_label} Peak Activity`;
+          } else {
+            document.getElementById("kpiPeakWeek").textContent = "—";
+            document.getElementById("kpiPeakWeekSub").textContent = "No peak recorded";
+          }
 
-      document.getElementById("weeklyTrendContainer").innerHTML = weeklyData.slice(-8).map(w => {
-        const pctHeight = Math.round((w.count / maxW) * 90) + 10;
-        const barBg = w.is_peak ? '#003527' : '#006c49';
-        const barBorder = w.is_peak ? 'border:2px solid #4ade80;' : '';
-        const textBg = w.is_peak ? 'color:#003527;font-weight:800;' : 'color:#9ca3af;';
-        const peakLabel = w.is_peak ? '▲' : '';
-        return `
+          document.getElementById("weeklyTrendContainer").innerHTML = weeklyData.slice(-8).map(w => {
+            const pctHeight = Math.round((w.count / maxW) * 90) + 10;
+            const barBg = w.is_peak ? '#7c2d12' : '#ea580c';
+            const barBorder = w.is_peak ? 'border:2px solid #ea580c;' : '';
+            const textBg = w.is_peak ? 'color:#7c2d12;font-weight:800;' : 'color:#9ca3af;';
+            const peakLabel = w.is_peak ? '▲' : '';
+            return `
           <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;">
-            <div style="font-size:9px;color:${w.is_peak ? '#003527' : '#9ca3af'};font-weight:600;">${w.count}</div>
+            <div style="font-size:9px;color:${w.is_peak ? '#7c2d12' : '#9ca3af'};font-weight:600;">${w.count}</div>
             <div style="width:100%;background:${barBg};border-radius:4px 4px 0 0;height:${pctHeight}px;${barBorder}box-sizing:border-box;"></div>
             <div style="font-size:9px;${textBg}">${w.week_label}${peakLabel}</div>
           </div>
         `;
-      }).join("");
+          }).join("");
 
-      const avgW = Math.round(weeklyData.reduce((s, w) => s + w.count, 0) / weeklyData.length);
-      document.getElementById("weeklyTrendSubtext").textContent = `Average: ${avgW.toLocaleString()} activities/week · ${weeklyData.length} weeks tracked`;
-    } else {
-      document.getElementById("weeklyTrendContainer").innerHTML = '<div style="font-size:12px;color:#9ca3af;text-align:center;padding:16px;">No weekly trend data</div>';
+          const avgW = Math.round(weeklyData.reduce((s, w) => s + w.count, 0) / weeklyData.length);
+          document.getElementById("weeklyTrendSubtext").textContent = `Average: ${avgW.toLocaleString()} activities/week · ${weeklyData.length} weeks tracked`;
+        } else {
+          document.getElementById("weeklyTrendContainer").innerHTML = '<div style="font-size:12px;color:#9ca3af;text-align:center;padding:16px;">No weekly trend data</div>';
+          document.getElementById("kpiPeakWeek").textContent = "—";
+          document.getElementById("kpiPeakWeekSub").textContent = "No peak recorded";
+          document.getElementById("weeklyTrendSubtext").textContent = "Average: 0 activities/week";
+        }
+
+        setTimeout(() => {
+          document.querySelectorAll(".bar-fill[data-w]").forEach(b => b.style.width = b.dataset.w);
+        }, 120);
+
+      } catch (err) {
+        console.error("loadAllPerformanceData error:", err);
+      }
     }
 
-    setTimeout(() => {
-      document.querySelectorAll(".bar-fill[data-w]").forEach(b => b.style.width = b.dataset.w);
-    }, 120);
+    document.addEventListener("DOMContentLoaded", async () => {
+      const s = AgriAuth.getSession();
+      if (s) {
+        const name = (s.name && s.name !== "None") ? s.name : s.username;
+        document.getElementById("avatarCircle").textContent = name.charAt(0).toUpperCase();
+        document.getElementById("headerName").textContent = name;
+      }
 
-  } catch (err) {
-    console.error("loadAllPerformanceData error:", err);
-  }
-}
+      await loadPeriods();
+      await loadAllPerformanceData();
 
-document.addEventListener("DOMContentLoaded",()=>{
-  const s=AgriAuth.getSession();
-  if(s){const name=(s.name&&s.name!=="None")?s.name:s.username;document.getElementById("avatarCircle").textContent=name.charAt(0).toUpperCase();document.getElementById("headerName").textContent=name;}
-  
-  loadAllPerformanceData();
-
-  document.getElementById("logoutBtn").addEventListener("click",e=>{e.preventDefault();if(confirm("Sign out?"))AgriAuth.clearSession(),window.location.replace("/login.html");});
-});
-</script>
+      document.getElementById("logoutBtn").addEventListener("click", e => {
+        e.preventDefault();
+        if (confirm("Sign out?")) {
+          AgriAuth.clearSession();
+          window.location.replace("/login.html");
+        }
+      });
+    });
+  </script>
 </body>
+
 </html>
+<!-- cache-bust: 2026-06-23-2 -->

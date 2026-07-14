@@ -105,7 +105,7 @@ def build_phase1_connection_string() -> Dict[str, str]:
 
 def get_db_conn() -> pyodbc.Connection:
     parts = build_phase1_connection_string()
-    return pyodbc.connect(parts["conn_str"], autocommit=True)
+    return pyodbc.connect(parts["conn_str"], autocommit=True, timeout=5)
 
 
 def get_db() -> Generator[pyodbc.Connection, None, None]:
@@ -123,7 +123,7 @@ def get_db() -> Generator[pyodbc.Connection, None, None]:
 def _mask_conn_str(conn_str: str) -> str:
     # Mask common credentials tokens
     masked = conn_str
-    for key in ["PWD=", "UID=", "Password=", "User=", "PWD", "UID"]:
+    for key in ["PWD=", "UID=", "Password=", "User="]:
         # Basic masking without assuming exact format; keep simple.
         masked = masked.replace(key, f"{key.split('=')[0]}=***")
 
@@ -143,11 +143,17 @@ def masked_connection_diagnostics() -> Dict[str, str]:
 
 
 def fetch_test_1() -> Any:
-    with get_db_conn() as conn:
+    conn = get_db_conn()
+    try:
         cur = conn.cursor()
         cur.execute("SELECT 1 as test")
         row = cur.fetchone()
         return row[0] if row else None
+    finally:
+        try:
+            conn.close()
+        except Exception:
+            pass
 
 
 def odbc_drivers() -> List[str]:
@@ -162,7 +168,7 @@ from contextlib import contextmanager
 @contextmanager
 def db_cursor():
     parts = build_phase1_connection_string()
-    conn = pyodbc.connect(parts["conn_str"], autocommit=False)
+    conn = pyodbc.connect(parts["conn_str"], autocommit=False, timeout=5)
     cur = conn.cursor()
     try:
         yield cur

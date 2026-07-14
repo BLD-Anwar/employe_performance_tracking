@@ -16,6 +16,9 @@ const AgriAPI = {
   async _request(method, path, body = null) {
     const session = AgriAuth.getSession();
     const headers = { "Content-Type": "application/json" };
+    if (session && session.token) {
+      headers["Authorization"] = `Bearer ${session.token}`;
+    }
 
     const options = { method, headers };
     if (body) options.body = JSON.stringify(body);
@@ -95,10 +98,10 @@ const AgriAPI = {
   getSubVillages(village)    { return this._request("GET", `/tasks/sub-villages?village=${village || ""}`); },
 
   // ── Manager Performance ──────────────────────────────────────────────────
-  getPerformanceRanking()       { return this._request("GET", "/performance/ranking"); },
-  getPerformanceWorkTypes()     { return this._request("GET", "/performance/work-types"); },
-  getPerformanceTopVillages()   { return this._request("GET", "/performance/top-villages"); },
-  getPerformanceWeekly()        { return this._request("GET", "/performance/weekly"); },
+  getPerformanceRanking(params)   { const q = new URLSearchParams(params); return this._request("GET", `/performance/ranking?${q}`); },
+  getPerformanceWorkTypes(params) { const q = new URLSearchParams(params); return this._request("GET", `/performance/work-types?${q}`); },
+  getPerformanceTopVillages(params) { const q = new URLSearchParams(params); return this._request("GET", `/performance/top-villages?${q}`); },
+  getPerformanceWeekly(params)    { const q = new URLSearchParams(params); return this._request("GET", `/performance/weekly?${q}`); },
   getOfficerPerformance(id)     { return this._request("GET", `/performance/officer/${id}`); },
 
   // ── Manager Reports ──────────────────────────────────────────────────────
@@ -110,7 +113,7 @@ const AgriAPI = {
     const q = new URLSearchParams(params);
     window.open(`${this._baseUrl()}/reports/activities/download?${q}`, "_blank");
   },
-  getReportSummary()         { return this._request("GET", "/reports/summary"); },
+  getReportSummary(params)   { const q = new URLSearchParams(params); return this._request("GET", `/reports/summary?${q}`); },
   getReportArchive()         { return this._request("GET", "/reports/archive"); },
   getReportCount()           { return this._request("GET", "/reports/archive/count"); },
   getTaskStats()             { return this._request("GET", "/reports/task-stats"); },
@@ -198,7 +201,7 @@ const AgriAPI = {
     const s = AgriAuth.getSession();
     return this._request("GET", `/me/insights/${s.userId}`); 
   },
-  getVillages() { 
+  getMyVillages() { 
     const s = AgriAuth.getSession();
     return this._request("GET", `/me/villages/${s.userId}`); 
   },

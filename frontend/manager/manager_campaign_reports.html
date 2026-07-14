@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriPulse — Campaign Reports</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Tailwind CDN offline fallback — basic readable layout */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #f8f9ff;
+      color: #0b1c30;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+    }
+    img { max-width: 100%; }
+    a { color: #ea580c; }
+    a:hover { text-decoration: underline; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    input[type="text"], input[type="password"], input[type="email"],
+    input[type="number"], select, textarea {
+      width: 100%;
+      border: 1px solid #bfc9c3;
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: #ffffff;
+      color: #0b1c30;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      background-color: #7c2d12;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    button:hover { background-color: #9a3412; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 12px; border: 1px solid #e5e7eb; text-align: left; }
+    th { background-color: #f1f5f9; font-weight: 700; }
+  </style>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@400,0..1&display=swap"
+    rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f6f8;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+
+    .sidebar {
+      background: #0f172a;
+      width: 220px;
+      min-width: 220px;
+      flex-shrink: 0;
+      min-height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      margin: 2px 8px;
+      border-radius: 8px;
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .nav-link:hover {
+      background: #1e293b;
+      color: #ffffff;
+    }
+
+    .nav-link.active {
+      background: #ea580c;
+      color: #ffffff;
+    }
+
+    .nav-link.active .material-symbols-outlined {
+      color: #ffffff;
+    }
+
+    .nav-link.logout {
+      color: rgba(252, 165, 165, 0.7);
+    }
+
+    .nav-link.logout:hover {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+    }
+
+    .nav-link.settings-link {
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .tbl-row:hover {
+      background: #f9fafb;
+    }
+
+    .toast {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      background: #7c2d12;
+      color: #fff;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 999;
+      transform: translateX(140%);
+      transition: transform 0.3s ease;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    /* Print styling for professional reports */
+    @media print {
+      body {
+        background: #fff;
+        color: #000;
+        font-size: 12px;
+      }
+
+      .sidebar,
+      header,
+      .no-print,
+      #toast,
+      .print-btn-container {
+        display: none !important;
+      }
+
+      .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
+
+      .card {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin-bottom: 24px !important;
+      }
+
+      table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid #ddd !important;
+        padding: 8px 12px !important;
+      }
+
+      .progress-bar-container {
+        border: 1px solid #000 !important;
+      }
+    }
+  </style>
+  <script src="../assets/js/manager-auth-store.js"></script>
+  <script>
+    AgriAuth.ensureManagerSession();
+  </script>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div style="padding:20px 16px 12px;display:flex;align-items:center;gap:10px;">
+      <div
+        style="width:36px;height:36px;background:#ea580c;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="color:#ffffff;font-size:20px;">agriculture</span>
+      </div>
+      <div>
+        <div style="color:#ffffff;font-weight:800;font-size:14px;line-height:1.2;">Sri Sri Sugar</div>
+        <div style="color:#94a3b8;font-size:10px;font-weight:600;letter-spacing:0.06em;">MANAGER PORTAL
+        </div>
+      </div>
+    </div>
+    <nav style="flex:1;padding:8px 0;">
+      <a class="nav-link" href="manager_dashboard.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">dashboard</span>Overview</a>
+      <a class="nav-link" href="manager_officers.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">group</span>Officers</a>
+      <a class="nav-link" href="manager_tasks.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">checklist</span>Tasks</a>
+      <a class="nav-link" href="manager_farmers.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">person_search</span>Farmers Registry</a>
+      <a class="nav-link" href="manager_performance.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">bar_chart</span>Performance</a>
+      <a class="nav-link" href="manager_reports.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">assessment</span>Reports Dashboard</a>
+      <a class="nav-link active" href="manager_campaign_reports.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">query_stats</span>Campaign Reports</a>
+    </nav>
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding:8px 0;">
+      <a class="nav-link settings-link" href="manager_settings.html"><span class="material-symbols-outlined"
+          style="font-size:20px;">settings</span>Settings</a>
+      <a class="nav-link logout" href="#" id="logoutBtn"><span class="material-symbols-outlined"
+          style="font-size:20px;">logout</span>Logout</a>
+    </div>
+  </aside>
+
+  <div id="toast" class="toast"></div>
+
+  <div class="main-content" style="margin-left:220px;min-height:100vh;">
+    <header
+      style="background:#fff;border-bottom:1px solid #e5e7eb;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;">
+      <div>
+        <span style="font-size:18px;font-weight:800;color:#7c2d12;">Campaign & Agronomic Analytics</span>
+        <span style="font-size:12px;color:#6b7280;margin-left:10px;">Monitor target conversions & crop volume
+          expectations</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div class="print-btn-container" style="display:flex;gap:8px;">
+          <button onclick="exportToCSV()"
+            style="background:#ea580c;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.15s;"><span
+              class="material-symbols-outlined" style="font-size:16px;">download</span>Export CSV</button>
+          <button onclick="window.print()"
+            style="background:#7c2d12;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.15s;"><span
+              class="material-symbols-outlined" style="font-size:16px;">print</span>Print Report</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div
+            style="width:36px;height:36px;border-radius:99px;background:#ffedd5;color:#7c2d12;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;"
+            id="avatarCircle">M</div>
+          <span style="font-size:13px;font-weight:600;color:#374151;" id="headerName">—</span>
+        </div>
+      </div>
+    </header>
+
+    <div style="padding:24px;display:flex;flex-direction:column;gap:24px;">
+
+      <!-- Top-Level KPIs -->
+      <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:20px;">
+        <div class="card p-5" style="border-left:4px solid #7c2d12;">
+          <div
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">
+            Total Projected Sugarcane Yield</div>
+          <div style="font-size:28px;font-weight:800;color:#7c2d12;" id="kpiTonnage">—</div>
+          <div style="font-size:11px;color:#6b7280;margin-top:2px;">Sum of expectancies logged by field staff</div>
+        </div>
+        <div class="card p-5" style="border-left:4px solid #ea580c;">
+          <div
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">
+            Total Audit Engagements</div>
+          <div style="font-size:28px;font-weight:800;color:#ea580c;" id="kpiMeetings">—</div>
+          <div style="font-size:11px;color:#6b7280;margin-top:2px;">Distinct farm visits completed in current ledger
+          </div>
+        </div>
+        <div class="card p-5" style="border-left:4px solid #0d9488;">
+          <div
+            style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9ca3af;margin-bottom:4px;">
+            Active Operational Villages</div>
+          <div style="font-size:28px;font-weight:800;color:#0d9488;" id="kpiVillages">—</div>
+          <div style="font-size:11px;color:#6b7280;margin-top:2px;">Unique locations logged with farm analytics</div>
+        </div>
+      </div>
+
+      <!-- Campaigns Performance Progress bars -->
+      <div class="card p-6">
+        <h3
+          style="font-size:14px;font-weight:800;color:#7c2d12;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:20px;display:flex;align-items:center;gap:6px;">
+          <span class="material-symbols-outlined" style="font-size:20px;color:#7c2d12;">donut_large</span>
+          Aggregated Campaign Conversion Rates
+        </h3>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px 32px;" id="campaignProgressGrid">
+          <!-- Progress bars will load dynamically here -->
+          <div style="text-align:center;grid-column: span 2;color:#9ca3af;padding:24px;">Loading campaign metrics...
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Sugarcane Yield & Campaign Matrix by Village -->
+      <div class="card overflow-hidden">
+        <div
+          style="padding:16px 20px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h3 style="font-size:15px;font-weight:800;color:#111827;">Village Agronomic Projections & Campaign Grid</h3>
+            <p style="font-size:11px;color:#6b7280;margin-top:2px;">Village-level sugar cane forecasts and campaign
+              compliance percentages</p>
+          </div>
+          <div class="no-print" style="display:flex;gap:10px;align-items:center;">
+            <span style="font-size:12px;font-weight:600;color:#4b5563;">Search Village:</span>
+            <input type="text" id="villageSearchInput" placeholder="Type village name..." oninput="onSearchChange()"
+              style="font-size:12px;padding:6px 12px;border:1.5px solid #d1d5db;border-radius:8px;width:180px;">
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;text-align:left;">
+            <thead style="background:#f9fafb;border-bottom:1px solid #e5e7eb;">
+              <tr>
+                <th onclick="sortTable('village')"
+                  style="padding:12px 16px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;user-select:none;">
+                  Village <span id="sort-icon-village" style="font-size:10px;">↕</span></th>
+                <th onclick="sortTable('total_meetings')"
+                  style="padding:12px 16px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;user-select:none;text-align:center;">
+                  Visits <span id="sort-icon-total_meetings" style="font-size:10px;">↕</span></th>
+                <th onclick="sortTable('total_tonnage')"
+                  style="padding:12px 16px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;user-select:none;text-align:right;">
+                  Exp. Sugarcane <span id="sort-icon-total_tonnage" style="font-size:10px;">↕</span></th>
+                <th onclick="sortTable('kcc_rate')"
+                  style="padding:12px 16px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;user-select:none;text-align:center;">
+                  KCC <span id="sort-icon-kcc_rate" style="font-size:10px;">↕</span></th>
+                <th onclick="sortTable('canara_rate')"
+                  style="padding:12px 16px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;user-select:none;text-align:center;">
+                  Canara Loan <span id="sort-icon-canara_rate" style="font-size:10px;">↕</span></th>
+                <th onclick="sortTable('sangola_rate')"
+                  style="padding:12px 16px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;user-select:none;text-align:center;">
+                  Sangola Loan <span id="sort-icon-sangola_rate" style="font-size:10px;">↕</span></th>
+                <th onclick="sortTable('cane_reg_rate')"
+                  style="padding:12px 16px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;user-select:none;text-align:center;">
+                  Cane Reg <span id="sort-icon-cane_reg_rate" style="font-size:10px;">↕</span></th>
+                <th onclick="sortTable('recovery_rate')"
+                  style="padding:12px 16px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;user-select:none;text-align:center;">
+                  Recovery <span id="sort-icon-recovery_rate" style="font-size:10px;">↕</span></th>
+                <th onclick="sortTable('vehicle_rate')"
+                  style="padding:12px 16px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;user-select:none;text-align:center;">
+                  Vehicle Agr <span id="sort-icon-vehicle_rate" style="font-size:10px;">↕</span></th>
+              </tr>
+            </thead>
+            <tbody id="villageReportTableBody">
+              <tr>
+                <td colspan="9" style="padding:32px;text-align:center;color:#9ca3af;">Loading village matrix details...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let rawCampaignData = [];
+    let displayCampaignData = [];
+    let sortColumn = "total_tonnage";
+    let sortOrder = "desc";
+
+    function escapeHtml(s) {
+      if (!s) return "";
+      return s.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    async function apiFetch(path, options = {}) {
+      const p = path.startsWith("/api") ? path : `/api${path.startsWith("/") ? path : "/" + path}`;
+      return await AgriAuth.apiFetch(p, options);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 3000);
+    }
+
+    async function loadCampaignReports() {
+      try {
+        const res = await apiFetch("/reports/campaign-analytics");
+        if (!res.ok) throw new Error("Could not retrieve campaign analytics");
+
+        const data = await res.json();
+
+        // Calculate rate percentages for easy sorting and displaying
+        rawCampaignData = data.map(item => {
+          const meetings = item.total_meetings || 1;
+          return {
+            ...item,
+            kcc_rate: (item.kcc_yes / meetings) * 100,
+            canara_rate: (item.canara_hnt_yes / meetings) * 100,
+            sangola_rate: (item.sangola_hnt_yes / meetings) * 100,
+            cane_reg_rate: (item.cane_reg_yes / meetings) * 100,
+            recovery_rate: (item.recovery_yes / meetings) * 100,
+            vehicle_rate: (item.vehicle_yes / meetings) * 100
+          };
+        });
+
+        displayCampaignData = [...rawCampaignData];
+
+        calculateKPIs();
+        renderCampaignProgressBars();
+        sortAndRenderTable();
+      } catch (err) {
+        console.error(err);
+        showToast("Error loading campaign report data");
+        document.getElementById("villageReportTableBody").innerHTML = `
+        <tr>
+          <td colspan="9" style="padding:32px;text-align:center;color:#dc2626;">Failed to load report. Ensure you are signed in as a Manager.</td>
+        </tr>
+      `;
+      }
+    }
+
+    function calculateKPIs() {
+      let totalTonnage = 0;
+      let totalMeetings = 0;
+      let uniqueVillages = new Set();
+
+      rawCampaignData.forEach(item => {
+        totalTonnage += item.total_tonnage;
+        totalMeetings += item.total_meetings;
+        if (item.village && item.village !== "Unknown") {
+          uniqueVillages.add(item.village);
+        }
+      });
+
+      // Render formatted KPIs
+      document.getElementById("kpiTonnage").textContent = `${(totalTonnage / 1000).toFixed(1)} MT`;
+      document.getElementById("kpiMeetings").textContent = totalMeetings.toLocaleString();
+      document.getElementById("kpiVillages").textContent = uniqueVillages.size || 1;
+    }
+
+    function renderCampaignProgressBars() {
+      let totalMeetings = 0;
+      let totalKcc = 0;
+      let totalCanara = 0;
+      let totalSangola = 0;
+      let totalCaneReg = 0;
+      let totalRecovery = 0;
+      let totalVehicle = 0;
+
+      rawCampaignData.forEach(item => {
+        totalMeetings += item.total_meetings;
+        totalKcc += item.kcc_yes;
+        totalCanara += item.canara_hnt_yes;
+        totalSangola += item.sangola_hnt_yes;
+        totalCaneReg += item.cane_reg_yes;
+        totalRecovery += item.recovery_yes;
+        totalVehicle += item.vehicle_yes;
+      });
+
+      if (totalMeetings === 0) totalMeetings = 1;
+
+      const campaigns = [
+        { name: "Kisan Credit Card (KCC) Conversion", count: totalKcc, pct: (totalKcc / totalMeetings) * 100, color: "linear-gradient(90deg, #ea580c 0%, #f97316 100%)" },
+        { name: "Canara Bank H&T Loan Application", count: totalCanara, pct: (totalCanara / totalMeetings) * 100, color: "linear-gradient(90deg, #0d9488 0%, #14b8a6 100%)" },
+        { name: "Sangola Bank H&T Loan Application", count: totalSangola, pct: (totalSangola / totalMeetings) * 100, color: "linear-gradient(90deg, #2563eb 0%, #60a5fa 100%)" },
+        { name: "Sugarcane Registration Campaign", count: totalCaneReg, pct: (totalCaneReg / totalMeetings) * 100, color: "linear-gradient(90deg, #b45309 0%, #f59e0b 100%)" },
+        { name: "Sugarcane Recovery Commitment", count: totalRecovery, pct: (totalRecovery / totalMeetings) * 100, color: "linear-gradient(90deg, #0284c7 0%, #38bdf8 100%)" },
+        { name: "Harvesting & Transport Vehicle Agreement", count: totalVehicle, pct: (totalVehicle / totalMeetings) * 100, color: "linear-gradient(90deg, #4f46e5 0%, #818cf8 100%)" }
+      ];
+
+      const container = document.getElementById("campaignProgressGrid");
+      container.innerHTML = campaigns.map(c => `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:6px;">
+          <span style="font-weight:700;color:#374151;">${c.name}</span>
+          <span style="font-weight:800;color:#111827;">${c.pct.toFixed(1)}% <span style="font-weight:500;color:#6b7280;font-size:11px;">(${c.count}/${totalMeetings})</span></span>
+        </div>
+        <div class="progress-bar-container" style="height:10px;background:#e5e7eb;border-radius:99px;overflow:hidden;position:relative;">
+          <div style="height:100%;width:${c.pct}%;background:${c.color};border-radius:99px;transition:width 0.4s ease-out;"></div>
+        </div>
+      </div>
+    `).join("");
+    }
+
+    function onSearchChange() {
+      const q = document.getElementById("villageSearchInput").value.trim().toLowerCase();
+      if (!q) {
+        displayCampaignData = [...rawCampaignData];
+      } else {
+        displayCampaignData = rawCampaignData.filter(item =>
+          item.village.toLowerCase().includes(q)
+        );
+      }
+      sortAndRenderTable();
+    }
+
+    function sortTable(column) {
+      if (sortColumn === column) {
+        sortOrder = sortOrder === "asc" ? "desc" : "asc";
+      } else {
+        sortColumn = column;
+        sortOrder = "desc"; // Default to desc for numeric metrics
+      }
+
+      // Reset sort indicators
+      const columns = ['village', 'total_meetings', 'total_tonnage', 'kcc_rate', 'canara_rate', 'sangola_rate', 'cane_reg_rate', 'recovery_rate', 'vehicle_rate'];
+      columns.forEach(col => {
+        const el = document.getElementById(`sort-icon-${col}`);
+        if (el) el.textContent = "↕";
+      });
+
+      const activeEl = document.getElementById(`sort-icon-${column}`);
+      if (activeEl) {
+        activeEl.textContent = sortOrder === "asc" ? "▲" : "▼";
+      }
+
+      sortAndRenderTable();
+    }
+
+    function sortAndRenderTable() {
+      displayCampaignData.sort((a, b) => {
+        let valA = a[sortColumn];
+        let valB = b[sortColumn];
+
+        if (typeof valA === 'string') {
+          valA = valA.toLowerCase();
+          valB = valB.toLowerCase();
+        }
+
+        if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+        if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+        return 0;
+      });
+
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById("villageReportTableBody");
+      if (!displayCampaignData.length) {
+        tbody.innerHTML = `
+        <tr>
+          <td colspan="9" style="padding:32px;text-align:center;color:#9ca3af;">No villages match the search filter.</td>
+        </tr>
+      `;
+        return;
+      }
+
+      tbody.innerHTML = displayCampaignData.map(item => `
+      <tr class="tbl-row" style="border-top:1px solid #f3f4f6;">
+        <td style="padding:12px 16px;font-weight:700;color:#111827;">${escapeHtml(item.village)}</td>
+        <td style="padding:12px 16px;text-align:center;color:#4b5563;font-size:12px;">${item.total_meetings}</td>
+        <td style="padding:12px 16px;text-align:right;font-weight:800;color:#7c2d12;">${(item.total_tonnage / 1000).toFixed(1)} MT</td>
+        
+        <td style="padding:12px 16px;text-align:center;">
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:700;">
+            <span style="color:${item.kcc_rate > 50 ? '#ea580c' : '#b45309'}">${item.kcc_rate.toFixed(0)}%</span>
+            <div style="width:36px;height:6px;background:#e5e7eb;border-radius:99px;overflow:hidden;display:inline-block;">
+              <div style="width:${item.kcc_rate}%;height:100%;background:#ea580c;"></div>
+            </div>
+          </div>
+        </td>
+
+        <td style="padding:12px 16px;text-align:center;">
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:700;">
+            <span style="color:${item.canara_rate > 50 ? '#0d9488' : '#b45309'}">${item.canara_rate.toFixed(0)}%</span>
+            <div style="width:36px;height:6px;background:#e5e7eb;border-radius:99px;overflow:hidden;display:inline-block;">
+              <div style="width:${item.canara_rate}%;height:100%;background:#0d9488;"></div>
+            </div>
+          </div>
+        </td>
+
+        <td style="padding:12px 16px;text-align:center;">
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:700;">
+            <span style="color:${item.sangola_rate > 50 ? '#2563eb' : '#b45309'}">${item.sangola_rate.toFixed(0)}%</span>
+            <div style="width:36px;height:6px;background:#e5e7eb;border-radius:99px;overflow:hidden;display:inline-block;">
+              <div style="width:${item.sangola_rate}%;height:100%;background:#2563eb;"></div>
+            </div>
+          </div>
+        </td>
+
+        <td style="padding:12px 16px;text-align:center;">
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:700;">
+            <span style="color:${item.cane_reg_rate > 50 ? '#ea580c' : '#b45309'}">${item.cane_reg_rate.toFixed(0)}%</span>
+            <div style="width:36px;height:6px;background:#e5e7eb;border-radius:99px;overflow:hidden;display:inline-block;">
+              <div style="width:${item.cane_reg_rate}%;height:100%;background:#ea580c;"></div>
+            </div>
+          </div>
+        </td>
+
+        <td style="padding:12px 16px;text-align:center;">
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:700;">
+            <span style="color:${item.recovery_rate > 50 ? '#0284c7' : '#b45309'}">${item.recovery_rate.toFixed(0)}%</span>
+            <div style="width:36px;height:6px;background:#e5e7eb;border-radius:99px;overflow:hidden;display:inline-block;">
+              <div style="width:${item.recovery_rate}%;height:100%;background:#0284c7;"></div>
+            </div>
+          </div>
+        </td>
+
+        <td style="padding:12px 16px;text-align:center;">
+          <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:700;">
+            <span style="color:${item.vehicle_rate > 50 ? '#4f46e5' : '#b45309'}">${item.vehicle_rate.toFixed(0)}%</span>
+            <div style="width:36px;height:6px;background:#e5e7eb;border-radius:99px;overflow:hidden;display:inline-block;">
+              <div style="width:${item.vehicle_rate}%;height:100%;background:#4f46e5;"></div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    `).join("");
+    }
+
+    function exportToCSV() {
+      if (!rawCampaignData.length) {
+        showToast("No data to export");
+        return;
+      }
+
+      const headers = ["Village", "Total Meetings", "Expected Sugarcane Tonnage (kg)", "KCC Conversion (%)", "Canara Loan (%)", "Sangola Loan (%)", "Cane Registration (%)", "Recovery Agreement (%)", "Vehicle Agreement (%)"];
+
+      const rows = rawCampaignData.map(item => [
+        item.village,
+        item.total_meetings,
+        item.total_tonnage,
+        item.kcc_rate.toFixed(2),
+        item.canara_rate.toFixed(2),
+        item.sangola_rate.toFixed(2),
+        item.cane_reg_rate.toFixed(2),
+        item.recovery_rate.toFixed(2),
+        item.vehicle_rate.toFixed(2)
+      ]);
+
+      const csvContent = [
+        headers.join(","),
+        ...rows.map(e => e.map(val => `"${val}"`).join(","))
+      ].join("\n");
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", "campaign_analytics_report.csv");
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("CSV report downloaded successfully!");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const session = AgriAuth.getSession();
+      if (session) {
+        const name = (session.name && session.name !== "None") ? session.name : session.username;
+        document.getElementById("avatarCircle").textContent = name.charAt(0).toUpperCase();
+        document.getElementById("headerName").textContent = name;
+      }
+
+      document.getElementById("logoutBtn").addEventListener("click", e => {
+        e.preventDefault();
+        if (confirm("Sign out?")) {
+          AgriAuth.clearSession();
+          window.location.replace("/login.html");
+        }
+      });
+
+      // Set initial sort indicator visual
+      const activeEl = document.getElementById(`sort-icon-${sortColumn}`);
+      if (activeEl) {
+        activeEl.textContent = sortOrder === "asc" ? "▲" : "▼";
+      }
+
+      loadCampaignReports();
+    });
+  </script>
+</body>
+
+</html>
